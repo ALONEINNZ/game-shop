@@ -1058,6 +1058,12 @@ async function sendMessage() {
     addMessageToChat(message, 'user');
     chatHistory.push({ role: 'user', content: message });
     
+    // Get user name if logged in
+    let userName = null;
+    if (currentUser && currentUser.name) {
+        userName = currentUser.name.split(' ')[0]; // First name only
+    }
+    
     // Show typing indicator
     showTypingIndicator();
     
@@ -1069,7 +1075,8 @@ async function sendMessage() {
             },
             body: JSON.stringify({ 
                 message,
-                history: chatHistory.slice(-10) // Send last 10 messages for context
+                history: chatHistory.slice(-10),
+                userName
             })
         });
         

@@ -1,120 +1,129 @@
 const express = require('express');
 const router = express.Router();
 
-const GEMINI_API_KEY = process.env.GOOGLE_GEMINI_API_KEY;
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+// Groq API (fast & free)
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
-// System prompt to give the AI context
-const SYSTEM_PROMPT = `You are ExusBot, a friendly and knowledgeable AI assistant for ExusCraft - a gaming mod marketplace website. 
+// System prompt - general assistant that can answer anything
+const getSystemPrompt = (userName) => `You are ExusBot, a friendly and super knowledgeable AI assistant on ExusCraft - a gaming mod marketplace.
+
+${userName ? `The user's name is ${userName}. Address them by name occasionally to be personal and friendly.` : ''}
 
 Your personality:
-- Friendly, helpful, and enthusiastic about gaming
-- Use emojis occasionally to be expressive 🎮
+- Friendly, helpful, witty, and enthusiastic
+- Use emojis to be expressive 🎮 ✨ 🚀
 - Keep responses concise but informative
-- You're an expert on game modding, installation, troubleshooting, and gaming in general
+- You can answer ANY question on ANY topic - you're a general knowledge AI
+- Be conversational and fun
 
-Your knowledge areas:
-- Mod installation for all major games (Minecraft, Skyrim, GTA V, Cyberpunk 2077, Fallout 4, Witcher 3, Rust, etc.)
-- Troubleshooting crashes, conflicts, and performance issues
-- Game-specific modding tools (Forge, Fabric, SKSE, ScriptHookV, Vortex, Mod Organizer 2, etc.)
-- Graphics mods, shaders, ENBs, ReShade
-- Programming and development (JavaScript, Python, etc.)
-- General gaming knowledge and recommendations
+You can help with:
+- ANY question about ANY topic (science, history, math, coding, life advice, etc.)
+- Gaming and mod-related questions (your specialty!)
+- Programming in any language
+- Creative writing, jokes, stories
+- Explanations of complex topics
+- Recommendations and advice
+- Literally anything the user asks
 
-About ExusCraft:
+About ExusCraft (if asked):
 - Community-driven mod marketplace
 - Users can browse, download, and purchase mods
-- Users can create and share mod collections
 - Built in New Zealand 🇳🇿
-- Safe, virus-scanned downloads
 
 Guidelines:
-- If asked about non-gaming/non-tech topics, politely redirect to your expertise
-- Never share harmful content or help with cheating in online games
-- Be encouraging to new modders
-- Recommend backing up saves before modding
-- Keep responses under 300 words unless detailed instructions are needed`;
+- Answer ANY question the user asks - you're not limited to gaming
+- Be helpful and thorough
+- If you don't know something, say so honestly
+- Keep responses under 400 words unless more detail is needed
+- ${userName ? `Remember to occasionally use ${userName}'s name to be personal` : 'Be friendly and welcoming'}`;
 
 router.post('/chat', async (req, res) => {
     try {
-        const { message, history = [] } = req.body;
+        const { message, history = [], userName } = req.body;
 
         if (!message) {
             return res.status(400).json({ error: 'Message is required' });
         }
 
-        if (!GEMINI_API_KEY) {
-            return res.status(500).json({ error: 'AI service not configured' });
+        if (!GROQ_API_KEY) {
+            // Fallback to smart local responses
+            const response = getSmartResponse(message, userName);
+            return res.json({ response });
         }
 
-        // Build conversation history for context
-        const contents = [];
-        
-        // Add system prompt as first user message (Gemini doesn't have system role)
-        contents.push({
-            role: 'user',
-            parts: [{ text: SYSTEM_PROMPT + '\n\nPlease acknowledge you understand and are ready to help.' }]
-        });
-        contents.push({
-            role: 'model',
-            parts: [{ text: 'I understand! I\'m ExusBot, ready to help with all your gaming and modding questions! 🎮 What can I help you with?' }]
-        });
+        // Build messages for Groq
+        const messages = [
+            { role: 'system', content: getSystemPrompt(userName) }
+        ];
 
         // Add conversation history
-        for (const msg of history.slice(-10)) { // Keep last 10 messages for context
-            contents.push({
-                role: msg.role === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.content }]
+        for (const msg of history.slice(-10)) {
+            messages.push({
+                role: msg.role === 'user' ? 'user' : 'assistant',
+                content: msg.content
             });
         }
 
         // Add current message
-        contents.push({
-            role: 'user',
-            parts: [{ text: message }]
-        });
+        messages.push({ role: 'user', content: message });
 
-        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(GROQ_API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`
             },
             body: JSON.stringify({
-                contents,
-                generationConfig: {
-                    temperature: 0.7,
-                    topK: 40,
-                    topP: 0.95,
-                    maxOutputTokens: 500,
-                },
-                safetySettings: [
-                    { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-                    { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-                    { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-                    { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-                ]
+                model: 'llama-3.3-70b-versatile',
+                messages,
+                temperature: 0.8,
+                max_tokens: 600
             })
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            console.error('Gemini API error:', data);
-            return res.status(500).json({ error: 'AI service error', details: data.error?.message });
+            console.error('Groq API error:', data);
+            // Fallback to smart responses
+            const fallback = getSmartResponse(message, userName);
+            return res.json({ response: fallback });
         }
 
-        const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const aiResponse = data.choices?.[0]?.message?.content;
 
         if (!aiResponse) {
-            return res.status(500).json({ error: 'No response from AI' });
+            const fallback = getSmartResponse(message, userName);
+            return res.json({ response: fallback });
         }
 
         res.json({ response: aiResponse });
 
     } catch (error) {
         console.error('Chatbot error:', error);
-        res.status(500).json({ error: 'Failed to get AI response' });
+        const fallback = getSmartResponse(req.body.message, req.body.userName);
+        res.json({ response: fallback });
     }
 });
+
+// Smart fallback responses when API is unavailable
+function getSmartResponse(message, userName) {
+    const lower = message.toLowerCase();
+    const name = userName ? ` ${userName}` : '';
+    
+    // Greetings
+    if (/^(hi|hello|hey|yo|sup|howdy)/i.test(lower)) {
+        const greetings = [
+            `Hey${name}! 👋 What can I help you with today?`,
+            `Hello${name}! 🎮 Ready to chat about anything!`,
+            `Hey there${name}! What's on your mind?`
+        ];
+        return greetings[Math.floor(Math.random() * greetings.length)];
+    }
+    
+    // Default
+    return `Hey${name}! 🤖 I'm here to help with anything you need. What's your question?`;
+}
 
 module.exports = router;
