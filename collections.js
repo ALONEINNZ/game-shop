@@ -2,6 +2,7 @@
 let currentPage = 1;
 let isLoading = false;
 let hasMoreCollections = true;
+let currentUser = null;
 
 // Initialize collections page
 document.addEventListener('DOMContentLoaded', function() {
@@ -10,7 +11,236 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Check authentication
     checkAuthStatus();
+    
+    // Initialize theme
+    initTheme();
+    
+    // Initialize Google Sign-In
+    setTimeout(initGoogleSignIn, 500);
 });
+
+// Theme functionality
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+    const icon = document.getElementById('themeIcon');
+    if (icon) {
+        icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    }
+}
+
+// Dropdown functionality
+function toggleGameDropdown() {
+    const dropdown = document.getElementById('gameDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.nav-dropdown')) {
+        const gameDropdown = document.getElementById('gameDropdown');
+        if (gameDropdown) gameDropdown.classList.remove('show');
+    }
+    if (!e.target.closest('.user-profile-dropdown')) {
+        const userDropdown = document.getElementById('userDropdown');
+        if (userDropdown) userDropdown.classList.remove('show');
+    }
+});
+
+// Authentication functions
+function showLogin() {
+    document.getElementById('authContent').innerHTML = `
+        <div class="auth-form">
+            <div class="auth-header">
+                <h2>Welcome Back</h2>
+                <p>Sign in to your ExusCraft account</p>
+            </div>
+            
+            <div id="googleSignInDiv" style="display: flex; justify-content: center; margin: 1.5rem 0;"></div>
+            
+            <div class="auth-footer">
+                Don't have an account? <a href="#" onclick="showRegister()">Join ExusCraft</a>
+            </div>
+        </div>
+    `;
+    const modal = document.getElementById('authModal');
+    modal.style.display = 'block';
+    setTimeout(() => modal.classList.add('show'), 10);
+    
+    setTimeout(() => {
+        if (typeof google !== 'undefined' && google.accounts) {
+            google.accounts.id.renderButton(
+                document.getElementById('googleSignInDiv'),
+                { theme: 'filled_blue', size: 'large', text: 'signin_with', shape: 'rectangular', width: 280 }
+            );
+        }
+    }, 100);
+}
+
+function showRegister() {
+    document.getElementById('authContent').innerHTML = `
+        <div class="auth-form">
+            <div class="auth-header">
+                <h2>Join ExusCraft</h2>
+                <p>Create your account and start exploring</p>
+            </div>
+            
+            <div id="googleSignUpDiv" style="display: flex; justify-content: center; margin: 1.5rem 0;"></div>
+            
+            <div class="auth-footer">
+                Already have an account? <a href="#" onclick="showLogin()">Sign In</a>
+            </div>
+        </div>
+    `;
+    const modal = document.getElementById('authModal');
+    modal.style.display = 'block';
+    setTimeout(() => modal.classList.add('show'), 10);
+    
+    setTimeout(() => {
+        if (typeof google !== 'undefined' && google.accounts) {
+            google.accounts.id.renderButton(
+                document.getElementById('googleSignUpDiv'),
+                { theme: 'filled_blue', size: 'large', text: 'signup_with', shape: 'rectangular', width: 280 }
+            );
+        }
+    }, 100);
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById('authModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+}
+
+// Initialize Google Sign-In
+function initGoogleSignIn() {
+    if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+            client_id: '125508254360-rdb0cu5l4b2majds3i6pa13663uchku0.apps.googleusercontent.com',
+            callback: handleGoogleCredentialResponse
+        });
+    }
+}
+
+async function handleGoogleCredentialResponse(response) {
+    try {
+        // Send credential to backend to get a proper JWT token
+        const res = await fetch('/api/auth/google', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ credential: response.credential })
+        });
+        
+        const data = await res.json();
+        console.log('Google auth response:', data);
+        
+        if (!res.ok) {
+            throw new Error(data.message || 'Authentication failed');
+        }
+        
+        // Store the JWT token and user info
+        console.log('Storing token:', data.token);
+        localStorage.setItem('token', data.token);
+        
+        currentUser = {
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name || data.user.username,
+            picture: data.user.picture,
+            username: data.user.username
+        };
+        
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        updateUserNavigation();
+        closeAuthModal();
+        showMessage(`Welcome, ${currentUser.name}! 🎉`, 'success');
+    } catch (error) {
+        console.error('Error processing Google response:', error);
+        showMessage('Login failed. Please try again.', 'error');
+    }
+}
+
+function showMessage(message, type = 'info') {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message-toast ${type}`;
+    messageDiv.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: ${type === 'success' ? '#4ecdc4' : type === 'error' ? '#ff6b6b' : '#667eea'};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    `;
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => messageDiv.remove(), 300);
+    }, 3000);
+}
+
+function showOrders() {
+    showMessage('Orders feature coming soon!', 'info');
+}
+
+function showSettings() {
+    showMessage('Settings feature coming soon!', 'info');
+}
+
+function updateUserNavigation() {
+    const navAuth = document.getElementById('navAuth');
+    const navUser = document.getElementById('navUser');
+    
+    if (currentUser) {
+        if (navAuth) navAuth.style.display = 'none';
+        if (navUser) navUser.style.display = 'flex';
+        
+        const usernameEl = document.getElementById('username');
+        const avatarEl = document.getElementById('userAvatar');
+        
+        if (usernameEl) usernameEl.textContent = currentUser.name;
+        if (avatarEl && currentUser.picture) avatarEl.src = currentUser.picture;
+    } else {
+        if (navUser) navUser.style.display = 'none';
+        if (navAuth) navAuth.style.display = 'flex';
+    }
+}
 
 // Load featured collections
 async function loadFeaturedCollections() {
@@ -262,32 +492,48 @@ function showCollectionModal(collection) {
     `;
     
     modal.style.display = 'block';
+    setTimeout(() => modal.classList.add('show'), 10);
 }
 
 // Close collection modal
 function closeCollectionModal() {
-    document.getElementById('collectionModal').style.display = 'none';
+    const modal = document.getElementById('collectionModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
 }
 
 // Show create collection modal
 function showCreateCollection() {
     if (!isAuthenticated()) {
-        alert('Please log in to create collections');
+        showLogin();
         return;
     }
     
-    document.getElementById('createCollectionModal').style.display = 'block';
+    const modal = document.getElementById('createCollectionModal');
+    modal.style.display = 'block';
+    setTimeout(() => modal.classList.add('show'), 10);
 }
 
 // Close create collection modal
 function closeCreateCollectionModal() {
-    document.getElementById('createCollectionModal').style.display = 'none';
-    document.getElementById('createCollectionForm').reset();
+    const modal = document.getElementById('createCollectionModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.getElementById('createCollectionForm').reset();
+        }, 300);
+    }
 }
 
 // Create new collection
 async function createCollection(event) {
     event.preventDefault();
+    
+    const token = localStorage.getItem('token');
+    console.log('Token from localStorage:', token);
     
     const formData = {
         name: document.getElementById('collectionName').value,
@@ -303,7 +549,7 @@ async function createCollection(event) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(formData)
         });
@@ -390,30 +636,39 @@ async function downloadCollection(collectionId) {
 
 // Utility functions
 function isAuthenticated() {
-    return localStorage.getItem('token') !== null;
+    return localStorage.getItem('user') !== null;
 }
 
 function checkAuthStatus() {
-    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
     const navAuth = document.getElementById('navAuth');
     const navUser = document.getElementById('navUser');
     
-    if (token) {
-        navAuth.style.display = 'none';
-        navUser.style.display = 'flex';
-        
-        // Get user info from token or make API call
-        const username = localStorage.getItem('username') || 'User';
-        document.getElementById('username').textContent = username;
+    if (userData) {
+        try {
+            currentUser = JSON.parse(userData);
+            if (navAuth) navAuth.style.display = 'none';
+            if (navUser) navUser.style.display = 'flex';
+            
+            const usernameEl = document.getElementById('username');
+            const avatarEl = document.getElementById('userAvatar');
+            
+            if (usernameEl) usernameEl.textContent = currentUser.name || 'User';
+            if (avatarEl && currentUser.picture) avatarEl.src = currentUser.picture;
+        } catch (e) {
+            console.error('Error parsing user data:', e);
+            localStorage.removeItem('user');
+        }
     } else {
-        navAuth.style.display = 'flex';
-        navUser.style.display = 'none';
+        if (navAuth) navAuth.style.display = 'flex';
+        if (navUser) navUser.style.display = 'none';
     }
 }
 
 function logout() {
+    localStorage.removeItem('user');
     localStorage.removeItem('token');
-    localStorage.removeItem('username');
+    currentUser = null;
     window.location.href = 'index.html';
 }
 
@@ -421,11 +676,15 @@ function logout() {
 window.onclick = function(event) {
     const collectionModal = document.getElementById('collectionModal');
     const createModal = document.getElementById('createCollectionModal');
+    const authModal = document.getElementById('authModal');
     
     if (event.target === collectionModal) {
         closeCollectionModal();
     }
     if (event.target === createModal) {
         closeCreateCollectionModal();
+    }
+    if (event.target === authModal) {
+        closeAuthModal();
     }
 }

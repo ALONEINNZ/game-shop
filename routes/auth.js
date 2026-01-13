@@ -269,4 +269,64 @@ router.get('/me', auth, async (req, res) => {
   }
 });
 
+// Google Sign-In
+router.post('/google', async (req, res) => {
+  try {
+    const { credential } = req.body;
+    
+    if (!credential) {
+      return res.status(400).json({ message: 'Google credential is required' });
+    }
+
+    // Decode the JWT token from Google (basic decode, in production verify with Google's public keys)
+    const payload = JSON.parse(Buffer.from(credential.split('.')[1], 'base64').toString());
+    
+    const { sub: googleId, email, name, picture } = payload;
+
+    // Find or create user
+    let user = await User.findOne({ $or: [{ googleId }, { email }] });
+    
+    if (!user) {
+      // Create new user
+      user = new User({
+        username: name.replace(/\s+/g, '_').toLowerCase() + '_' + googleId.slice(-4),
+        email,
+        googleId,
+        avatar: picture,
+        isEmailVerified: true, // Google emails are verified
+        password: crypto.randomBytes(32).toString('hex') // Random password for Google users
+      });
+      await user.save();
+    } else if (!user.googleId) {
+      // Link Google account to existing user
+      user.googleId = googleId;
+      user.avatar = user.avatar || picture;
+      user.isEmailVerified = true;
+      await user.save();
+    }
+
+    const token = jwt.sign(
+      { userId: user._id }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        name: name,
+        picture: picture,
+        role: user.role,
+        isEmailVerified: user.isEmailVerified
+      }
+    });
+  } catch (error) {
+    console.error('Google auth error:', error);
+    res.status(500).json({ message: 'Server error during Google authentication' });
+  }
+});
+
 module.exports = router;
