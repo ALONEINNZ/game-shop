@@ -24,7 +24,7 @@ uploadDirs.forEach(dir => {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static('.'));
 app.use('/uploads', express.static('uploads'));
 
 // Routes
@@ -39,12 +39,12 @@ app.use('/api/collections', require('./routes/collections'));
 
 // Admin route
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+    res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
 // Serve frontend
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Connect to MongoDB
