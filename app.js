@@ -712,9 +712,6 @@ function showLibrary() {
                                 <button onclick="installFromLibrary('${mod.modId || mod._id}')" class="btn btn-primary btn-sm">
                                     <i class="fas fa-download"></i> Install
                                 </button>
-                                <button onclick="removeFromLibrary('${mod.modId || mod._id}')" class="btn btn-outline btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -1335,8 +1332,8 @@ function purchaseMod(modId) {
         
         setTimeout(() => {
             showMessage(`🎉 Purchase successful! ${mod.title} is now yours!`, 'success');
+            addToLibrary(modId);
             closeModal();
-            setTimeout(() => downloadMod(modId), 1000);
         }, 1500);
     }
 }
