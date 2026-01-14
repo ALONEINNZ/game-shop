@@ -6,40 +6,74 @@
     <title>Mod Collections - ExusCraft</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="styles-new.css" rel="stylesheet">
+    <link href="styles-new.css?v=3" rel="stylesheet">
 </head>
 <body>
-    <div class="loading" id="loading"><div class="loading-spinner"></div></div>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Premium Navigation - SAME AS INDEX.HTML -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <div class="nav-brand">
                 <a href="index.html" class="logo">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#gradient)"/><path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/><circle cx="16" cy="16" r="3" fill="white"/><defs><linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#5B8CFF"/><stop offset="50%" style="stop-color:#7C5CFF"/><stop offset="100%" style="stop-color:#C15CFF"/></linearGradient></defs></svg>
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                        <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
+                        <circle cx="16" cy="16" r="3" fill="white"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#5B8CFF"/>
+                                <stop offset="50%" style="stop-color:#7C5CFF"/>
+                                <stop offset="100%" style="stop-color:#C15CFF"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
                     <span class="logo-text">ExusCraft</span>
                 </a>
             </div>
-            <div class="nav-search"><i class="fas fa-search"></i><input type="text" id="navSearch" placeholder="Search collections..."></div>
+            
+            <div class="nav-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="navSearch" placeholder="Search collections..." onkeyup="handleNavSearch(event)">
+            </div>
+            
             <div class="nav-menu">
                 <a class="nav-link" href="index.html#games">Browse</a>
                 <a class="nav-link active" href="collections.html">Collections</a>
-                <a class="nav-link upload-link" href="#" onclick="showUploadModal()"><i class="fas fa-upload"></i> Upload</a>
-                <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+                <a class="nav-link upload-link" href="#" onclick="showUploadModal()">
+                    <i class="fas fa-upload"></i> Upload
+                </a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
             </div>
+
             <div class="nav-auth" id="navAuth">
                 <button onclick="showLogin()" class="btn btn-outline">Login</button>
                 <button onclick="showRegister()" class="btn btn-primary">Join Free</button>
             </div>
-            <div class="nav-user" id="navUser" style="display:none;">
+            <div class="nav-user" id="navUser" style="display: none;">
                 <div class="user-profile-dropdown">
-                    <button class="user-avatar-btn" onclick="toggleUserMenu()"><img id="userAvatar" src="https://via.placeholder.com/36" alt="Avatar"></button>
+                    <button class="user-avatar-btn" onclick="toggleUserMenu()">
+                        <img id="userAvatar" src="https://via.placeholder.com/36x36/5B8CFF/ffffff?text=U" alt="Avatar">
+                    </button>
                     <div class="user-dropdown" id="userDropdown">
-                        <div class="user-dropdown-header"><img id="userAvatarLarge" src="https://via.placeholder.com/48" alt="Avatar"><div><span id="username" class="dropdown-username"></span><span class="dropdown-email" id="userEmail"></span></div></div>
+                        <div class="user-dropdown-header">
+                            <img id="userAvatarLarge" src="https://via.placeholder.com/48x48/5B8CFF/ffffff?text=U" alt="Avatar">
+                            <div>
+                                <span id="username" class="dropdown-username"></span>
+                                <span class="dropdown-email" id="userEmail"></span>
+                            </div>
+                        </div>
                         <div class="dropdown-divider"></div>
-                        <a href="index.html" onclick="setTimeout(()=>showProfile(),100)"><i class="fas fa-user"></i> Profile</a>
-                        <a href="index.html" onclick="setTimeout(()=>showMyMods(),100)"><i class="fas fa-puzzle-piece"></i> My Mods</a>
-                        <a href="index.html" onclick="setTimeout(()=>showFavorites(),100)"><i class="fas fa-heart"></i> Favorites</a>
-                        <a href="index.html" onclick="setTimeout(()=>showDownloads(),100)"><i class="fas fa-download"></i> Downloads</a>
-                        <a href="index.html" onclick="setTimeout(()=>showSettings(),100)"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="index.html" onclick="setTimeout(() => showProfile(), 100)"><i class="fas fa-user"></i> My Profile</a>
+                        <a href="index.html" onclick="setTimeout(() => showMyMods(), 100)"><i class="fas fa-puzzle-piece"></i> My Mods</a>
+                        <a href="index.html" onclick="setTimeout(() => showFavorites(), 100)"><i class="fas fa-heart"></i> Favorites</a>
+                        <a href="index.html" onclick="setTimeout(() => showDownloads(), 100)"><i class="fas fa-download"></i> Downloads</a>
+                        <a href="index.html" onclick="setTimeout(() => showSettings(), 100)"><i class="fas fa-cog"></i> Settings</a>
                         <div class="dropdown-divider"></div>
                         <a href="#" onclick="logout()" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
                     </div>
@@ -47,47 +81,246 @@
             </div>
         </div>
     </nav>
+
+    <!-- Cinematic Hero Section - SAME STYLE AS INDEX -->
     <section class="hero" id="hero">
-        <div class="hero-background"><div class="hero-particles"></div></div>
+        <div class="hero-background">
+            <div class="hero-particles"></div>
+        </div>
         <div class="hero-content">
-            <span class="hero-badge"> Curated Mod Packs</span>
+            <span class="hero-badge">📦 Curated Mod Packs</span>
             <h1 class="hero-title">Mod <span class="gradient-text">Collections</span></h1>
             <p class="hero-subtitle">Discover hand-picked mod packs curated by the community, or create your own collection to share with fellow gamers.</p>
             <div class="hero-cta">
-                <button onclick="document.getElementById('featuredCollections').scrollIntoView({behavior:'smooth'})" class="btn btn-primary btn-large btn-animated"><i class="fas fa-compass"></i> Browse Collections</button>
-                <button onclick="showCreateCollection()" class="btn btn-outline btn-large"><i class="fas fa-plus"></i> Create Collection</button>
+                <button onclick="document.getElementById('featuredCollections').scrollIntoView({behavior: 'smooth'})" class="btn btn-primary btn-large btn-animated">
+                    <i class="fas fa-compass"></i> Browse Collections
+                </button>
+                <button onclick="showCreateCollection()" class="btn btn-outline btn-large">
+                    <i class="fas fa-plus"></i> Create Collection
+                </button>
             </div>
             <div class="hero-stats">
-                <div class="hero-stat"><span class="stat-number">50+</span><span class="stat-label">Collections</span></div>
-                <div class="hero-stat"><span class="stat-number">200+</span><span class="stat-label">Mods</span></div>
-                <div class="hero-stat"><span class="stat-number">10K+</span><span class="stat-label">Downloads</span></div>
-                <div class="hero-stat"><span class="stat-number">8</span><span class="stat-label">Games</span></div>
+                <div class="hero-stat">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Collections</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number">200+</span>
+                    <span class="stat-label">Mods Included</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number">10K+</span>
+                    <span class="stat-label">Downloads</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number">8</span>
+                    <span class="stat-label">Games</span>
+                </div>
             </div>
         </div>
-        <div class="scroll-indicator" onclick="document.getElementById('featuredCollections').scrollIntoView({behavior:'smooth'})"><span>Explore</span><i class="fas fa-chevron-down"></i></div>
-    </section>
-    <section class="section"><div class="container">
-        <div class="section-header"><h2 class="section-title">Featured Collections</h2><p class="section-subtitle">Hand-picked by our community</p></div>
-        <div class="collections-showcase" id="featuredCollections"></div>
-    </div></section>
-    <section class="section" id="allCollections"><div class="container">
-        <div class="section-header"><h2 class="section-title">Browse Collections</h2></div>
-        <div class="games-controls fade-in">
-            <div class="search-bar"><input type="text" id="collectionSearch" placeholder="Search..." onkeyup="searchCollections()"><i class="fas fa-search"></i></div>
-            <select id="categoryFilter" onchange="filterCollections()"><option value="">All Categories</option><option value="Graphics Enhancement">Graphics</option><option value="Gameplay Overhaul">Gameplay</option><option value="Performance">Performance</option></select>
-            <select id="sortFilter" onchange="filterCollections()"><option value="featured">Featured</option><option value="newest">Newest</option><option value="popular">Popular</option></select>
-            <select id="gameFilter" onchange="filterCollections()"><option value="">All Games</option><option value="Minecraft">Minecraft</option><option value="Skyrim">Skyrim</option><option value="GTA V">GTA V</option></select>
+        <div class="scroll-indicator" onclick="document.getElementById('featuredCollections').scrollIntoView({behavior: 'smooth'})">
+            <span>Explore collections</span>
+            <i class="fas fa-chevron-down"></i>
         </div>
-        <div class="games-showcase" id="collectionsGrid"></div>
-        <div style="text-align:center;margin-top:3rem;"><button id="loadMoreCollections" onclick="loadMoreCollections()" class="btn btn-outline btn-large" style="display:none;">Load More</button></div>
-    </div></section>
-    <div id="collectionModal" class="modal"><div class="modal-content collection-modal"><span class="close" onclick="closeCollectionModal()">&times;</span><div id="collectionDetails"></div></div></div>
-    <div id="createCollectionModal" class="modal"><div class="modal-content"><span class="close" onclick="closeCreateCollectionModal()">&times;</span><div class="create-collection-form"><h2>Create Collection</h2><form id="createCollectionForm" onsubmit="createCollection(event)"><div class="form-group"><label>Name</label><input type="text" id="collectionName" required></div><div class="form-group"><label>Description</label><textarea id="collectionDescription" rows="3"></textarea></div><div class="form-row"><div class="form-group"><label>Game</label><select id="collectionGame" required><option value="">Select</option><option value="Minecraft">Minecraft</option><option value="Skyrim">Skyrim</option></select></div><div class="form-group"><label>Category</label><select id="collectionCategory"><option value="Mixed">Mixed</option><option value="Graphics Enhancement">Graphics</option></select></div></div><div class="form-group"><label><input type="checkbox" id="collectionPublic" checked> Public</label></div><div class="form-actions"><button type="button" onclick="closeCreateCollectionModal()" class="btn btn-outline">Cancel</button><button type="submit" class="btn btn-primary">Create</button></div></form></div></div></div>
-    <div id="authModal" class="modal"><div class="modal-content"><span class="close" onclick="closeAuthModal()">&times;</span><div id="authContent"></div></div></div>
-    <button class="chatbot-toggle" onclick="window.location.href='index.html'" style="position:fixed;bottom:30px;right:100px;z-index:9999;"><i class="fas fa-comments"></i></button>
-    <button class="cart-toggle" onclick="window.location.href='index.html'" style="position:fixed;bottom:30px;right:30px;z-index:9999;"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></button>
-    <footer class="site-footer"><div class="footer-content"><div class="footer-main"><div class="footer-brand-section"><div class="footer-brand"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="url(#fg)"/><path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/><circle cx="16" cy="16" r="3" fill="white"/><defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#5B8CFF"/><stop offset="50%" style="stop-color:#7C5CFF"/><stop offset="100%" style="stop-color:#C15CFF"/></linearGradient></defs></svg><span class="footer-logo-text">ExusCraft</span></div><p class="footer-tagline">Community-driven mod platform.</p></div><div class="footer-links-grid"><div class="footer-column"><h4>Browse</h4><a href="index.html#games">All Mods</a><a href="collections.html">Collections</a></div><div class="footer-column"><h4>Legal</h4><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="dmca.html">DMCA</a></div></div></div><div class="footer-bottom"><p class="footer-copyright"> 2026 ExusCraft</p><div class="footer-social"><a href="https://discord.gg/exuscraft" target="_blank"><i class="fab fa-discord"></i></a><a href="https://twitter.com/exuscraft" target="_blank"><i class="fab fa-twitter"></i></a></div></div></div></footer>
+    </section>
+
+    <!-- Featured Collections -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Collections</h2>
+                <p class="section-subtitle">Hand-picked collections by our community</p>
+            </div>
+            <div class="collections-showcase" id="featuredCollections"></div>
+        </div>
+    </section>
+
+    <!-- All Collections -->
+    <section class="section" id="allCollections">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Browse Collections</h2>
+            </div>
+            
+            <div class="games-controls fade-in">
+                <div class="search-bar">
+                    <input type="text" id="collectionSearch" placeholder="Search collections..." onkeyup="searchCollections()">
+                    <i class="fas fa-search"></i>
+                </div>
+                <select id="categoryFilter" onchange="filterCollections()">
+                    <option value="">All Categories</option>
+                    <option value="Graphics Enhancement">Graphics Enhancement</option>
+                    <option value="Gameplay Overhaul">Gameplay Overhaul</option>
+                    <option value="Quality of Life">Quality of Life</option>
+                    <option value="Performance">Performance</option>
+                    <option value="Content Addition">Content Addition</option>
+                </select>
+                <select id="sortFilter" onchange="filterCollections()">
+                    <option value="featured">Featured</option>
+                    <option value="newest">Newest</option>
+                    <option value="popular">Most Popular</option>
+                    <option value="downloads">Most Downloaded</option>
+                </select>
+                <select id="gameFilter" onchange="filterCollections()">
+                    <option value="">All Games</option>
+                    <option value="Minecraft">Minecraft</option>
+                    <option value="Skyrim">Skyrim</option>
+                    <option value="GTA V">GTA V</option>
+                    <option value="Cyberpunk 2077">Cyberpunk 2077</option>
+                </select>
+            </div>
+            
+            <div class="games-showcase" id="collectionsGrid"></div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <button id="loadMoreCollections" onclick="loadMoreCollections()" class="btn btn-outline btn-large" style="display: none;">
+                    Load More Collections
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Collection Detail Modal -->
+    <div id="collectionModal" class="modal">
+        <div class="modal-content collection-modal">
+            <span class="close" onclick="closeCollectionModal()">&times;</span>
+            <div id="collectionDetails"></div>
+        </div>
+    </div>
+
+    <!-- Create Collection Modal -->
+    <div id="createCollectionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCreateCollectionModal()">&times;</span>
+            <div class="create-collection-form">
+                <h2>Create New Collection</h2>
+                <form id="createCollectionForm" onsubmit="createCollection(event)">
+                    <div class="form-group">
+                        <label for="collectionName">Collection Name</label>
+                        <input type="text" id="collectionName" required maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="collectionDescription">Description</label>
+                        <textarea id="collectionDescription" rows="4" maxlength="500"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="collectionGame">Game</label>
+                            <select id="collectionGame" required>
+                                <option value="">Select Game</option>
+                                <option value="Minecraft">Minecraft</option>
+                                <option value="Skyrim">Skyrim</option>
+                                <option value="GTA V">GTA V</option>
+                                <option value="Cyberpunk 2077">Cyberpunk 2077</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="collectionCategory">Category</label>
+                            <select id="collectionCategory">
+                                <option value="Mixed">Mixed</option>
+                                <option value="Graphics Enhancement">Graphics Enhancement</option>
+                                <option value="Gameplay Overhaul">Gameplay Overhaul</option>
+                                <option value="Performance">Performance</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="collectionPublic" checked> Make this collection public</label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" onclick="closeCreateCollectionModal()" class="btn btn-outline">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Collection</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <div id="authContent"></div>
+        </div>
+    </div>
+
+    <!-- Floating Buttons -->
+    <button id="chatbotToggle" class="chatbot-toggle" onclick="window.location.href='index.html'" style="position: fixed; bottom: 30px; right: 100px; z-index: 9999;">
+        <i class="fas fa-comments"></i>
+    </button>
+    <button id="cartToggle" class="cart-toggle" onclick="window.location.href='index.html'" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
+        <i class="fas fa-shopping-cart"></i>
+        <span id="cartCount" class="cart-count">0</span>
+    </button>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="footer-brand-section">
+                    <div class="footer-brand">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="32" height="32" rx="8" fill="url(#footerGradient)"/>
+                            <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
+                            <circle cx="16" cy="16" r="3" fill="white"/>
+                            <defs>
+                                <linearGradient id="footerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#5B8CFF"/>
+                                    <stop offset="50%" style="stop-color:#7C5CFF"/>
+                                    <stop offset="100%" style="stop-color:#C15CFF"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span class="footer-logo-text">ExusCraft</span>
+                    </div>
+                    <p class="footer-tagline">A community-driven mod platform built for creators and players.</p>
+                    <div class="footer-nz">
+                        <span class="nz-flag">🇳🇿</span>
+                        <span>Proudly made in New Zealand</span>
+                    </div>
+                </div>
+                
+                <div class="footer-links-grid">
+                    <div class="footer-column">
+                        <h4>Browse</h4>
+                        <a href="index.html#games">All Mods</a>
+                        <a href="index.html#deals">Free Mods</a>
+                        <a href="collections.html">Collections</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Games</h4>
+                        <a href="index.html">Minecraft</a>
+                        <a href="index.html">Skyrim</a>
+                        <a href="index.html">GTA V</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Creators</h4>
+                        <a href="#" onclick="showUploadModal()">Upload a Mod</a>
+                        <a href="https://discord.gg/exuscraft" target="_blank">Creator Guidelines</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal & Safety</h4>
+                        <a href="terms.html">Terms of Service</a>
+                        <a href="privacy.html">Privacy Policy</a>
+                        <a href="dmca.html">DMCA Policy</a>
+                        <a href="report.html">Report a Mod</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2026 ExusCraft. All rights reserved.</p>
+                <div class="footer-social">
+                    <a href="https://discord.gg/exuscraft" target="_blank" title="Discord"><i class="fab fa-discord"></i></a>
+                    <a href="https://twitter.com/exuscraft" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="https://youtube.com/@exuscraft" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="https://github.com/exuscraft" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="collections.js"></script>
+    <script src="collections.js?v=3"></script>
 </body>
 </html>
