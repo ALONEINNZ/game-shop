@@ -423,12 +423,14 @@ let userMods = JSON.parse(localStorage.getItem('userMods') || '[]');
 let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 let downloads = JSON.parse(localStorage.getItem('downloads') || '[]');
 let userSettings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+let library = JSON.parse(localStorage.getItem('library') || '[]');
 
 function saveUserData() {
     localStorage.setItem('userMods', JSON.stringify(userMods));
     localStorage.setItem('favorites', JSON.stringify(favorites));
     localStorage.setItem('downloads', JSON.stringify(downloads));
     localStorage.setItem('userSettings', JSON.stringify(userSettings));
+    localStorage.setItem('library', JSON.stringify(library));
 }
 
 // ============================================
@@ -468,9 +470,9 @@ function showProfile() {
                     <span class="stat-label">Mods Created</span>
                 </div>
                 <div class="profile-stat-card">
-                    <i class="fas fa-download"></i>
-                    <span class="stat-value">${formatDownloads(totalDownloads)}</span>
-                    <span class="stat-label">Total Downloads</span>
+                    <i class="fas fa-book"></i>
+                    <span class="stat-value">${library.length}</span>
+                    <span class="stat-label">In Library</span>
                 </div>
                 <div class="profile-stat-card">
                     <i class="fas fa-heart"></i>
@@ -485,6 +487,7 @@ function showProfile() {
             </div>
             
             <div class="profile-actions">
+                <button onclick="showLibrary()" class="btn btn-primary"><i class="fas fa-book"></i> My Library</button>
                 <button onclick="showMyMods()" class="btn btn-outline"><i class="fas fa-puzzle-piece"></i> My Mods</button>
                 <button onclick="showFavorites()" class="btn btn-outline"><i class="fas fa-heart"></i> Favorites</button>
                 <button onclick="showDownloads()" class="btn btn-outline"><i class="fas fa-download"></i> Downloads</button>
@@ -664,6 +667,113 @@ function toggleFavorite(modId) {
 
 function isFavorite(modId) {
     return favorites.includes(modId);
+}
+
+// ============================================
+// LIBRARY FEATURE (Like Steam)
+// ============================================
+function showLibrary() {
+    if (!currentUser) {
+        showLogin();
+        return;
+    }
+    
+    const modal = document.getElementById('profileModal') || createProfileModal();
+    const content = document.getElementById('profileContent');
+    
+    const libraryMods = library.map(item => {
+        const mod = mods.find(m => m._id === item.modId) || item;
+        return { ...mod, ...item };
+    });
+    
+    content.innerHTML = `
+        <div class="library-container">
+            <div class="section-header-modal">
+                <button onclick="showProfile()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h2><i class="fas fa-book"></i> My Library</h2>
+            </div>
+            
+            <div class="library-grid" id="libraryGrid">
+                ${libraryMods.length === 0 ? `
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <h3>Your library is empty</h3>
+                        <p>Mods you add to your library will appear here. Browse and add mods to get started!</p>
+                        <button onclick="closeProfileModal(); scrollToMods();" class="btn btn-primary"><i class="fas fa-compass"></i> Browse Mods</button>
+                    </div>
+                ` : libraryMods.map(mod => `
+                    <div class="library-card">
+                        <img src="${mod.images?.[0] || mod.image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=200&fit=crop'}" alt="${mod.title}">
+                        <div class="library-card-content">
+                            <h4>${mod.title}</h4>
+                            <p class="library-game">${mod.gameTitle || mod.game} • ${mod.category}</p>
+                            <p class="library-added">Added ${new Date(mod.addedAt).toLocaleDateString()}</p>
+                            <div class="library-actions">
+                                <button onclick="installFromLibrary('${mod.modId || mod._id}')" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-download"></i> Install
+                                </button>
+                                <button onclick="removeFromLibrary('${mod.modId || mod._id}')" class="btn btn-outline btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function addToLibrary(modId) {
+    if (!currentUser) {
+        showLogin();
+        showMessage('Please login to add mods to your library', 'info');
+        return;
+    }
+    
+    const mod = mods.find(m => m._id === modId);
+    if (!mod) return;
+    
+    // Check if already in library
+    if (library.some(item => item.modId === modId)) {
+        showMessage('This mod is already in your library!', 'info');
+        return;
+    }
+    
+    library.push({
+        modId: modId,
+        title: mod.title,
+        game: mod.gameTitle,
+        category: mod.category,
+        image: mod.images?.[0],
+        version: mod.version,
+        addedAt: new Date().toISOString()
+    });
+    
+    saveUserData();
+    showMessage(`"${mod.title}" added to your library! 📚`, 'success');
+}
+
+function removeFromLibrary(modId) {
+    library = library.filter(item => item.modId !== modId);
+    saveUserData();
+    showLibrary(); // Refresh
+    showMessage('Removed from library', 'info');
+}
+
+function installFromLibrary(modId) {
+    const mod = mods.find(m => m._id === modId);
+    if (mod) {
+        addToDownloads(modId);
+        showMessage(`Installing "${mod.title}"... Download started!`, 'success');
+    }
+}
+
+function isInLibrary(modId) {
+    return library.some(item => item.modId === modId);
 }
 
 // ============================================
@@ -1085,9 +1195,12 @@ function showModDetails(modId) {
                     <button onclick="downloadModWithAnimation('${mod._id}')" class="btn btn-primary btn-large download-btn" id="downloadBtn-${mod._id}">
                         <i class="fas fa-download"></i> Download Now
                     </button>
+                    <button onclick="addToLibrary('${mod._id}')" class="btn btn-library btn-large ${isInLibrary(mod._id) ? 'in-library' : ''}">
+                        <i class="fas fa-${isInLibrary(mod._id) ? 'check' : 'book'}"></i> ${isInLibrary(mod._id) ? 'In Library' : 'Add to Library'}
+                    </button>
                 ` : `
-                    <button onclick="purchaseMod('${mod._id}')" class="btn btn-primary btn-large">
-                        <i class="fas fa-credit-card"></i> Purchase - ${priceDisplay}
+                    <button onclick="purchaseAndAddToLibrary('${mod._id}')" class="btn btn-primary btn-large">
+                        <i class="fas fa-book"></i> Buy & Add to Library - ${priceDisplay}
                     </button>
                     <button onclick="addModToCart('${mod._id}')" class="btn btn-outline btn-large">
                         <i class="fas fa-cart-plus"></i> Add to Cart
@@ -1224,6 +1337,39 @@ function purchaseMod(modId) {
             showMessage(`🎉 Purchase successful! ${mod.title} is now yours!`, 'success');
             closeModal();
             setTimeout(() => downloadMod(modId), 1000);
+        }, 1500);
+    }
+}
+
+// Purchase and Add to Library (Steam-like)
+function purchaseAndAddToLibrary(modId) {
+    const mod = mods.find(m => m._id === modId);
+    if (!mod) {
+        showMessage('Mod not found!', 'error');
+        return;
+    }
+    
+    if (!currentUser) {
+        showMessage('Please login to purchase mods', 'info');
+        closeModal();
+        showLogin();
+        return;
+    }
+    
+    if (isInLibrary(modId)) {
+        showMessage('This mod is already in your library!', 'info');
+        return;
+    }
+    
+    const confirmPurchase = confirm(`Purchase ${mod.title} for $${mod.price.toFixed(2)} and add to your library?\n\nThis is a demo - no real payment will be processed.`);
+    
+    if (confirmPurchase) {
+        showMessage(`Processing purchase for ${mod.title}...`, 'info');
+        
+        setTimeout(() => {
+            addToLibrary(modId);
+            showMessage(`🎉 Purchase successful! "${mod.title}" added to your library!`, 'success');
+            closeModal();
         }, 1500);
     }
 }
@@ -2067,7 +2213,15 @@ function submitMod(event, existingId = null) {
     const gameTitle = document.getElementById('modGame').value;
     const category = document.getElementById('modCategory').value;
     const version = document.getElementById('modVersion').value.trim() || '1.0.0';
-    const price = parseFloat(document.getElementById('modPrice').value) || 0;
+    let price = parseFloat(document.getElementById('modPrice').value) || 0;
+    
+    // Price cap at $99.99
+    const PRICE_CAP = 99.99;
+    if (price > PRICE_CAP) {
+        showMessage(`Price capped at $${PRICE_CAP}. Your price has been adjusted.`, 'info');
+        price = PRICE_CAP;
+    }
+    
     const tags = document.getElementById('modTags').value.split(',').map(t => t.trim()).filter(t => t);
     const requirements = document.getElementById('modRequirements').value.trim();
     
@@ -2231,6 +2385,10 @@ window.loginWithGoogle = loginWithGoogle;
 window.logout = logout;
 window.toggleUserMenu = toggleUserMenu;
 window.showProfile = showProfile;
+window.showLibrary = showLibrary;
+window.addToLibrary = addToLibrary;
+window.removeFromLibrary = removeFromLibrary;
+window.installFromLibrary = installFromLibrary;
 window.showOrders = showOrders;
 window.showSettings = showSettings;
 window.showDownloads = showDownloads;
@@ -2246,6 +2404,7 @@ window.closeProfileModal = closeProfileModal;
 window.showModDetails = showModDetails;
 window.downloadMod = downloadMod;
 window.purchaseMod = purchaseMod;
+window.purchaseAndAddToLibrary = purchaseAndAddToLibrary;
 window.addModToCart = addModToCart;
 window.removeFromCart = removeFromCart;
 window.checkout = checkout;
