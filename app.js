@@ -273,20 +273,18 @@ function updateUserNavigation() {
     const navAuth = document.getElementById('navAuth');
     const username = document.getElementById('username');
     const userAvatar = document.getElementById('userAvatar');
+    const userAvatarLarge = document.getElementById('userAvatarLarge');
+    const userEmail = document.getElementById('userEmail');
     
     if (currentUser) {
         if (navUser) navUser.style.display = 'flex';
         if (navAuth) navAuth.style.display = 'none';
         if (username) username.textContent = currentUser.name || currentUser.username || currentUser.email || 'User';
+        if (userEmail) userEmail.textContent = currentUser.email || '';
         
-        if (userAvatar) {
-            if (currentUser.picture || currentUser.avatar) {
-                userAvatar.src = currentUser.picture || currentUser.avatar;
-            } else {
-                const firstLetter = (currentUser.name || currentUser.username || 'U')[0].toUpperCase();
-                userAvatar.src = `https://via.placeholder.com/32x32/ff6b6b/ffffff?text=${firstLetter}`;
-            }
-        }
+        const avatarUrl = currentUser.picture || currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name || 'User')}&background=5B8CFF&color=fff&size=48`;
+        if (userAvatar) userAvatar.src = avatarUrl;
+        if (userAvatarLarge) userAvatarLarge.src = avatarUrl;
     } else {
         if (navUser) navUser.style.display = 'none';
         if (navAuth) navAuth.style.display = 'flex';
@@ -418,9 +416,505 @@ function toggleUserMenu() {
     }
 }
 
-function showProfile() { showMessage('Profile feature coming soon!', 'info'); }
-function showOrders() { showMessage('Orders feature coming soon!', 'info'); }
-function showSettings() { showMessage('Settings feature coming soon!', 'info'); }
+// ============================================
+// USER DATA STORAGE
+// ============================================
+let userMods = JSON.parse(localStorage.getItem('userMods') || '[]');
+let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+let downloads = JSON.parse(localStorage.getItem('downloads') || '[]');
+let userSettings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+
+function saveUserData() {
+    localStorage.setItem('userMods', JSON.stringify(userMods));
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    localStorage.setItem('downloads', JSON.stringify(downloads));
+    localStorage.setItem('userSettings', JSON.stringify(userSettings));
+}
+
+// ============================================
+// PROFILE FEATURE
+// ============================================
+function showProfile() {
+    if (!currentUser) {
+        showLogin();
+        return;
+    }
+    
+    const modal = document.getElementById('profileModal') || createProfileModal();
+    const content = document.getElementById('profileContent');
+    
+    const userModCount = userMods.length;
+    const totalDownloads = userMods.reduce((sum, mod) => sum + (mod.downloads || 0), 0);
+    const memberSince = currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString() : 'January 2026';
+    
+    content.innerHTML = `
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar-large">
+                    <img src="${currentUser.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name || 'User')}&background=5B8CFF&color=fff&size=120`}" alt="Avatar">
+                    <button class="avatar-edit-btn" onclick="changeAvatar()"><i class="fas fa-camera"></i></button>
+                </div>
+                <div class="profile-info">
+                    <h2>${currentUser.name || currentUser.username || 'User'}</h2>
+                    <p class="profile-email">${currentUser.email || ''}</p>
+                    <p class="profile-member">Member since ${memberSince}</p>
+                </div>
+            </div>
+            
+            <div class="profile-stats-grid">
+                <div class="profile-stat-card">
+                    <i class="fas fa-puzzle-piece"></i>
+                    <span class="stat-value">${userModCount}</span>
+                    <span class="stat-label">Mods Created</span>
+                </div>
+                <div class="profile-stat-card">
+                    <i class="fas fa-download"></i>
+                    <span class="stat-value">${formatDownloads(totalDownloads)}</span>
+                    <span class="stat-label">Total Downloads</span>
+                </div>
+                <div class="profile-stat-card">
+                    <i class="fas fa-heart"></i>
+                    <span class="stat-value">${favorites.length}</span>
+                    <span class="stat-label">Favorites</span>
+                </div>
+                <div class="profile-stat-card">
+                    <i class="fas fa-cloud-download-alt"></i>
+                    <span class="stat-value">${downloads.length}</span>
+                    <span class="stat-label">Downloads</span>
+                </div>
+            </div>
+            
+            <div class="profile-actions">
+                <button onclick="showMyMods()" class="btn btn-outline"><i class="fas fa-puzzle-piece"></i> My Mods</button>
+                <button onclick="showFavorites()" class="btn btn-outline"><i class="fas fa-heart"></i> Favorites</button>
+                <button onclick="showDownloads()" class="btn btn-outline"><i class="fas fa-download"></i> Downloads</button>
+                <button onclick="showSettings()" class="btn btn-outline"><i class="fas fa-cog"></i> Settings</button>
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function createProfileModal() {
+    const modal = document.createElement('div');
+    modal.id = 'profileModal';
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content profile-modal">
+            <span class="close" onclick="closeProfileModal()">&times;</span>
+            <div id="profileContent"></div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+}
+
+function changeAvatar() {
+    showMessage('Avatar upload coming soon! For now, your Google profile picture is used.', 'info');
+}
+
+// ============================================
+// MY MODS FEATURE
+// ============================================
+function showMyMods() {
+    if (!currentUser) {
+        showLogin();
+        return;
+    }
+    
+    const modal = document.getElementById('profileModal') || createProfileModal();
+    const content = document.getElementById('profileContent');
+    
+    content.innerHTML = `
+        <div class="my-mods-container">
+            <div class="section-header-modal">
+                <button onclick="showProfile()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h2>My Mods</h2>
+                <button onclick="showUploadModal()" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Upload New</button>
+            </div>
+            
+            <div class="my-mods-grid" id="myModsGrid">
+                ${userMods.length === 0 ? `
+                    <div class="empty-state">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <h3>No mods yet</h3>
+                        <p>Start creating and sharing your mods with the community!</p>
+                        <button onclick="showUploadModal()" class="btn btn-primary"><i class="fas fa-upload"></i> Upload Your First Mod</button>
+                    </div>
+                ` : userMods.map(mod => `
+                    <div class="my-mod-card">
+                        <img src="${mod.images?.[0] || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=200&fit=crop'}" alt="${mod.title}">
+                        <div class="my-mod-info">
+                            <h4>${mod.title}</h4>
+                            <p>${mod.gameTitle} • ${mod.category}</p>
+                            <div class="my-mod-stats">
+                                <span><i class="fas fa-download"></i> ${formatDownloads(mod.downloads || 0)}</span>
+                                <span><i class="fas fa-star"></i> ${mod.rating || 0}</span>
+                            </div>
+                            <div class="my-mod-actions">
+                                <button onclick="editMod('${mod._id}')" class="btn btn-outline btn-xs"><i class="fas fa-edit"></i> Edit</button>
+                                <button onclick="deleteMod('${mod._id}')" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function editMod(modId) {
+    const mod = userMods.find(m => m._id === modId);
+    if (!mod) return;
+    showUploadModal(mod);
+}
+
+function deleteMod(modId) {
+    if (confirm('Are you sure you want to delete this mod? This cannot be undone.')) {
+        userMods = userMods.filter(m => m._id !== modId);
+        saveUserData();
+        showMyMods();
+        showMessage('Mod deleted successfully', 'success');
+    }
+}
+
+// ============================================
+// FAVORITES FEATURE
+// ============================================
+function showFavorites() {
+    if (!currentUser) {
+        showLogin();
+        return;
+    }
+    
+    const modal = document.getElementById('profileModal') || createProfileModal();
+    const content = document.getElementById('profileContent');
+    
+    const favoriteMods = mods.filter(mod => favorites.includes(mod._id));
+    
+    content.innerHTML = `
+        <div class="favorites-container">
+            <div class="section-header-modal">
+                <button onclick="showProfile()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h2>My Favorites</h2>
+            </div>
+            
+            <div class="favorites-grid" id="favoritesGrid">
+                ${favoriteMods.length === 0 ? `
+                    <div class="empty-state">
+                        <i class="fas fa-heart"></i>
+                        <h3>No favorites yet</h3>
+                        <p>Browse mods and click the heart icon to add them to your favorites!</p>
+                        <button onclick="closeProfileModal(); scrollToMods();" class="btn btn-primary"><i class="fas fa-compass"></i> Browse Mods</button>
+                    </div>
+                ` : favoriteMods.map(mod => `
+                    <div class="favorite-card" onclick="closeProfileModal(); showModDetails('${mod._id}');">
+                        <img src="${mod.images?.[0] || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=200&fit=crop'}" alt="${mod.title}">
+                        <button class="remove-fav-btn" onclick="event.stopPropagation(); toggleFavorite('${mod._id}')"><i class="fas fa-heart-broken"></i></button>
+                        <div class="favorite-info">
+                            <h4>${mod.title}</h4>
+                            <p>${mod.gameTitle} • ${mod.category}</p>
+                            <span class="favorite-price">${mod.isFree ? 'FREE' : '$' + mod.price.toFixed(2)}</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function toggleFavorite(modId) {
+    if (!currentUser) {
+        showLogin();
+        showMessage('Please login to add favorites', 'info');
+        return;
+    }
+    
+    const index = favorites.indexOf(modId);
+    if (index > -1) {
+        favorites.splice(index, 1);
+        showMessage('Removed from favorites', 'info');
+    } else {
+        favorites.push(modId);
+        showMessage('Added to favorites! ❤️', 'success');
+    }
+    saveUserData();
+    
+    // Refresh if on favorites page
+    if (document.querySelector('.favorites-container')) {
+        showFavorites();
+    }
+}
+
+function isFavorite(modId) {
+    return favorites.includes(modId);
+}
+
+// ============================================
+// DOWNLOADS FEATURE
+// ============================================
+function showDownloads() {
+    if (!currentUser) {
+        showLogin();
+        return;
+    }
+    
+    const modal = document.getElementById('profileModal') || createProfileModal();
+    const content = document.getElementById('profileContent');
+    
+    content.innerHTML = `
+        <div class="downloads-container">
+            <div class="section-header-modal">
+                <button onclick="showProfile()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h2>My Downloads</h2>
+            </div>
+            
+            <div class="downloads-list" id="downloadsList">
+                ${downloads.length === 0 ? `
+                    <div class="empty-state">
+                        <i class="fas fa-download"></i>
+                        <h3>No downloads yet</h3>
+                        <p>Download mods to see them here for easy re-downloading!</p>
+                        <button onclick="closeProfileModal(); scrollToMods();" class="btn btn-primary"><i class="fas fa-compass"></i> Browse Mods</button>
+                    </div>
+                ` : downloads.map(dl => {
+                    const mod = mods.find(m => m._id === dl.modId) || dl;
+                    return `
+                        <div class="download-item">
+                            <img src="${mod.images?.[0] || dl.image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=60&h=60&fit=crop'}" alt="${mod.title || dl.title}">
+                            <div class="download-info">
+                                <h4>${mod.title || dl.title}</h4>
+                                <p>${mod.gameTitle || dl.game} • v${mod.version || dl.version || '1.0'}</p>
+                                <span class="download-date">Downloaded ${new Date(dl.date).toLocaleDateString()}</span>
+                            </div>
+                            <div class="download-actions">
+                                <button onclick="redownloadMod('${dl.modId}')" class="btn btn-primary btn-sm"><i class="fas fa-download"></i> Re-download</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function addToDownloads(modId) {
+    const mod = mods.find(m => m._id === modId);
+    if (!mod) return;
+    
+    // Check if already in downloads
+    const existing = downloads.find(d => d.modId === modId);
+    if (existing) {
+        existing.date = new Date().toISOString();
+        existing.count = (existing.count || 1) + 1;
+    } else {
+        downloads.unshift({
+            modId: modId,
+            title: mod.title,
+            game: mod.gameTitle,
+            version: mod.version,
+            image: mod.images?.[0],
+            date: new Date().toISOString(),
+            count: 1
+        });
+    }
+    saveUserData();
+}
+
+function redownloadMod(modId) {
+    const mod = mods.find(m => m._id === modId);
+    if (mod) {
+        closeProfileModal();
+        downloadMod(modId);
+    } else {
+        showMessage('Mod no longer available', 'error');
+    }
+}
+
+// ============================================
+// SETTINGS FEATURE
+// ============================================
+function showSettings() {
+    if (!currentUser) {
+        showLogin();
+        return;
+    }
+    
+    const modal = document.getElementById('profileModal') || createProfileModal();
+    const content = document.getElementById('profileContent');
+    
+    // Load current settings
+    const settings = {
+        emailNotifications: userSettings.emailNotifications !== false,
+        downloadNotifications: userSettings.downloadNotifications !== false,
+        showOnlineStatus: userSettings.showOnlineStatus !== false,
+        autoDownload: userSettings.autoDownload || false,
+        theme: currentTheme,
+        language: userSettings.language || 'en'
+    };
+    
+    content.innerHTML = `
+        <div class="settings-container">
+            <div class="section-header-modal">
+                <button onclick="showProfile()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h2>Settings</h2>
+            </div>
+            
+            <div class="settings-sections">
+                <div class="settings-section">
+                    <h3><i class="fas fa-user"></i> Account</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Email</span>
+                            <span class="setting-value">${currentUser.email || 'Not set'}</span>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Username</span>
+                            <span class="setting-value">${currentUser.name || currentUser.username || 'Not set'}</span>
+                        </div>
+                        <button onclick="editUsername()" class="btn btn-outline btn-xs">Edit</button>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3><i class="fas fa-palette"></i> Appearance</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Theme</span>
+                            <span class="setting-desc">Choose your preferred color scheme</span>
+                        </div>
+                        <select onchange="changeThemeSetting(this.value)" class="setting-select">
+                            <option value="dark" ${settings.theme === 'dark' ? 'selected' : ''}>Dark Mode</option>
+                            <option value="light" ${settings.theme === 'light' ? 'selected' : ''}>Light Mode</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3><i class="fas fa-bell"></i> Notifications</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Email Notifications</span>
+                            <span class="setting-desc">Receive updates about your mods</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" ${settings.emailNotifications ? 'checked' : ''} onchange="updateSetting('emailNotifications', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Download Notifications</span>
+                            <span class="setting-desc">Get notified when downloads complete</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" ${settings.downloadNotifications ? 'checked' : ''} onchange="updateSetting('downloadNotifications', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3><i class="fas fa-shield-alt"></i> Privacy</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Show Online Status</span>
+                            <span class="setting-desc">Let others see when you're online</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" ${settings.showOnlineStatus ? 'checked' : ''} onchange="updateSetting('showOnlineStatus', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section danger-zone">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Clear All Data</span>
+                            <span class="setting-desc">Remove all local data including favorites and downloads</span>
+                        </div>
+                        <button onclick="clearAllData()" class="btn btn-danger btn-sm">Clear Data</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-label">Logout</span>
+                            <span class="setting-desc">Sign out of your account</span>
+                        </div>
+                        <button onclick="closeProfileModal(); logout();" class="btn btn-outline btn-sm">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function updateSetting(key, value) {
+    userSettings[key] = value;
+    saveUserData();
+    showMessage('Setting updated', 'success');
+}
+
+function changeThemeSetting(theme) {
+    currentTheme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    updateThemeIcon();
+    showMessage(`Theme changed to ${theme} mode`, 'success');
+}
+
+function editUsername() {
+    const newName = prompt('Enter new display name:', currentUser.name || currentUser.username || '');
+    if (newName && newName.trim()) {
+        currentUser.name = newName.trim();
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        updateUserNavigation();
+        showSettings();
+        showMessage('Username updated!', 'success');
+    }
+}
+
+function clearAllData() {
+    if (confirm('Are you sure? This will clear all your favorites, downloads history, and settings. This cannot be undone.')) {
+        favorites = [];
+        downloads = [];
+        userSettings = {};
+        userMods = [];
+        saveUserData();
+        showMessage('All data cleared', 'success');
+        showSettings();
+    }
+}
+
+function showOrders() {
+    showDownloads();
+}
 
 // Display Mods in Sections
 function displayModsInSections(modsToShow) {
@@ -584,6 +1078,9 @@ function showModDetails(modId) {
             </div>
             
             <div class="mod-detail-actions">
+                <button onclick="toggleFavorite('${mod._id}')" class="btn ${isFavorite(mod._id) ? 'btn-danger' : 'btn-outline'} btn-large fav-btn">
+                    <i class="fas fa-heart"></i> ${isFavorite(mod._id) ? 'Favorited' : 'Add to Favorites'}
+                </button>
                 ${mod.isFree ? `
                     <button onclick="downloadModWithAnimation('${mod._id}')" class="btn btn-primary btn-large download-btn" id="downloadBtn-${mod._id}">
                         <i class="fas fa-download"></i> Download Now
@@ -682,6 +1179,11 @@ Proudly made in New Zealand 🇳🇿
         if (downloadBtn) {
             downloadBtn.innerHTML = '<i class="fas fa-check"></i> Downloaded!';
             downloadBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        }
+        
+        // Track download
+        if (currentUser) {
+            addToDownloads(modId);
         }
         
         showMessage(`${mod.title} downloaded successfully!`, 'success');
@@ -1409,6 +1911,318 @@ function toggleGameDropdown() {
     }
 }
 
+// New UI Functions
+function scrollToMods() {
+    const modsSection = document.getElementById('games');
+    if (modsSection) {
+        modsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function handleNavSearch(event) {
+    if (event.key === 'Enter') {
+        const query = event.target.value.trim();
+        if (query) {
+            // Scroll to mods section and search
+            scrollToMods();
+            const searchInput = document.getElementById('gameSearch');
+            if (searchInput) {
+                searchInput.value = query;
+                searchAllMods();
+            }
+        }
+    }
+}
+
+// ============================================
+// UPLOAD MOD FEATURE
+// ============================================
+function showUploadModal(existingMod = null) {
+    if (!currentUser) {
+        showLogin();
+        showMessage('Please login to upload mods', 'info');
+        return;
+    }
+    
+    const isEdit = !!existingMod;
+    const modal = document.getElementById('profileModal') || createProfileModal();
+    const content = document.getElementById('profileContent');
+    
+    content.innerHTML = `
+        <div class="upload-container">
+            <div class="section-header-modal">
+                <button onclick="showMyMods()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h2>${isEdit ? 'Edit Mod' : 'Upload New Mod'}</h2>
+            </div>
+            
+            <form id="uploadModForm" onsubmit="submitMod(event, ${isEdit ? `'${existingMod._id}'` : 'null'})">
+                <div class="upload-image-section">
+                    <div class="upload-preview" id="uploadPreview">
+                        ${existingMod?.images?.[0] ? `<img src="${existingMod.images[0]}" alt="Preview">` : `
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Click to upload image</span>
+                        `}
+                    </div>
+                    <input type="file" id="modImage" accept="image/*" onchange="previewImage(this)" style="display: none;">
+                    <button type="button" onclick="document.getElementById('modImage').click()" class="btn btn-outline btn-sm">
+                        <i class="fas fa-image"></i> ${existingMod ? 'Change Image' : 'Add Image'}
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="modTitle">Mod Title *</label>
+                    <input type="text" id="modTitle" required maxlength="100" value="${existingMod?.title || ''}" placeholder="Enter mod name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="modDescription">Description *</label>
+                    <textarea id="modDescription" required rows="4" maxlength="1000" placeholder="Describe your mod...">${existingMod?.description || ''}</textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modGame">Game *</label>
+                        <select id="modGame" required>
+                            <option value="">Select Game</option>
+                            <option value="Minecraft" ${existingMod?.gameTitle === 'Minecraft' ? 'selected' : ''}>Minecraft</option>
+                            <option value="Skyrim" ${existingMod?.gameTitle === 'Skyrim' ? 'selected' : ''}>Skyrim</option>
+                            <option value="GTA V" ${existingMod?.gameTitle === 'GTA V' ? 'selected' : ''}>GTA V</option>
+                            <option value="Cyberpunk 2077" ${existingMod?.gameTitle === 'Cyberpunk 2077' ? 'selected' : ''}>Cyberpunk 2077</option>
+                            <option value="Rust" ${existingMod?.gameTitle === 'Rust' ? 'selected' : ''}>Rust</option>
+                            <option value="The Witcher 3" ${existingMod?.gameTitle === 'The Witcher 3' ? 'selected' : ''}>The Witcher 3</option>
+                            <option value="Fallout 4" ${existingMod?.gameTitle === 'Fallout 4' ? 'selected' : ''}>Fallout 4</option>
+                            <option value="Counter-Strike 2" ${existingMod?.gameTitle === 'Counter-Strike 2' ? 'selected' : ''}>Counter-Strike 2</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modCategory">Category *</label>
+                        <select id="modCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="Graphics" ${existingMod?.category === 'Graphics' ? 'selected' : ''}>Graphics</option>
+                            <option value="Gameplay" ${existingMod?.category === 'Gameplay' ? 'selected' : ''}>Gameplay</option>
+                            <option value="UI/UX" ${existingMod?.category === 'UI/UX' ? 'selected' : ''}>UI/UX</option>
+                            <option value="Audio" ${existingMod?.category === 'Audio' ? 'selected' : ''}>Audio</option>
+                            <option value="Performance" ${existingMod?.category === 'Performance' ? 'selected' : ''}>Performance</option>
+                            <option value="Utility" ${existingMod?.category === 'Utility' ? 'selected' : ''}>Utility</option>
+                            <option value="Maps" ${existingMod?.category === 'Maps' ? 'selected' : ''}>Maps</option>
+                            <option value="Characters" ${existingMod?.category === 'Characters' ? 'selected' : ''}>Characters</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modVersion">Version</label>
+                        <input type="text" id="modVersion" value="${existingMod?.version || '1.0.0'}" placeholder="1.0.0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modPrice">Price ($)</label>
+                        <input type="number" id="modPrice" min="0" step="0.01" value="${existingMod?.price || 0}" placeholder="0 for free">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="modTags">Tags (comma separated)</label>
+                    <input type="text" id="modTags" value="${existingMod?.tags?.join(', ') || ''}" placeholder="e.g. graphics, performance, essential">
+                </div>
+                
+                <div class="form-group">
+                    <label for="modRequirements">Requirements</label>
+                    <input type="text" id="modRequirements" value="${existingMod?.requirements || ''}" placeholder="e.g. Game version 1.20+, Mod loader required">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" onclick="showMyMods()" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-${isEdit ? 'save' : 'upload'}"></i> ${isEdit ? 'Save Changes' : 'Upload Mod'}</button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+let uploadedImageData = null;
+
+function previewImage(input) {
+    const preview = document.getElementById('uploadPreview');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            uploadedImageData = e.target.result;
+            preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function submitMod(event, existingId = null) {
+    event.preventDefault();
+    
+    const title = document.getElementById('modTitle').value.trim();
+    const description = document.getElementById('modDescription').value.trim();
+    const gameTitle = document.getElementById('modGame').value;
+    const category = document.getElementById('modCategory').value;
+    const version = document.getElementById('modVersion').value.trim() || '1.0.0';
+    const price = parseFloat(document.getElementById('modPrice').value) || 0;
+    const tags = document.getElementById('modTags').value.split(',').map(t => t.trim()).filter(t => t);
+    const requirements = document.getElementById('modRequirements').value.trim();
+    
+    if (!title || !description || !gameTitle || !category) {
+        showMessage('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    const modData = {
+        _id: existingId || 'user_' + Date.now(),
+        title,
+        description,
+        shortDescription: description.substring(0, 100) + (description.length > 100 ? '...' : ''),
+        gameTitle,
+        category,
+        version,
+        price,
+        isFree: price === 0,
+        tags,
+        requirements,
+        specs: 'Check mod description for requirements',
+        author: currentUser.name || currentUser.username || 'Anonymous',
+        authorId: currentUser.id,
+        images: [uploadedImageData || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=250&fit=crop'],
+        rating: existingId ? (userMods.find(m => m._id === existingId)?.rating || 0) : 0,
+        downloads: existingId ? (userMods.find(m => m._id === existingId)?.downloads || 0) : 0,
+        status: 'starting-out',
+        featured: false,
+        createdAt: existingId ? (userMods.find(m => m._id === existingId)?.createdAt || new Date().toISOString()) : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+    
+    if (existingId) {
+        const index = userMods.findIndex(m => m._id === existingId);
+        if (index > -1) {
+            userMods[index] = modData;
+        }
+        showMessage('Mod updated successfully! 🎉', 'success');
+    } else {
+        userMods.unshift(modData);
+        // Also add to main mods array so it shows up
+        mods.unshift(modData);
+        showMessage('Mod uploaded successfully! 🎉', 'success');
+    }
+    
+    saveUserData();
+    uploadedImageData = null;
+    showMyMods();
+    
+    // Refresh the main page mods display
+    displayModsInSections(mods);
+}
+
+function showMyMods() {
+    if (!currentUser) {
+        showLogin();
+        return;
+    }
+    
+    const modal = document.getElementById('profileModal') || createProfileModal();
+    const content = document.getElementById('profileContent');
+    
+    content.innerHTML = `
+        <div class="my-mods-container">
+            <div class="section-header-modal">
+                <button onclick="showProfile()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h2>My Mods</h2>
+                <button onclick="showUploadModal()" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Upload New</button>
+            </div>
+            
+            <div class="my-mods-grid" id="myModsGrid">
+                ${userMods.length === 0 ? `
+                    <div class="empty-state">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <h3>No mods yet</h3>
+                        <p>Start creating and sharing your mods with the community!</p>
+                        <button onclick="showUploadModal()" class="btn btn-primary"><i class="fas fa-upload"></i> Upload Your First Mod</button>
+                    </div>
+                ` : userMods.map(mod => `
+                    <div class="my-mod-card">
+                        <img src="${mod.images?.[0] || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=200&fit=crop'}" alt="${mod.title}">
+                        <div class="my-mod-info">
+                            <h4>${mod.title}</h4>
+                            <p>${mod.gameTitle} • ${mod.category}</p>
+                            <div class="my-mod-stats">
+                                <span><i class="fas fa-download"></i> ${formatDownloads(mod.downloads || 0)}</span>
+                                <span><i class="fas fa-star"></i> ${mod.rating || 0}</span>
+                            </div>
+                            <div class="my-mod-actions">
+                                <button onclick="editMod('${mod._id}')" class="btn btn-outline btn-xs"><i class="fas fa-edit"></i> Edit</button>
+                                <button onclick="deleteMod('${mod._id}')" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function showFavorites() {
+    if (!currentUser) {
+        showLogin();
+        return;
+    }
+    
+    const modal = document.getElementById('profileModal') || createProfileModal();
+    const content = document.getElementById('profileContent');
+    
+    const favoriteMods = mods.filter(mod => favorites.includes(mod._id));
+    
+    content.innerHTML = `
+        <div class="favorites-container">
+            <div class="section-header-modal">
+                <button onclick="showProfile()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h2>My Favorites</h2>
+            </div>
+            
+            <div class="favorites-grid" id="favoritesGrid">
+                ${favoriteMods.length === 0 ? `
+                    <div class="empty-state">
+                        <i class="fas fa-heart"></i>
+                        <h3>No favorites yet</h3>
+                        <p>Browse mods and click the heart icon to add them to your favorites!</p>
+                        <button onclick="closeProfileModal(); scrollToMods();" class="btn btn-primary"><i class="fas fa-compass"></i> Browse Mods</button>
+                    </div>
+                ` : favoriteMods.map(mod => `
+                    <div class="favorite-card" onclick="closeProfileModal(); showModDetails('${mod._id}');">
+                        <img src="${mod.images?.[0] || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=200&fit=crop'}" alt="${mod.title}">
+                        <button class="remove-fav-btn" onclick="event.stopPropagation(); toggleFavorite('${mod._id}')"><i class="fas fa-heart-broken"></i></button>
+                        <div class="favorite-info">
+                            <h4>${mod.title}</h4>
+                            <p>${mod.gameTitle} • ${mod.category}</p>
+                            <span class="favorite-price">${mod.isFree ? 'FREE' : '$' + mod.price.toFixed(2)}</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function toggleMobileMenu() {
+    const navMenu = document.querySelector('.nav-menu');
+    if (navMenu) {
+        navMenu.classList.toggle('mobile-open');
+    }
+}
+
 // Make all functions globally available
 window.toggleTheme = toggleTheme;
 window.showLogin = showLogin;
@@ -1419,6 +2233,11 @@ window.toggleUserMenu = toggleUserMenu;
 window.showProfile = showProfile;
 window.showOrders = showOrders;
 window.showSettings = showSettings;
+window.showDownloads = showDownloads;
+window.showMyMods = showMyMods;
+window.showFavorites = showFavorites;
+window.showUploadModal = showUploadModal;
+window.toggleFavorite = toggleFavorite;
 window.toggleCart = toggleCart;
 window.toggleChatbot = toggleChatbot;
 window.closeAuthModal = closeAuthModal;
@@ -1443,5 +2262,18 @@ window.handleChatKeyPress = handleChatKeyPress;
 window.sendMessage = sendMessage;
 window.askBot = askBot;
 window.handleGoogleCredentialResponse = handleGoogleCredentialResponse;
+window.scrollToMods = scrollToMods;
+window.handleNavSearch = handleNavSearch;
+window.toggleMobileMenu = toggleMobileMenu;
+window.editMod = editMod;
+window.deleteMod = deleteMod;
+window.redownloadMod = redownloadMod;
+window.updateSetting = updateSetting;
+window.changeThemeSetting = changeThemeSetting;
+window.editUsername = editUsername;
+window.clearAllData = clearAllData;
+window.submitMod = submitMod;
+window.previewImage = previewImage;
+window.addToDownloads = addToDownloads;
 
 console.log('ExusCraft app loaded successfully!');
