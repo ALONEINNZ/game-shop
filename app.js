@@ -426,7 +426,9 @@ async function handleGoogleCredentialResponse(response) {
             email: data.user.email,
             name: data.user.name || data.user.username,
             picture: data.user.picture,
-            username: data.user.username
+            username: data.user.username,
+            role: data.user.role,
+            isAdmin: data.user.role === 'admin'
         };
         
         localStorage.setItem('user', JSON.stringify(currentUser));
