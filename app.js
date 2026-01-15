@@ -1231,11 +1231,45 @@ function showModDetails(modId) {
 let activeDownloads = [];
 let downloadManagerOpen = false;
 
+// Helper function to close all floating panels
+function closeAllPanels(except = null) {
+    // Close download manager
+    if (except !== 'downloads') {
+        const downloadPanel = document.getElementById('downloadManagerPanel');
+        if (downloadPanel) {
+            downloadPanel.classList.remove('show');
+            downloadManagerOpen = false;
+        }
+    }
+    
+    // Close cart
+    if (except !== 'cart') {
+        const cartElement = document.getElementById('cart');
+        if (cartElement) {
+            cartElement.classList.remove('open');
+        }
+    }
+    
+    // Close chatbot
+    if (except !== 'chatbot') {
+        const chatbot = document.getElementById('chatbot');
+        if (chatbot) {
+            chatbot.classList.remove('open');
+        }
+    }
+}
+
 function toggleDownloadManager() {
     const panel = document.getElementById('downloadManagerPanel');
     if (!panel) return;
     
-    downloadManagerOpen = !downloadManagerOpen;
+    const willOpen = !downloadManagerOpen;
+    
+    if (willOpen) {
+        closeAllPanels('downloads');
+    }
+    
+    downloadManagerOpen = willOpen;
     panel.classList.toggle('show', downloadManagerOpen);
     
     if (downloadManagerOpen) {
@@ -1665,6 +1699,12 @@ function updateCartDisplay() {
 function toggleCart() {
     const cartElement = document.getElementById('cart');
     if (cartElement) {
+        const willOpen = !cartElement.classList.contains('open');
+        
+        if (willOpen) {
+            closeAllPanels('cart');
+        }
+        
         cartElement.classList.toggle('open');
         if (cartElement.classList.contains('open')) {
             updateCartDisplay();
