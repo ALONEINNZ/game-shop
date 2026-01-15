@@ -8414,3 +8414,24 @@ p, .mod-card-desc, .game-description, .section-subtitle {
         opacity: 0.5;
     }
 }
+
+
+/* ============================================
+   ADMIN LINK STYLING
+   ============================================ */
+.admin-link {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(249, 115, 22, 0.1)) !important;
+    color: #F97316 !important;
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    border-radius: var(--radius-md);
+    margin: 0.25rem 0;
+}
+
+.admin-link:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(249, 115, 22, 0.2)) !important;
+    border-color: rgba(249, 115, 22, 0.4);
+}
+
+.admin-link i {
+    color: #F97316 !important;
+}

@@ -304,6 +304,8 @@ function updateUserNavigation() {
     const userAvatar = document.getElementById('userAvatar');
     const userAvatarLarge = document.getElementById('userAvatarLarge');
     const userEmail = document.getElementById('userEmail');
+    const adminLink = document.getElementById('adminLink');
+    const adminDivider = document.getElementById('adminDivider');
     
     if (currentUser) {
         if (navUser) navUser.style.display = 'flex';
@@ -314,9 +316,16 @@ function updateUserNavigation() {
         const avatarUrl = currentUser.picture || currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name || 'User')}&background=5B8CFF&color=fff&size=48`;
         if (userAvatar) userAvatar.src = avatarUrl;
         if (userAvatarLarge) userAvatarLarge.src = avatarUrl;
+        
+        // Show admin link only for admins
+        const isAdmin = currentUser.role === 'admin' || currentUser.isAdmin === true;
+        if (adminLink) adminLink.style.display = isAdmin ? 'flex' : 'none';
+        if (adminDivider) adminDivider.style.display = isAdmin ? 'block' : 'none';
     } else {
         if (navUser) navUser.style.display = 'none';
         if (navAuth) navAuth.style.display = 'flex';
+        if (adminLink) adminLink.style.display = 'none';
+        if (adminDivider) adminDivider.style.display = 'none';
     }
 }
 
