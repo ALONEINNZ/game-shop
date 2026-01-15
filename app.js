@@ -1220,13 +1220,21 @@ function showModDetails(modId) {
 }
 
 // ============================================
-// DOWNLOAD MANAGER - Redirects to Downloads Page
+// DOWNLOAD MANAGER - Panel with Progress Tracking
 // ============================================
 let activeDownloads = [];
+let downloadManagerOpen = false;
 
 function toggleDownloadManager() {
-    // Redirect to downloads page
-    window.location.href = 'downloads.html';
+    const panel = document.getElementById('downloadManagerPanel');
+    if (!panel) return;
+    
+    downloadManagerOpen = !downloadManagerOpen;
+    panel.classList.toggle('show', downloadManagerOpen);
+    
+    if (downloadManagerOpen) {
+        renderDownloadManager();
+    }
 }
 
 function goToDownloads() {
