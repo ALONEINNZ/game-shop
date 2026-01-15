@@ -211,32 +211,27 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('ExusCraft loading...');
     
     initializeTheme();
-    
-    const loadingElement = document.getElementById('loading');
-    if (loadingElement) {
-        setTimeout(() => {
-            loadingElement.style.display = 'none';
-        }, 500);
-    }
-    
     loadSavedData();
     
-    // Show skeleton loaders first
-    showSkeletonLoaders();
+    // Load mods immediately
+    mods = realMods;
+    displayModsInSections(mods);
     
-    // Load mods with slight delay for effect
-    setTimeout(() => {
-        mods = realMods;
-        displayModsInSections(mods);
-    }, 300);
-    
-    initScrollAnimations();
     initNavbarScroll();
     updateUserNavigation();
     updateCartDisplay();
     
-    // Initialize interactive hexagon grid
-    initHexGrid();
+    // Initialize hex grid after a short delay to not block rendering
+    setTimeout(() => initHexGrid(), 100);
+    
+    // Hide loading screen
+    const loadingElement = document.getElementById('loading');
+    if (loadingElement) {
+        loadingElement.style.opacity = '0';
+        setTimeout(() => {
+            loadingElement.style.display = 'none';
+        }, 300);
+    }
     
     console.log('ExusCraft loaded successfully!');
 });
@@ -1918,7 +1913,7 @@ function showPaymentModal(total) {
 
 // Stripe Elements
 let stripe, cardElement;
-const STRIPE_KEY = 'pk_live_51SpyRKE0BrIXglmdvz7Q6kqqUbQ7A7a0gDQeDW8EVGkzNesRYcDlLDbhoktY9kRegftb34W63uWbzbgRDqoseelm00ACTQCY1K';
+const STRIPE_KEY = 'pk_test_51SpyRKE0BrIXglmdbvjUNB6XJ9f3PRkuufk39Lwh7tgNpRjymzYduUP8ATi8rMeuHKMeLLwLbpfszhlAbUb2mecK00D79fwdXM';
 
 function initStripeElements(total) {
     stripe = Stripe(STRIPE_KEY);
@@ -2042,10 +2037,6 @@ function closeSuccessModal() {
     const modal = document.getElementById('successModal');
     if (modal) { modal.classList.remove('show'); setTimeout(() => { modal.style.display = 'none'; modal.remove(); }, 300); }
 }
-
-// PLACEHOLDER - original checkout end
-function _checkoutEnd() {
-    // This function is just a marker
 
 // Search and Filter Functions (NO SIDEBAR)
 function searchAllMods() {
