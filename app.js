@@ -1219,32 +1219,201 @@ function showModDetails(modId) {
     }, 10);
 }
 
-// Download Mod with Animation (ALWAYS DIRECT DOWNLOAD)
-function downloadModWithAnimation(modId) {
-    const mod = mods.find(m => m._id === modId);
-    if (!mod) {
-        showMessage('Mod not found!', 'error');
+// ============================================
+// DOWNLOAD MANAGER
+// ============================================
+let activeDownloads = [];
+let downloadManagerOpen = false;
+
+function toggleDownloadManager() {
+    const panel = document.getElementById('downloadManagerPanel');
+    if (panel) {
+        downloadManagerOpen = !downloadManagerOpen;
+        panel.classList.toggle('show', downloadManagerOpen);
+        if (downloadManagerOpen) {
+            renderDownloadManager();
+        }
+    }
+}
+
+function renderDownloadManager() {
+    const content = document.getElementById('downloadManagerContent');
+    if (!content) return;
+    
+    if (activeDownloads.length === 0) {
+        content.innerHTML = `
+            <div class="no-downloads">
+                <i class="fas fa-cloud-download-alt"></i>
+                <p>No active downloads</p>
+            </div>
+        `;
         return;
     }
     
-    const downloadBtn = document.getElementById(`downloadBtn-${modId}`);
-    if (downloadBtn) {
-        // Animate button
-        downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
-        downloadBtn.disabled = true;
-        downloadBtn.style.background = '#6b7280';
+    content.innerHTML = activeDownloads.map(dl => `
+        <div class="download-item" id="download-${dl.id}">
+            <div class="download-item-header">
+                <img src="${dl.image}" alt="${dl.title}" class="download-item-icon">
+                <div class="download-item-info">
+                    <div class="download-item-title">${dl.title}</div>
+                    <div class="download-item-game">${dl.game} • v${dl.version}</div>
+                </div>
+                <div class="download-item-actions">
+                    ${dl.status === 'downloading' ? `
+                        <button class="pause" onclick="pauseDownload('${dl.id}')" title="Pause"><i class="fas fa-pause"></i></button>
+                    ` : dl.status === 'paused' ? `
+                        <button onclick="resumeDownload('${dl.id}')" title="Resume"><i class="fas fa-play"></i></button>
+                    ` : ''}
+                    ${dl.status !== 'completed' ? `
+                        <button class="cancel" onclick="cancelDownload('${dl.id}')" title="Cancel"><i class="fas fa-times"></i></button>
+                    ` : `
+                        <button onclick="openDownloadedFile('${dl.id}')" title="Open"><i class="fas fa-folder-open"></i></button>
+                    `}
+                </div>
+            </div>
+            <div class="download-progress-container">
+                <div class="download-progress-bar">
+                    <div class="download-progress-fill ${dl.status === 'completed' ? 'completed' : ''}" style="width: ${dl.progress}%"></div>
+                </div>
+            </div>
+            <div class="download-stats">
+                <span><i class="fas fa-database"></i> ${formatFileSize(dl.downloaded)} / ${formatFileSize(dl.totalSize)}</span>
+                <span><i class="fas fa-tachometer-alt"></i> ${dl.speed}</span>
+                <span><i class="fas fa-clock"></i> ${dl.timeRemaining}</span>
+            </div>
+            <div class="download-status ${dl.status}">
+                <i class="fas fa-${dl.status === 'downloading' ? 'spinner fa-spin' : dl.status === 'completed' ? 'check-circle' : dl.status === 'paused' ? 'pause-circle' : 'exclamation-circle'}"></i>
+                <span>${dl.status === 'downloading' ? 'Downloading...' : dl.status === 'completed' ? 'Completed' : dl.status === 'paused' ? 'Paused' : 'Error'}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+function updateDownloadCount() {
+    const countEl = document.getElementById('downloadCount');
+    const toggleBtn = document.getElementById('downloadManagerToggle');
+    const activeCount = activeDownloads.filter(d => d.status === 'downloading').length;
+    
+    if (countEl) {
+        countEl.textContent = activeCount;
+        countEl.style.display = activeCount > 0 ? 'flex' : 'none';
+    }
+    if (toggleBtn) {
+        toggleBtn.classList.toggle('has-active', activeCount > 0);
+    }
+}
+
+function startDownload(modId) {
+    const mod = mods.find(m => m._id === modId);
+    if (!mod) return;
+    
+    // Check if already downloading
+    if (activeDownloads.some(d => d.modId === modId && d.status === 'downloading')) {
+        showMessage('This mod is already downloading!', 'info');
+        toggleDownloadManager();
+        return;
     }
     
-    showMessage(`Preparing download for ${mod.title}...`, 'info');
+    const downloadId = 'dl_' + Date.now();
+    const totalSize = Math.floor(Math.random() * 500000000) + 50000000; // 50MB - 550MB
     
-    setTimeout(() => {
-        if (downloadBtn) {
-            downloadBtn.innerHTML = '<i class="fas fa-download fa-bounce"></i> Downloading...';
-            downloadBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+    const download = {
+        id: downloadId,
+        modId: modId,
+        title: mod.title,
+        game: mod.gameTitle,
+        version: mod.version,
+        image: mod.images?.[0] || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&h=100&fit=crop',
+        totalSize: totalSize,
+        downloaded: 0,
+        progress: 0,
+        speed: '0 MB/s',
+        timeRemaining: 'Calculating...',
+        status: 'downloading',
+        startTime: Date.now()
+    };
+    
+    activeDownloads.unshift(download);
+    updateDownloadCount();
+    
+    // Open download manager
+    if (!downloadManagerOpen) {
+        toggleDownloadManager();
+    } else {
+        renderDownloadManager();
+    }
+    
+    showMessage(`Starting download: ${mod.title}`, 'info');
+    
+    // Simulate download progress
+    simulateDownload(downloadId);
+}
+
+function simulateDownload(downloadId) {
+    const download = activeDownloads.find(d => d.id === downloadId);
+    if (!download || download.status !== 'downloading') return;
+    
+    const interval = setInterval(() => {
+        const dl = activeDownloads.find(d => d.id === downloadId);
+        if (!dl || dl.status !== 'downloading') {
+            clearInterval(interval);
+            return;
         }
         
-        // Create downloadable file (ALWAYS DIRECT DOWNLOAD)
-        const content = `===========================================
+        // Random speed between 5-50 MB/s
+        const speedMBps = Math.random() * 45 + 5;
+        const bytesPerInterval = speedMBps * 1024 * 1024 * 0.1; // 100ms interval
+        
+        dl.downloaded = Math.min(dl.downloaded + bytesPerInterval, dl.totalSize);
+        dl.progress = Math.round((dl.downloaded / dl.totalSize) * 100);
+        dl.speed = speedMBps.toFixed(1) + ' MB/s';
+        
+        const remaining = dl.totalSize - dl.downloaded;
+        const secondsRemaining = remaining / (speedMBps * 1024 * 1024);
+        
+        if (secondsRemaining < 60) {
+            dl.timeRemaining = Math.ceil(secondsRemaining) + 's';
+        } else if (secondsRemaining < 3600) {
+            dl.timeRemaining = Math.ceil(secondsRemaining / 60) + 'm ' + Math.ceil(secondsRemaining % 60) + 's';
+        } else {
+            dl.timeRemaining = Math.floor(secondsRemaining / 3600) + 'h ' + Math.ceil((secondsRemaining % 3600) / 60) + 'm';
+        }
+        
+        if (dl.progress >= 100) {
+            dl.status = 'completed';
+            dl.speed = '-';
+            dl.timeRemaining = 'Done';
+            clearInterval(interval);
+            
+            // Track download
+            if (currentUser) {
+                addToDownloads(dl.modId);
+            }
+            
+            showMessage(`Download complete: ${dl.title}`, 'success');
+            
+            // Trigger actual file download
+            triggerFileDownload(dl.modId);
+        }
+        
+        renderDownloadManager();
+        updateDownloadCount();
+    }, 100);
+}
+
+function triggerFileDownload(modId) {
+    const mod = mods.find(m => m._id === modId);
+    if (!mod) return;
+    
+    const content = `===========================================
 ${mod.title} - v${mod.version}
 ===========================================
 
@@ -1275,34 +1444,77 @@ Installation Instructions:
 Thank you for downloading from ExusCraft!
 Proudly made in New Zealand 🇳🇿
 ===========================================`;
-        
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${mod.title.replace(/[^a-z0-9]/gi, '_')}_v${mod.version}_ExusCraft.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-        
-        if (downloadBtn) {
-            downloadBtn.innerHTML = '<i class="fas fa-check"></i> Downloaded!';
-            downloadBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-        }
-        
-        // Track download
-        if (currentUser) {
-            addToDownloads(modId);
-        }
-        
-        showMessage(`${mod.title} downloaded successfully!`, 'success');
-        
-        setTimeout(() => {
-            closeModal();
-        }, 1500);
-        
-    }, 1000);
+    
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${mod.title.replace(/[^a-z0-9]/gi, '_')}_v${mod.version}_ExusCraft.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+
+function pauseDownload(downloadId) {
+    const dl = activeDownloads.find(d => d.id === downloadId);
+    if (dl) {
+        dl.status = 'paused';
+        dl.speed = '-';
+        dl.timeRemaining = 'Paused';
+        renderDownloadManager();
+        updateDownloadCount();
+    }
+}
+
+function resumeDownload(downloadId) {
+    const dl = activeDownloads.find(d => d.id === downloadId);
+    if (dl) {
+        dl.status = 'downloading';
+        simulateDownload(downloadId);
+        renderDownloadManager();
+        updateDownloadCount();
+    }
+}
+
+function cancelDownload(downloadId) {
+    activeDownloads = activeDownloads.filter(d => d.id !== downloadId);
+    renderDownloadManager();
+    updateDownloadCount();
+    showMessage('Download cancelled', 'info');
+}
+
+function clearCompletedDownloads() {
+    activeDownloads = activeDownloads.filter(d => d.status !== 'completed');
+    renderDownloadManager();
+    updateDownloadCount();
+}
+
+function openDownloadedFile(downloadId) {
+    showMessage('Opening downloads folder...', 'info');
+}
+
+function openDownloadsFolder() {
+    showMessage('Downloads are saved to your browser\'s default download location', 'info');
+}
+
+// Download Mod with Animation (ALWAYS DIRECT DOWNLOAD)
+function downloadModWithAnimation(modId) {
+    const mod = mods.find(m => m._id === modId);
+    if (!mod) {
+        showMessage('Mod not found!', 'error');
+        return;
+    }
+    
+    const downloadBtn = document.getElementById(`downloadBtn-${modId}`);
+    if (downloadBtn) {
+        downloadBtn.innerHTML = '<i class="fas fa-check"></i> Added to Downloads';
+        downloadBtn.disabled = true;
+    }
+    
+    // Start download in download manager
+    startDownload(modId);
+    closeModal();
 }
 
 // Download Mod (for card buttons)
@@ -2401,6 +2613,13 @@ window.closeModal = closeModal;
 window.closeProfileModal = closeProfileModal;
 window.showModDetails = showModDetails;
 window.downloadMod = downloadMod;
+window.toggleDownloadManager = toggleDownloadManager;
+window.pauseDownload = pauseDownload;
+window.resumeDownload = resumeDownload;
+window.cancelDownload = cancelDownload;
+window.clearCompletedDownloads = clearCompletedDownloads;
+window.openDownloadedFile = openDownloadedFile;
+window.openDownloadsFolder = openDownloadsFolder;
 window.purchaseMod = purchaseMod;
 window.purchaseAndAddToLibrary = purchaseAndAddToLibrary;
 window.addModToCart = addModToCart;
