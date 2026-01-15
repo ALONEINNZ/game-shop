@@ -1058,7 +1058,7 @@ function displayModCards(modsToShow, containerId) {
             <div class="mod-card" onclick="showModDetails('${mod._id}')">
                 <div class="mod-card-image">
                     <img src="${mod.images[0]}" alt="${mod.title}" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop'">
-                    ${mod.featured ? '<span class="mod-badge featured">Featured</span>' : ''}
+                    ${mod.featured ? '<span class="featured-tag"><i class="fas fa-star"></i> Featured</span>' : ''}
                     ${mod.isFree ? '<span class="mod-badge free">FREE</span>' : ''}
                     ${status ? `<span class="mod-badge status" style="background: ${status.color}">${status.label}</span>` : ''}
                 </div>
@@ -1073,9 +1073,15 @@ function displayModCards(modsToShow, containerId) {
                         <span class="mod-card-rating"><span class="stars">${stars}</span> ${mod.rating.toFixed(1)}</span>
                         <span class="mod-card-downloads"><i class="fas fa-download"></i> ${formatDownloads(mod.downloads)}</span>
                     </div>
+                    <div class="creator-info">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(mod.author)}" alt="${mod.author}" class="creator-avatar">
+                        <div>
+                            <div class="creator-name">${mod.author} ${mod.featured ? '<span class="verified-badge"><i class="fas fa-check"></i> Verified</span>' : ''}</div>
+                            <div class="creator-stats">${formatDownloads(mod.downloads * 3)} total downloads</div>
+                        </div>
+                    </div>
                     <div class="mod-card-footer">
                         <span class="mod-card-price">${priceDisplay}</span>
-                        <span class="mod-card-author">by ${mod.author}</span>
                     </div>
                     <div class="mod-card-actions">
                         <button onclick="event.stopPropagation(); ${mod.isFree ? `downloadMod('${mod._id}')` : `addModToCart('${mod._id}')`}" class="btn btn-primary btn-sm">
