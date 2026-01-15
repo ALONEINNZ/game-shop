@@ -1947,7 +1947,7 @@ async function processStripePayment(total) {
     
     try {
         const token = localStorage.getItem('token');
-        const modIds = cart.map(item => item._id);
+        const cartItems = cart.map(item => ({ id: item._id, title: item.title, price: item.price }));
         
         // Create payment intent
         const response = await fetch('/api/orders/create-payment-intent', {
@@ -1956,7 +1956,7 @@ async function processStripePayment(total) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ gameIds: modIds })
+            body: JSON.stringify({ amount: total, items: cartItems })
         });
         
         if (!response.ok) throw new Error('Payment setup failed');
@@ -1986,7 +1986,7 @@ async function processStripePayment(total) {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ paymentIntentId: paymentIntent.id, gameIds: modIds })
+                body: JSON.stringify({ paymentIntentId: paymentIntent.id, items: cartItems, amount: total })
             });
             
             // Success

@@ -1,7 +1,6 @@
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
-const Game = require('../models/Game');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 
@@ -10,17 +9,21 @@ const router = express.Router();
 // Create payment intent
 router.post('/create-payment-intent', auth, async (req, res) => {
   try {
-    const { gameIds } = req.body;
+    const { gameIds, amount, items } = req.body;
     
-    const games = await Game.find({ _id: { $in: gameIds } });
-    const totalAmount = games.reduce((sum, game) => sum + game.price, 0);
+    // Use amount from frontend (in dollars), convert to cents
+    const totalAmount = amount || 0;
+    
+    if (totalAmount <= 0) {
+      return res.status(400).json({ message: 'Invalid amount' });
+    }
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(totalAmount * 100), // Convert to cents
-      currency: 'usd',
+      currency: 'nzd', // NZ dollars
       metadata: {
         userId: req.userId,
-        gameIds: gameIds.join(',')
+        items: items ? JSON.stringify(items.slice(0, 5)) : '' // Store item info
       }
     });
 
@@ -29,6 +32,7 @@ router.post('/create-payment-intent', auth, async (req, res) => {
       amount: totalAmount
     });
   } catch (error) {
+    console.error('Payment intent error:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -36,7 +40,7 @@ router.post('/create-payment-intent', auth, async (req, res) => {
 
 router.post('/confirm-purchase', auth, async (req, res) => {
   try {
-    const { paymentIntentId, gameIds } = req.body;
+    const { paymentIntentId, items, amount } = req.body;
     
     // Verify payment with Stripe
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
@@ -45,43 +49,23 @@ router.post('/confirm-purchase', auth, async (req, res) => {
       return res.status(400).json({ message: 'Payment not completed' });
     }
 
-    const games = await Game.find({ _id: { $in: gameIds } });
-    const totalAmount = games.reduce((sum, game) => sum + game.price, 0);
-
-    // Create order
+    // Create order record
     const order = new Order({
       user: req.userId,
-      games: games.map(game => ({
-        game: game._id,
-        price: game.price
-      })),
-      totalAmount,
+      items: items || [],
+      totalAmount: amount || paymentIntent.amount / 100,
       paymentStatus: 'completed',
       paymentId: paymentIntentId
     });
 
     await order.save();
 
-    // Add games to user's purchased games
-    const user = await User.findById(req.userId);
-    const newPurchases = games.map(game => ({
-      game: game._id,
-      purchaseDate: new Date()
-    }));
-    
-    user.purchasedGames.push(...newPurchases);
-    await user.save();
-
     res.json({
       message: 'Purchase completed successfully',
-      order: order,
-      downloadLinks: games.map(game => ({
-        gameId: game._id,
-        title: game.title,
-        downloadUrl: game.downloadUrl
-      }))
+      order: order
     });
   } catch (error) {
+    console.error('Confirm purchase error:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -90,7 +74,6 @@ router.post('/confirm-purchase', auth, async (req, res) => {
 router.get('/my-orders', auth, async (req, res) => {
   try {
     const orders = await Order.find({ user: req.userId })
-      .populate('games.game')
       .sort({ createdAt: -1 });
     
     res.json(orders);
