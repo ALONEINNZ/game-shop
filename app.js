@@ -2857,29 +2857,29 @@ function initHexGrid() {
     
     let mouseX = -1000;
     let mouseY = -1000;
+    let targetMouseX = -1000;
+    let targetMouseY = -1000;
     let animationId;
+    let lastFrame = 0;
+    const fps = 30; // Limit to 30fps for performance
+    const frameInterval = 1000 / fps;
     
-    // Hexagon settings
-    const hexSize = 40;
+    // Hexagon settings - larger for fewer hexagons = better performance
+    const hexSize = 50;
     const hexHeight = hexSize * Math.sqrt(3);
-    const hexWidth = hexSize * 2;
-    const influenceRadius = 150;
-    const maxScale = 2.5;
-    
-    // Colors
-    const baseColor = 'rgba(91, 140, 255, 0.08)';
-    const hoverColor = 'rgba(91, 140, 255, 0.4)';
-    const glowColor = 'rgba(124, 92, 255, 0.6)';
+    const hexWidth = hexSize * 1.5;
+    const influenceRadius = 120;
+    const maxScale = 1.8;
     
     function resizeCanvas() {
         canvas.width = hero.offsetWidth;
         canvas.height = hero.offsetHeight;
     }
     
-    function drawHexagon(x, y, size, fillColor, strokeColor, strokeWidth) {
+    function drawHexagon(x, y, size) {
         ctx.beginPath();
         for (let i = 0; i < 6; i++) {
-            const angle = (Math.PI / 3) * i - Math.PI / 6;
+            const angle = (Math.PI / 3) * i;
             const hx = x + size * Math.cos(angle);
             const hy = y + size * Math.sin(angle);
             if (i === 0) {
@@ -2889,64 +2889,55 @@ function initHexGrid() {
             }
         }
         ctx.closePath();
-        
-        if (fillColor) {
-            ctx.fillStyle = fillColor;
-            ctx.fill();
-        }
-        
-        if (strokeColor) {
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = strokeWidth || 1;
-            ctx.stroke();
-        }
+        ctx.stroke();
     }
     
-    function getDistance(x1, y1, x2, y2) {
-        return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-    }
-    
-    function draw() {
+    function draw(timestamp) {
+        // Frame limiting for performance
+        if (timestamp - lastFrame < frameInterval) {
+            animationId = requestAnimationFrame(draw);
+            return;
+        }
+        lastFrame = timestamp;
+        
+        // Smooth mouse following
+        mouseX += (targetMouseX - mouseX) * 0.15;
+        mouseY += (targetMouseY - mouseY) * 0.15;
+        
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        const cols = Math.ceil(canvas.width / (hexWidth * 0.75)) + 2;
-        const rows = Math.ceil(canvas.height / hexHeight) + 2;
+        // Calculate grid - connected hexagons
+        const horizontalSpacing = hexSize * 1.5;
+        const verticalSpacing = hexHeight;
+        const cols = Math.ceil(canvas.width / horizontalSpacing) + 2;
+        const rows = Math.ceil(canvas.height / verticalSpacing) + 2;
         
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < cols; col++) {
-                const x = col * hexWidth * 0.75;
-                const y = row * hexHeight + (col % 2 === 1 ? hexHeight / 2 : 0);
+                const x = col * horizontalSpacing;
+                const y = row * verticalSpacing + (col % 2 === 1 ? verticalSpacing / 2 : 0);
                 
-                const distance = getDistance(x, y, mouseX, mouseY);
+                // Quick distance check (squared to avoid sqrt)
+                const dx = x - mouseX;
+                const dy = y - mouseY;
+                const distSq = dx * dx + dy * dy;
+                const influenceSq = influenceRadius * influenceRadius;
                 
-                if (distance < influenceRadius) {
-                    // Calculate scale based on distance
-                    const scale = 1 + (maxScale - 1) * (1 - distance / influenceRadius);
-                    const scaledSize = hexSize * scale * 0.4;
-                    
-                    // Calculate color intensity
+                if (distSq < influenceSq) {
+                    const distance = Math.sqrt(distSq);
                     const intensity = 1 - distance / influenceRadius;
-                    const r = Math.round(91 + (124 - 91) * intensity);
-                    const g = Math.round(140 + (92 - 140) * intensity);
-                    const b = 255;
-                    const alpha = 0.1 + intensity * 0.5;
+                    const scale = 1 + (maxScale - 1) * intensity * intensity;
                     
-                    const dynamicColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-                    const strokeAlpha = 0.2 + intensity * 0.6;
-                    const dynamicStroke = `rgba(${r}, ${g}, ${b}, ${strokeAlpha})`;
-                    
-                    // Draw glow effect for close hexagons
-                    if (intensity > 0.5) {
-                        ctx.shadowColor = glowColor;
-                        ctx.shadowBlur = 15 * intensity;
-                    }
-                    
-                    drawHexagon(x, y, scaledSize, dynamicColor, dynamicStroke, 1 + intensity);
-                    
-                    ctx.shadowBlur = 0;
+                    // Subtle outline only - brighter near mouse
+                    const alpha = 0.06 + intensity * 0.25;
+                    ctx.strokeStyle = `rgba(91, 140, 255, ${alpha})`;
+                    ctx.lineWidth = 0.5 + intensity * 1;
+                    drawHexagon(x, y, hexSize * scale * 0.48);
                 } else {
-                    // Draw base hexagon
-                    drawHexagon(x, y, hexSize * 0.35, null, baseColor, 0.5);
+                    // Very subtle base grid
+                    ctx.strokeStyle = 'rgba(91, 140, 255, 0.04)';
+                    ctx.lineWidth = 0.5;
+                    drawHexagon(x, y, hexSize * 0.48);
                 }
             }
         }
@@ -2956,40 +2947,53 @@ function initHexGrid() {
     
     function handleMouseMove(e) {
         const rect = hero.getBoundingClientRect();
-        mouseX = e.clientX - rect.left;
-        mouseY = e.clientY - rect.top;
+        targetMouseX = e.clientX - rect.left;
+        targetMouseY = e.clientY - rect.top;
     }
     
     function handleMouseLeave() {
-        mouseX = -1000;
-        mouseY = -1000;
+        targetMouseX = -1000;
+        targetMouseY = -1000;
     }
     
+    // Throttled touch handler
+    let touchThrottle = false;
     function handleTouchMove(e) {
+        if (touchThrottle) return;
+        touchThrottle = true;
+        setTimeout(() => touchThrottle = false, 50);
+        
         if (e.touches.length > 0) {
             const rect = hero.getBoundingClientRect();
-            mouseX = e.touches[0].clientX - rect.left;
-            mouseY = e.touches[0].clientY - rect.top;
+            targetMouseX = e.touches[0].clientX - rect.left;
+            targetMouseY = e.touches[0].clientY - rect.top;
         }
     }
     
     function handleTouchEnd() {
-        mouseX = -1000;
-        mouseY = -1000;
+        targetMouseX = -1000;
+        targetMouseY = -1000;
     }
     
     // Initialize
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    hero.addEventListener('mousemove', handleMouseMove);
+    
+    // Debounced resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(resizeCanvas, 200);
+    });
+    
+    hero.addEventListener('mousemove', handleMouseMove, { passive: true });
     hero.addEventListener('mouseleave', handleMouseLeave);
-    hero.addEventListener('touchmove', handleTouchMove);
+    hero.addEventListener('touchmove', handleTouchMove, { passive: true });
     hero.addEventListener('touchend', handleTouchEnd);
     
     // Start animation
-    draw();
+    animationId = requestAnimationFrame(draw);
     
-    // Cleanup on page unload
+    // Cleanup
     window.addEventListener('beforeunload', () => {
         cancelAnimationFrame(animationId);
     });
