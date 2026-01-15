@@ -1904,6 +1904,31 @@ document.addEventListener('click', function(e) {
         const dropdown = document.getElementById('gameDropdown');
         if (dropdown) dropdown.classList.remove('show');
     }
+    
+    // Close floating panels when clicking outside
+    const clickedOnPanel = e.target.closest('.download-manager-panel, .cart-panel, #cart, .chatbot-panel, #chatbot');
+    const clickedOnToggle = e.target.closest('.download-manager-toggle, .cart-toggle, .chatbot-toggle');
+    
+    if (!clickedOnPanel && !clickedOnToggle) {
+        // Close download manager
+        const downloadPanel = document.getElementById('downloadManagerPanel');
+        if (downloadPanel && downloadPanel.classList.contains('show')) {
+            downloadPanel.classList.remove('show');
+            downloadManagerOpen = false;
+        }
+        
+        // Close cart
+        const cartElement = document.getElementById('cart');
+        if (cartElement && cartElement.classList.contains('open')) {
+            cartElement.classList.remove('open');
+        }
+        
+        // Close chatbot
+        const chatbot = document.getElementById('chatbot');
+        if (chatbot && chatbot.classList.contains('open')) {
+            chatbot.classList.remove('open');
+        }
+    }
 });
 
 // Scroll Animations
@@ -1940,6 +1965,12 @@ function toggleChatbot() {
     const notification = document.getElementById('chatNotification');
     
     if (chatbot) {
+        const willOpen = !chatbot.classList.contains('open');
+        
+        if (willOpen) {
+            closeAllPanels('chatbot');
+        }
+        
         chatbot.classList.toggle('open');
         if (chatbot.classList.contains('open') && notification) {
             notification.style.display = 'none';
