@@ -6576,3 +6576,557 @@ select:focus {
         font-size: 1rem !important;
     }
 }
+
+
+/* ============================================
+   ENHANCED UI POLISH - Developer Recommendations
+   ============================================ */
+
+/* ============================================
+   MOD CARDS - Enhanced with all metadata
+   ============================================ */
+.mod-card, .game-card {
+    background: linear-gradient(145deg, var(--bg-card) 0%, rgba(21, 28, 44, 0.9) 100%);
+    border: 1px solid rgba(91, 140, 255, 0.08);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+
+.mod-card:hover, .game-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: transparent;
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(91, 140, 255, 0.3),
+        0 0 60px rgba(91, 140, 255, 0.12);
+}
+
+/* Gradient border on hover */
+.mod-card::after, .game-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(91, 140, 255, 0.5), rgba(193, 92, 255, 0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.mod-card:hover::after, .game-card:hover::after {
+    opacity: 1;
+}
+
+/* ============================================
+   BUTTONS - Gradient with Glow
+   ============================================ */
+.btn-primary {
+    background: linear-gradient(135deg, #5B8CFF 0%, #7C5CFF 100%);
+    background-size: 200% 200%;
+    color: white;
+    font-weight: 700;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(91, 140, 255, 0.35);
+}
+
+.btn-primary:hover {
+    transform: scale(1.04);
+    box-shadow: 
+        0 8px 30px rgba(91, 140, 255, 0.5),
+        0 0 40px rgba(91, 140, 255, 0.3);
+    background-position: 100% 0;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* Glow pulse animation for important CTAs */
+.btn-primary.btn-glow {
+    animation: btnGlow 2s ease-in-out infinite;
+}
+
+@keyframes btnGlow {
+    0%, 100% { box-shadow: 0 4px 20px rgba(91, 140, 255, 0.35); }
+    50% { box-shadow: 0 4px 35px rgba(91, 140, 255, 0.6), 0 0 50px rgba(91, 140, 255, 0.3); }
+}
+
+/* Secondary buttons */
+.btn-outline, .btn-secondary {
+    background: rgba(91, 140, 255, 0.08);
+    border: 1px solid rgba(91, 140, 255, 0.25);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.btn-outline:hover, .btn-secondary:hover {
+    background: rgba(91, 140, 255, 0.15);
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(91, 140, 255, 0.2);
+}
+
+/* ============================================
+   NAVIGATION - Sticky with blur
+   ============================================ */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(11, 15, 20, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(91, 140, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+    background: rgba(11, 15, 20, 0.95);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Active nav link */
+.nav-link.active {
+    color: var(--accent-primary) !important;
+    background: rgba(91, 140, 255, 0.12);
+    position: relative;
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: var(--gradient-brand);
+    border-radius: 2px;
+}
+
+/* Search bar prominent */
+.nav-search {
+    flex: 1;
+    max-width: 450px;
+}
+
+.nav-search input {
+    background: rgba(91, 140, 255, 0.06);
+    border: 1px solid rgba(91, 140, 255, 0.15);
+    border-radius: 50px;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    transition: all 0.3s ease;
+}
+
+.nav-search input:focus {
+    background: rgba(91, 140, 255, 0.1);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.15), 0 0 30px rgba(91, 140, 255, 0.1);
+}
+
+/* ============================================
+   FILTERS - Interactive badges
+   ============================================ */
+.filter-btn, select, .category-filter {
+    background: rgba(91, 140, 255, 0.06);
+    border: 1px solid rgba(91, 140, 255, 0.15);
+    border-radius: 50px;
+    padding: 0.6rem 1.25rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover, select:hover, .category-filter:hover {
+    background: rgba(91, 140, 255, 0.12);
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+.filter-btn.active, .category-filter.active {
+    background: var(--gradient-brand) !important;
+    border-color: transparent !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(91, 140, 255, 0.4);
+}
+
+/* Select dropdowns */
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239AA4BF' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+/* ============================================
+   TYPOGRAPHY - Better hierarchy
+   ============================================ */
+.section-title {
+    font-size: clamp(2rem, 5vw, 3rem) !important;
+    font-weight: 900 !important;
+    letter-spacing: -1px;
+    margin-bottom: 0.5rem;
+}
+
+/* Gradient headings for featured sections */
+#featured-games .section-title,
+#new-releases .section-title,
+#deals .section-title {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Body text line height */
+p, .mod-card-desc, .game-description {
+    line-height: 1.7;
+}
+
+/* ============================================
+   EXUSBOT - Floating with pulse
+   ============================================ */
+.chatbot-toggle {
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 100px !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
+    background: var(--gradient-brand) !important;
+    border: none !important;
+    color: white !important;
+    font-size: 1.3rem !important;
+    cursor: pointer;
+    z-index: 99998 !important;
+    box-shadow: 0 8px 30px rgba(91, 140, 255, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: chatbotPulse 3s ease-in-out infinite;
+}
+
+@keyframes chatbotPulse {
+    0%, 100% { 
+        box-shadow: 0 8px 30px rgba(91, 140, 255, 0.4);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 8px 40px rgba(91, 140, 255, 0.6), 0 0 60px rgba(91, 140, 255, 0.3);
+        transform: scale(1.05);
+    }
+}
+
+.chatbot-toggle:hover {
+    transform: scale(1.15) !important;
+    animation: none;
+    box-shadow: 0 12px 40px rgba(91, 140, 255, 0.6);
+}
+
+/* Chatbot notification badge */
+.chatbot-notification {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 22px;
+    height: 22px;
+    background: var(--danger);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: notificationBounce 0.5s ease;
+    box-shadow: 0 2px 10px rgba(239, 68, 68, 0.5);
+}
+
+@keyframes notificationBounce {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Chatbot panel - modal style */
+#chatbot, .chatbot {
+    position: fixed !important;
+    bottom: 100px !important;
+    right: 30px !important;
+    width: 380px !important;
+    max-height: 550px !important;
+    background: var(--bg-card) !important;
+    border: 1px solid rgba(91, 140, 255, 0.2) !important;
+    border-radius: var(--radius-xl) !important;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(91, 140, 255, 0.1) !important;
+    z-index: 99999 !important;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#chatbot.open, .chatbot.open {
+    display: flex !important;
+    transform: translateY(0);
+    opacity: 1;
+    animation: chatbotSlideUp 0.3s ease forwards;
+}
+
+@keyframes chatbotSlideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* ============================================
+   HERO - Gaming themed gradient
+   ============================================ */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(91, 140, 255, 0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 50%, rgba(124, 92, 255, 0.2) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 30% at 10% 70%, rgba(193, 92, 255, 0.15) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg-primary) 0%, rgba(11, 15, 20, 0.95) 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Animated grid pattern */
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(rgba(91, 140, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(91, 140, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
+    animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50px); }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   BROWSE BY GAME - Icons
+   ============================================ */
+.game-card-filter {
+    background: linear-gradient(145deg, var(--bg-card) 0%, rgba(21, 28, 44, 0.8) 100%);
+    border: 1px solid rgba(91, 140, 255, 0.1);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.game-card-filter:hover {
+    transform: translateY(-8px) scale(1.03);
+    border-color: var(--accent-primary);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 40px rgba(91, 140, 255, 0.15);
+}
+
+.game-card-filter .game-icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.game-card-filter:hover .game-icon {
+    transform: scale(1.15);
+}
+
+.game-card-filter h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.game-card-filter p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ============================================
+   SKELETON LOADERS
+   ============================================ */
+.skeleton {
+    background: linear-gradient(90deg, 
+        var(--bg-card) 0%, 
+        rgba(91, 140, 255, 0.08) 50%, 
+        var(--bg-card) 100%);
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.5s ease-in-out infinite;
+    border-radius: var(--radius-md);
+}
+
+@keyframes skeletonShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-card {
+    height: 320px;
+    border-radius: var(--radius-lg);
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-text.short {
+    width: 60%;
+}
+
+/* ============================================
+   MICRO-INTERACTIONS
+   ============================================ */
+
+/* Card image zoom */
+.mod-card-image img, .game-image img {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s ease;
+}
+
+.mod-card:hover .mod-card-image img,
+.game-card:hover .game-image img {
+    transform: scale(1.12);
+    filter: brightness(1.1);
+}
+
+/* Button ripple effect */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.5s ease, height 0.5s ease;
+}
+
+.btn:active::before {
+    width: 400px;
+    height: 400px;
+}
+
+/* Link hover underline animation */
+a:not(.btn):not(.nav-link):not(.logo) {
+    position: relative;
+}
+
+a:not(.btn):not(.nav-link):not(.logo)::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent-primary);
+    transition: width 0.3s ease;
+}
+
+a:not(.btn):not(.nav-link):not(.logo):hover::after {
+    width: 100%;
+}
+
+/* Icon hover bounce */
+.trust-item i, .game-card-stats i, .mod-card-stats i {
+    transition: transform 0.3s ease;
+}
+
+.trust-item:hover i, 
+.game-card:hover .game-card-stats i,
+.mod-card:hover .mod-card-stats i {
+    transform: scale(1.2);
+}
+
+/* ============================================
+   MOBILE RESPONSIVE UPDATES
+   ============================================ */
+@media (max-width: 768px) {
+    .chatbot-toggle {
+        width: 50px !important;
+        height: 50px !important;
+        bottom: 20px !important;
+        right: 80px !important;
+        font-size: 1.1rem !important;
+    }
+    
+    #chatbot, .chatbot {
+        width: calc(100% - 20px) !important;
+        max-height: 80vh !important;
+        bottom: 80px !important;
+        right: 10px !important;
+        left: 10px !important;
+        border-radius: var(--radius-lg) !important;
+    }
+    
+    .hero::after {
+        background-size: 30px 30px;
+    }
+    
+    .game-card-filter .game-icon {
+        font-size: 2.5rem;
+    }
+}

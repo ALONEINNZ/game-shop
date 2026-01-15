@@ -203,9 +203,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     loadSavedData();
     
-    // Load mods
-    mods = realMods;
-    displayModsInSections(mods);
+    // Show skeleton loaders first
+    showSkeletonLoaders();
+    
+    // Load mods with slight delay for effect
+    setTimeout(() => {
+        mods = realMods;
+        displayModsInSections(mods);
+    }, 300);
     
     initScrollAnimations();
     initNavbarScroll();
@@ -214,6 +219,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('ExusCraft loaded successfully!');
 });
+
+// Skeleton Loaders
+function showSkeletonLoaders() {
+    const containers = ['featuredGames', 'newReleases', 'dealsGames', 'allGames'];
+    containers.forEach(id => {
+        const container = document.getElementById(id);
+        if (container) {
+            const skeletonCount = id === 'allGames' ? 8 : 4;
+            container.innerHTML = Array(skeletonCount).fill('').map(() => `
+                <div class="mod-card skeleton-card">
+                    <div class="skeleton" style="height: 180px; border-radius: var(--radius-lg) var(--radius-lg) 0 0;"></div>
+                    <div style="padding: 1.25rem;">
+                        <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                        <div class="skeleton skeleton-text short" style="width: 60%;"></div>
+                        <div class="skeleton skeleton-text" style="width: 40%; margin-top: 1rem;"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    });
+}
 
 // Theme System
 function initializeTheme() {
