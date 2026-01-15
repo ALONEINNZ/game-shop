@@ -3028,15 +3028,14 @@ function initHexGrid() {
     let targetMouseY = -1000;
     let animationId;
     let lastFrame = 0;
-    const fps = 30; // Limit to 30fps for performance
+    const fps = 60; // Smoother animation
     const frameInterval = 1000 / fps;
     
-    // Hexagon settings - properly connected grid
-    const hexSize = 30; // Radius of hexagon
-    const hexWidth = hexSize * 2;
+    // Hexagon settings - connected grid
+    const hexSize = 35;
     const hexHeight = hexSize * Math.sqrt(3);
-    const influenceRadius = 150;
-    const maxScale = 2;
+    const influenceRadius = 120;
+    const maxScale = 1.6;
     
     function resizeCanvas() {
         canvas.width = hero.offsetWidth;
@@ -3046,8 +3045,7 @@ function initHexGrid() {
     function drawHexagon(x, y, size) {
         ctx.beginPath();
         for (let i = 0; i < 6; i++) {
-            // Flat-top hexagon (rotate 30 degrees)
-            const angle = (Math.PI / 3) * i + Math.PI / 6;
+            const angle = (Math.PI / 3) * i;
             const hx = x + size * Math.cos(angle);
             const hy = y + size * Math.sin(angle);
             if (i === 0) {
@@ -3061,21 +3059,21 @@ function initHexGrid() {
     }
     
     function draw(timestamp) {
-        // Frame limiting for performance
+        // Frame limiting
         if (timestamp - lastFrame < frameInterval) {
             animationId = requestAnimationFrame(draw);
             return;
         }
         lastFrame = timestamp;
         
-        // Smooth mouse following
-        mouseX += (targetMouseX - mouseX) * 0.15;
-        mouseY += (targetMouseY - mouseY) * 0.15;
+        // Faster mouse following
+        mouseX += (targetMouseX - mouseX) * 0.3;
+        mouseY += (targetMouseY - mouseY) * 0.3;
         
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Calculate grid - flat-top hexagons that connect perfectly
-        const horizSpacing = hexSize * 1.5; // 3/4 of width for overlap
+        // Hexagon grid spacing
+        const horizSpacing = hexSize * 1.5;
         const vertSpacing = hexHeight;
         const cols = Math.ceil(canvas.width / horizSpacing) + 2;
         const rows = Math.ceil(canvas.height / vertSpacing) + 2;
@@ -3085,7 +3083,6 @@ function initHexGrid() {
                 const x = col * horizSpacing;
                 const y = row * vertSpacing + (col % 2 === 1 ? vertSpacing / 2 : 0);
                 
-                // Quick distance check (squared to avoid sqrt)
                 const dx = x - mouseX;
                 const dy = y - mouseY;
                 const distSq = dx * dx + dy * dy;
@@ -3096,14 +3093,12 @@ function initHexGrid() {
                     const intensity = 1 - distance / influenceRadius;
                     const scale = 1 + (maxScale - 1) * intensity * intensity;
                     
-                    // Brighter near mouse
-                    const alpha = 0.05 + intensity * 0.3;
+                    const alpha = 0.04 + intensity * 0.2;
                     ctx.strokeStyle = `rgba(91, 140, 255, ${alpha})`;
-                    ctx.lineWidth = 0.5 + intensity * 1.5;
+                    ctx.lineWidth = 0.5 + intensity;
                     drawHexagon(x, y, hexSize * scale);
                 } else {
-                    // Very subtle base grid - full size hexagons
-                    ctx.strokeStyle = 'rgba(91, 140, 255, 0.035)';
+                    ctx.strokeStyle = 'rgba(91, 140, 255, 0.03)';
                     ctx.lineWidth = 0.5;
                     drawHexagon(x, y, hexSize);
                 }
