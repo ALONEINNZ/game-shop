@@ -8702,230 +8702,103 @@ p, .mod-card-desc, .game-description, .section-subtitle {
     }
 }
 
-/* Gradient text shimmer animation */
-.gradient-text {
-    background-size: 200% 100%;
-    animation: gradientShimmer 3s ease infinite;
-    filter: drop-shadow(0 0 15px rgba(91, 140, 255, 0.3));
-}
-
-@keyframes gradientShimmer {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-}
-
-/* Section titles pulse */
-.section-title {
-    animation: sectionPulse 5s ease-in-out infinite;
-}
-
-@keyframes sectionPulse {
-    0%, 100% {
-        text-shadow: 0 0 20px rgba(91, 140, 255, 0.1);
-    }
-    50% {
-        text-shadow: 0 0 35px rgba(91, 140, 255, 0.25);
-    }
-}
-
-
 /* ============================================
-   ENHANCED UI ANIMATIONS & EFFECTS
+   OPTIMIZED ANIMATIONS - PERFORMANCE FOCUSED
+   Only flicker + one-time load animations
    ============================================ */
 
-/* Button hover glow effect */
-.btn-primary {
-    position: relative;
-    overflow: hidden;
+/* NEON FLICKER - Logo text */
+.logo-text {
+    animation: neonFlicker 3s ease-in-out infinite;
+    will-change: opacity;
 }
 
-.btn-primary::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s ease, height 0.6s ease;
-    pointer-events: none;
-}
-
-.btn-primary:hover::after {
-    width: 300px;
-    height: 300px;
-}
-
-/* Card shine effect on hover */
-.mod-card, .game-card {
-    position: relative;
-    overflow: hidden;
-}
-
-.mod-card::before, .game-card::before {
-    content: '';
-    position: absolute;
-    top: -100%;
-    left: -100%;
-    width: 50%;
-    height: 200%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.05),
-        transparent
-    );
-    transform: rotate(25deg);
-    transition: all 0.7s ease;
-    z-index: 1;
-    pointer-events: none;
-}
-
-.mod-card:hover::before, .game-card:hover::before {
-    left: 150%;
-}
-
-/* Hero badge floating animation */
-.hero-badge {
-    animation: badgeFloat 4s ease-in-out infinite, pulse 3s ease-in-out infinite;
-}
-
-@keyframes badgeFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-}
-
-/* Stats counter glow */
-.stat-number {
-    animation: statGlow 3s ease-in-out infinite;
-}
-
-@keyframes statGlow {
-    0%, 100% {
-        filter: drop-shadow(0 0 5px rgba(91, 140, 255, 0.3));
+@keyframes neonFlicker {
+    0%, 18%, 22%, 25%, 27%, 50%, 52%, 55%, 100% {
+        text-shadow: 
+            0 0 10px rgba(91, 140, 255, 0.8),
+            0 0 20px rgba(91, 140, 255, 0.5),
+            0 0 40px rgba(124, 92, 255, 0.3);
+        opacity: 1;
     }
-    50% {
-        filter: drop-shadow(0 0 15px rgba(91, 140, 255, 0.6));
+    19%, 21% {
+        text-shadow: 0 0 5px rgba(91, 140, 255, 0.3);
+        opacity: 0.4;
+    }
+    23%, 26% {
+        text-shadow: none;
+        opacity: 0.2;
+    }
+    51%, 54% {
+        text-shadow: 0 0 5px rgba(91, 140, 255, 0.2);
+        opacity: 0.3;
     }
 }
 
-/* Trust bar icons bounce */
-.trust-item i {
-    animation: trustBounce 2s ease-in-out infinite;
+/* Gradient text flicker - "Game Mods" */
+.gradient-text {
+    animation: gradientFlicker 2.5s ease-in-out infinite;
+    will-change: opacity;
 }
 
-.trust-item:nth-child(1) i { animation-delay: 0s; }
-.trust-item:nth-child(2) i { animation-delay: 0.2s; }
-.trust-item:nth-child(3) i { animation-delay: 0.4s; }
-.trust-item:nth-child(4) i { animation-delay: 0.6s; }
-.trust-item:nth-child(5) i { animation-delay: 0.8s; }
-
-@keyframes trustBounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-}
-
-/* Floating action buttons pulse */
-.cart-toggle, .chatbot-toggle, .download-manager-toggle {
-    animation: fabPulse 2.5s ease-in-out infinite;
-}
-
-@keyframes fabPulse {
-    0%, 100% {
-        box-shadow: 0 4px 20px rgba(91, 140, 255, 0.3);
+@keyframes gradientFlicker {
+    0%, 14%, 18%, 22%, 40%, 44%, 48%, 100% {
+        filter: drop-shadow(0 0 15px rgba(91, 140, 255, 0.5));
+        opacity: 1;
     }
-    50% {
-        box-shadow: 0 4px 30px rgba(91, 140, 255, 0.5), 0 0 40px rgba(91, 140, 255, 0.2);
+    15%, 17% {
+        filter: none;
+        opacity: 0.4;
     }
-}
-
-/* Game filter cards hover effect */
-.game-card-filter {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.game-card-filter:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(91, 140, 255, 0.15);
-}
-
-.game-card-filter:hover .game-icon {
-    animation: iconPop 0.4s ease;
-}
-
-@keyframes iconPop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-    100% { transform: scale(1); }
-}
-
-/* Search bar focus glow */
-.nav-search input:focus {
-    animation: searchGlow 1.5s ease-in-out infinite;
-}
-
-@keyframes searchGlow {
-    0%, 100% {
-        box-shadow: 0 0 20px rgba(91, 140, 255, 0.15);
+    19%, 21% {
+        filter: none;
+        opacity: 0.2;
     }
-    50% {
-        box-shadow: 0 0 30px rgba(91, 140, 255, 0.3);
+    41%, 43% {
+        filter: none;
+        opacity: 0.3;
+    }
+    45%, 47% {
+        filter: none;
+        opacity: 0.15;
     }
 }
 
-/* Category badge hover */
-.mod-card-category, .game-category {
-    transition: all 0.3s ease;
+/* ONE-TIME LOAD ANIMATIONS */
+.hero-content {
+    animation: jumpUp 0.6s ease-out forwards;
 }
 
-.mod-card:hover .mod-card-category,
-.game-card:hover .game-category {
-    background: rgba(91, 140, 255, 0.2);
-    transform: scale(1.05);
+@keyframes jumpUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Rating stars twinkle */
-.mod-card-rating .stars, .review-rating {
-    animation: starTwinkle 2s ease-in-out infinite;
+.hero-badge { animation: fadeIn 0.5s ease-out 0.2s both; }
+.hero-subtitle { animation: fadeIn 0.5s ease-out 0.4s both; }
+.hero-cta { animation: fadeIn 0.5s ease-out 0.5s both; }
+.hero-stats { animation: fadeIn 0.5s ease-out 0.6s both; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes starTwinkle {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+.navbar { animation: slideDown 0.4s ease-out; }
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-100%); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Price tag pulse for paid mods */
-.mod-card-price {
-    animation: pricePulse 3s ease-in-out infinite;
+/* HOVER-ONLY - No constant animations */
+.mod-card, .game-card, .game-card-filter {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-@keyframes pricePulse {
-    0%, 100% {
-        filter: brightness(1);
-    }
-    50% {
-        filter: brightness(1.2);
-    }
-}
-
-/* Featured badge glow */
-.mod-badge.featured, .featured-tag {
-    animation: featuredGlow 2s ease-in-out infinite;
-}
-
-@keyframes featuredGlow {
-    0%, 100% {
-        box-shadow: 0 2px 10px rgba(91, 140, 255, 0.3);
-    }
-    50% {
-        box-shadow: 0 2px 20px rgba(91, 140, 255, 0.6), 0 0 30px rgba(124, 92, 255, 0.3);
-    }
-}
-
-/* Navbar link underline animation */
-.nav-link {
-    position: relative;
+.mod-card:hover, .game-card:hover, .game-card-filter:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
 }
 
 .nav-link::after {
@@ -8936,529 +8809,21 @@ p, .mod-card-desc, .game-description, .section-subtitle {
     width: 0;
     height: 2px;
     background: var(--gradient-brand);
-    transition: all 0.3s ease;
-    transform: translateX(-50%);
+    transition: width 0.3s ease, left 0.3s ease;
 }
 
 .nav-link:hover::after {
     width: 80%;
+    left: 10%;
 }
 
-/* Upload button special effect */
-.upload-link {
-    position: relative;
-    overflow: hidden;
-}
-
-.upload-link::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    animation: uploadShine 3s ease-in-out infinite;
-}
-
-@keyframes uploadShine {
-    0% { left: -100%; }
-    50%, 100% { left: 100%; }
-}
-
-/* Modal backdrop blur animation */
-.modal.show {
-    animation: modalFadeIn 0.3s ease;
-}
-
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-        backdrop-filter: blur(0);
-    }
-    to {
-        opacity: 1;
-        backdrop-filter: blur(10px);
-    }
-}
-
-/* Chatbot typing indicator */
-.chatbot-messages .message.typing .message-content::after {
-    content: '...';
-    animation: typingDots 1.5s ease-in-out infinite;
-}
-
-@keyframes typingDots {
-    0%, 20% { content: '.'; }
-    40% { content: '..'; }
-    60%, 100% { content: '...'; }
-}
-
-/* Scroll reveal for sections */
-.section {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Footer link hover effect */
-.footer-column a {
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-.footer-column a::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    width: 0;
-    height: 1px;
-    background: var(--accent-primary);
-    transition: width 0.3s ease;
-}
-
-.footer-column a:hover::before {
-    width: 100%;
-}
-
-/* Dropdown menu slide animation */
-.dropdown-menu, .user-dropdown {
-    animation: dropdownSlide 0.3s ease;
-}
-
-@keyframes dropdownSlide {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Loading spinner enhanced */
-.loading-spinner {
-    animation: spinnerRotate 1s linear infinite, spinnerPulse 2s ease-in-out infinite;
-}
-
-@keyframes spinnerRotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-@keyframes spinnerPulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-/* Parallax section text glow */
-.parallax-title {
-    animation: parallaxGlow 4s ease-in-out infinite;
-}
-
-@keyframes parallaxGlow {
-    0%, 100% {
-        text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-    }
-    50% {
-        text-shadow: 0 0 50px rgba(255, 255, 255, 0.5), 0 0 80px rgba(91, 140, 255, 0.3);
-    }
-}
-
-/* Cart item slide in */
-.cart-item {
-    animation: cartItemSlide 0.3s ease;
-}
-
-@keyframes cartItemSlide {
-    from {
-        opacity: 0;
-        transform: translateX(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Notification badge bounce */
-.cart-count, .chatbot-notification, .download-count {
-    animation: notificationBounce 2s ease-in-out infinite;
-}
-
-@keyframes notificationBounce {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-/* Input field focus animation */
-input:focus, select:focus, textarea:focus {
-    animation: inputFocus 0.3s ease;
-}
-
-@keyframes inputFocus {
-    from {
-        box-shadow: 0 0 0 rgba(91, 140, 255, 0);
-    }
-    to {
-        box-shadow: 0 0 20px rgba(91, 140, 255, 0.15);
-    }
-}
-
-
-/* ============================================
-   NEON FLICKER SIGN EFFECT - OBVIOUS VERSION
-   ============================================ */
-
-/* Logo text neon flicker - very obvious */
-.logo-text {
-    animation: neonFlickerHard 2.5s ease-in-out infinite;
-}
-
-@keyframes neonFlickerHard {
-    0%, 18%, 22%, 25%, 27%, 50%, 52%, 55%, 100% {
-        text-shadow: 
-            0 0 10px rgba(91, 140, 255, 0.8),
-            0 0 20px rgba(91, 140, 255, 0.6),
-            0 0 40px rgba(124, 92, 255, 0.5),
-            0 0 60px rgba(91, 140, 255, 0.3),
-            0 0 80px rgba(193, 92, 255, 0.2);
-        opacity: 1;
-    }
-    19%, 21% {
-        text-shadow: 
-            0 0 5px rgba(91, 140, 255, 0.3);
-        opacity: 0.4;
-    }
-    23%, 26% {
-        text-shadow: none;
-        opacity: 0.2;
-    }
-    51%, 54% {
-        text-shadow: 
-            0 0 5px rgba(91, 140, 255, 0.2);
-        opacity: 0.3;
-    }
-}
-
-/* Hero title flicker effect - more obvious */
-.hero-title {
-    animation: heroFlickerHard 3s ease-in-out infinite;
-}
-
-@keyframes heroFlickerHard {
-    0%, 15%, 17%, 20%, 22%, 45%, 47%, 50%, 100% {
-        text-shadow: 
-            0 0 20px rgba(91, 140, 255, 0.4),
-            0 0 40px rgba(91, 140, 255, 0.2);
-        opacity: 1;
-    }
-    16%, 21% {
-        text-shadow: 0 0 5px rgba(91, 140, 255, 0.1);
-        opacity: 0.5;
-    }
-    46%, 49% {
-        text-shadow: none;
-        opacity: 0.3;
-    }
-}
-
-/* Gradient text intense flicker - VERY obvious */
-.gradient-text {
-    animation: gradientFlickerHard 2s ease-in-out infinite;
-}
-
-@keyframes gradientFlickerHard {
-    0%, 14%, 18%, 22%, 40%, 44%, 48%, 100% {
-        filter: drop-shadow(0 0 20px rgba(91, 140, 255, 0.7)) drop-shadow(0 0 40px rgba(193, 92, 255, 0.5)) brightness(1.1);
-        opacity: 1;
-    }
-    15%, 17% {
-        filter: drop-shadow(0 0 5px rgba(91, 140, 255, 0.2)) brightness(0.6);
-        opacity: 0.4;
-    }
-    19%, 21% {
-        filter: none;
-        opacity: 0.2;
-    }
-    41%, 43% {
-        filter: drop-shadow(0 0 3px rgba(91, 140, 255, 0.1)) brightness(0.5);
-        opacity: 0.3;
-    }
-    45%, 47% {
-        filter: none;
-        opacity: 0.15;
-    }
-}
-
-/* Section title flicker - noticeable */
-.section-title {
-    animation: sectionFlickerHard 4s ease-in-out infinite;
-}
-
-@keyframes sectionFlickerHard {
-    0%, 12%, 16%, 35%, 39%, 100% {
-        text-shadow: 
-            0 0 15px rgba(91, 140, 255, 0.4),
-            0 0 30px rgba(91, 140, 255, 0.2);
-        opacity: 1;
-    }
-    13%, 15% {
-        text-shadow: 0 0 5px rgba(91, 140, 255, 0.1);
-        opacity: 0.6;
-    }
-    36%, 38% {
-        text-shadow: none;
-        opacity: 0.4;
-    }
-}
-
-/* ============================================
-   JUMP UP / POP IN ANIMATIONS
-   ============================================ */
-
-/* Hero content jump up on load */
-.hero-content {
-    animation: jumpUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-@keyframes jumpUp {
-    0% {
-        opacity: 0;
-        transform: translateY(60px) scale(0.95);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Hero badge bounce in */
-.hero-badge {
-    animation: badgeBounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both, badgeFloat 4s ease-in-out 1s infinite;
-}
-
-@keyframes badgeBounceIn {
-    0% {
-        opacity: 0;
-        transform: translateY(-30px) scale(0.5);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Hero title slide up */
-.hero-title {
-    animation: titleSlideUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both, heroFlicker 5s ease-in-out 1s infinite;
-}
-
-@keyframes titleSlideUp {
-    0% {
-        opacity: 0;
-        transform: translateY(40px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Hero subtitle fade up */
-.hero-subtitle {
-    animation: subtitleFadeUp 0.6s ease-out 0.5s both;
-}
-
-@keyframes subtitleFadeUp {
-    0% {
-        opacity: 0;
-        transform: translateY(25px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Hero CTA buttons pop in */
-.hero-cta {
-    animation: ctaPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s both;
-}
-
-@keyframes ctaPopIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.8) translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-/* Hero stats count up animation */
-.hero-stats {
-    animation: statsSlideUp 0.6s ease-out 0.9s both;
-}
-
-@keyframes statsSlideUp {
-    0% {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Individual stat pop */
-.hero-stat {
-    animation: statPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-.hero-stat:nth-child(1) { animation-delay: 1s; }
-.hero-stat:nth-child(2) { animation-delay: 1.1s; }
-.hero-stat:nth-child(3) { animation-delay: 1.2s; }
-.hero-stat:nth-child(4) { animation-delay: 1.3s; }
-
-@keyframes statPop {
-    0% {
-        opacity: 0;
-        transform: scale(0.5);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Mod cards stagger pop in when scrolled into view */
-.mod-card, .game-card {
-    animation: cardPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-@keyframes cardPopIn {
-    0% {
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Trust bar items slide in */
-.trust-item {
-    animation: trustSlideIn 0.5s ease-out both;
-}
-
-.trust-item:nth-child(1) { animation-delay: 0.1s; }
-.trust-item:nth-child(2) { animation-delay: 0.2s; }
-.trust-item:nth-child(3) { animation-delay: 0.3s; }
-.trust-item:nth-child(4) { animation-delay: 0.4s; }
-.trust-item:nth-child(5) { animation-delay: 0.5s; }
-
-@keyframes trustSlideIn {
-    0% {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Navbar slide down */
-.navbar {
-    animation: navSlideDown 0.5s ease-out;
-}
-
-@keyframes navSlideDown {
-    0% {
-        opacity: 0;
-        transform: translateY(-100%);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Game filter cards pop */
-.game-card-filter {
-    animation: filterCardPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-.game-card-filter:nth-child(1) { animation-delay: 0.05s; }
-.game-card-filter:nth-child(2) { animation-delay: 0.1s; }
-.game-card-filter:nth-child(3) { animation-delay: 0.15s; }
-.game-card-filter:nth-child(4) { animation-delay: 0.2s; }
-.game-card-filter:nth-child(5) { animation-delay: 0.25s; }
-.game-card-filter:nth-child(6) { animation-delay: 0.3s; }
-.game-card-filter:nth-child(7) { animation-delay: 0.35s; }
-.game-card-filter:nth-child(8) { animation-delay: 0.4s; }
-
-@keyframes filterCardPop {
-    0% {
-        opacity: 0;
-        transform: scale(0.8) translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-/* Floating buttons bounce in */
-.cart-toggle, .chatbot-toggle, .download-manager-toggle {
-    animation: fabBounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s both;
-}
-
-@keyframes fabBounceIn {
-    0% {
-        opacity: 0;
-        transform: scale(0) rotate(-180deg);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) rotate(0);
-    }
-}
-
-/* Downloads page specific fixes */
+/* Downloads page */
 .downloads-container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.download-item {
-    animation: downloadItemSlide 0.4s ease-out both;
-}
-
-.download-item:nth-child(1) { animation-delay: 0.1s; }
-.download-item:nth-child(2) { animation-delay: 0.15s; }
-.download-item:nth-child(3) { animation-delay: 0.2s; }
-.download-item:nth-child(4) { animation-delay: 0.25s; }
-.download-item:nth-child(5) { animation-delay: 0.3s; }
-
-@keyframes downloadItemSlide {
-    0% {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Fix downloads empty state centering */
 .downloads-empty {
     display: flex;
     flex-direction: column;
@@ -9469,16 +8834,13 @@ input:focus, select:focus, textarea:focus {
     min-height: 300px;
 }
 
-/* Progress bar animation */
-.progress-bar-fill {
-    animation: progressPulse 1.5s ease-in-out infinite;
+/* Floating buttons - hover only */
+.cart-toggle, .chatbot-toggle, .download-manager-toggle {
+    box-shadow: 0 4px 20px rgba(91, 140, 255, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-@keyframes progressPulse {
-    0%, 100% {
-        box-shadow: 0 0 5px rgba(91, 140, 255, 0.3);
-    }
-    50% {
-        box-shadow: 0 0 15px rgba(91, 140, 255, 0.6);
-    }
+.cart-toggle:hover, .chatbot-toggle:hover, .download-manager-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 25px rgba(91, 140, 255, 0.5);
 }
