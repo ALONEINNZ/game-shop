@@ -1220,20 +1220,17 @@ function showModDetails(modId) {
 }
 
 // ============================================
-// DOWNLOAD MANAGER
+// DOWNLOAD MANAGER - Redirects to Downloads Page
 // ============================================
 let activeDownloads = [];
-let downloadManagerOpen = false;
 
 function toggleDownloadManager() {
-    const panel = document.getElementById('downloadManagerPanel');
-    if (panel) {
-        downloadManagerOpen = !downloadManagerOpen;
-        panel.classList.toggle('show', downloadManagerOpen);
-        if (downloadManagerOpen) {
-            renderDownloadManager();
-        }
-    }
+    // Redirect to downloads page
+    window.location.href = 'downloads.html';
+}
+
+function goToDownloads() {
+    window.location.href = 'downloads.html';
 }
 
 function renderDownloadManager() {
