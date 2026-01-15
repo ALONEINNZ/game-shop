@@ -1886,36 +1886,19 @@ function showPaymentModal(total) {
                 </div>
                 
                 <div class="payment-form">
-                    <div class="demo-payment-notice">
-                        <i class="fas fa-info-circle"></i>
-                        <p>Demo Mode - Enter any card details to test</p>
-                    </div>
                     <div class="form-group">
-                        <label>Card Number</label>
-                        <input type="text" id="demoCardNumber" class="form-input" placeholder="4242 4242 4242 4242" maxlength="19">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group half">
-                            <label>Expiry</label>
-                            <input type="text" id="demoExpiry" class="form-input" placeholder="MM/YY" maxlength="5">
-                        </div>
-                        <div class="form-group half">
-                            <label>CVC</label>
-                            <input type="text" id="demoCvc" class="form-input" placeholder="123" maxlength="4">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Cardholder Name</label>
-                        <input type="text" id="demoName" class="form-input" placeholder="John Doe">
+                        <label>Card Details</label>
+                        <div id="card-element" class="stripe-card-element"></div>
+                        <div id="card-errors" class="card-errors"></div>
                     </div>
                     
-                    <button id="payButton" class="btn btn-primary btn-full btn-large" onclick="processDemoPayment()">
-                        <i class="fas fa-lock"></i> Pay $${total.toFixed(2)}
+                    <button id="payButton" class="btn btn-primary btn-full btn-large">
+                        <i class="fas fa-lock"></i> Pay $\${total.toFixed(2)}
                     </button>
                     
                     <div class="payment-security">
                         <i class="fas fa-shield-alt"></i>
-                        <span>Secured checkout</span>
+                        <span>Secured by Stripe</span>
                     </div>
                 </div>
                 
@@ -1930,56 +1913,106 @@ function showPaymentModal(total) {
     
     modal.style.display = 'flex';
     setTimeout(() => modal.classList.add('show'), 10);
-    setupPaymentInputs();
+    initStripeElements(total);
 }
 
-function setupPaymentInputs() {
-    const cardInput = document.getElementById('demoCardNumber');
-    if (cardInput) {
-        cardInput.addEventListener('input', (e) => {
-            let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
-            value = value.match(/.{1,4}/g)?.join(' ') || value;
-            e.target.value = value;
-        });
-    }
-    const expiryInput = document.getElementById('demoExpiry');
-    if (expiryInput) {
-        expiryInput.addEventListener('input', (e) => {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length >= 2) value = value.slice(0, 2) + '/' + value.slice(2);
-            e.target.value = value;
-        });
-    }
+// Stripe Elements
+let stripe, cardElement;
+const STRIPE_KEY = 'pk_live_51SpyRKE0BrIXglmdvz7Q6kqqUbQ7A7a0gDQeDW8EVGkzNesRYcDlLDbhoktY9kRegftb34W63uWbzbgRDqoseelm00ACTQCY1K';
+
+function initStripeElements(total) {
+    stripe = Stripe(STRIPE_KEY);
+    const elements = stripe.elements();
+    
+    const style = {
+        base: {
+            color: '#E6EAF2',
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '16px',
+            '::placeholder': { color: '#6B7280' }
+        },
+        invalid: { color: '#EF4444' }
+    };
+    
+    cardElement = elements.create('card', { style });
+    cardElement.mount('#card-element');
+    
+    cardElement.on('change', (event) => {
+        document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
+    });
+    
+    // Add click handler to pay button
+    document.getElementById('payButton').onclick = () => processStripePayment(total);
 }
 
-function processDemoPayment() {
+async function processStripePayment(total) {
     const payButton = document.getElementById('payButton');
-    const cardNumber = document.getElementById('demoCardNumber')?.value || '';
-    const expiry = document.getElementById('demoExpiry')?.value || '';
-    const cvc = document.getElementById('demoCvc')?.value || '';
-    const name = document.getElementById('demoName')?.value || '';
-    
-    if (cardNumber.replace(/\s/g, '').length < 13) { showMessage('Enter valid card number', 'error'); return; }
-    if (expiry.length < 5) { showMessage('Enter valid expiry', 'error'); return; }
-    if (cvc.length < 3) { showMessage('Enter valid CVC', 'error'); return; }
-    if (name.length < 2) { showMessage('Enter cardholder name', 'error'); return; }
-    
     payButton.disabled = true;
     payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
     
-    setTimeout(() => {
-        cart.forEach(item => {
-            if (!library.find(id => id === item._id)) library.push(item._id);
-            downloadMod(item._id);
+    try {
+        const token = localStorage.getItem('token');
+        const modIds = cart.map(item => item._id);
+        
+        // Create payment intent
+        const response = await fetch('/api/orders/create-payment-intent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ gameIds: modIds })
         });
-        saveUserData();
-        cart = [];
-        updateCartDisplay();
-        saveData();
-        closePaymentModal();
-        toggleCart();
-        showCheckoutSuccess();
-    }, 2000);
+        
+        if (!response.ok) throw new Error('Payment setup failed');
+        
+        const { clientSecret } = await response.json();
+        
+        // Confirm with Stripe
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: cardElement,
+                billing_details: { email: currentUser?.email || '' }
+            }
+        });
+        
+        if (error) {
+            document.getElementById('card-errors').textContent = error.message;
+            payButton.disabled = false;
+            payButton.innerHTML = `<i class="fas fa-lock"></i> Pay $${total.toFixed(2)}`;
+            return;
+        }
+        
+        if (paymentIntent.status === 'succeeded') {
+            // Confirm on backend
+            await fetch('/api/orders/confirm-purchase', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ paymentIntentId: paymentIntent.id, gameIds: modIds })
+            });
+            
+            // Success
+            cart.forEach(item => {
+                if (!library.find(id => id === item._id)) library.push(item._id);
+                downloadMod(item._id);
+            });
+            saveUserData();
+            cart = [];
+            updateCartDisplay();
+            saveData();
+            closePaymentModal();
+            toggleCart();
+            showCheckoutSuccess();
+        }
+    } catch (error) {
+        console.error('Payment error:', error);
+        document.getElementById('card-errors').textContent = 'Payment failed. Please try again.';
+        payButton.disabled = false;
+        payButton.innerHTML = `<i class="fas fa-lock"></i> Pay $${total.toFixed(2)}`;
+    }
 }
 
 function showCheckoutSuccess() {

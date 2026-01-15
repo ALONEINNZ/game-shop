@@ -9073,3 +9073,25 @@ p, .mod-card-desc, .game-description, .section-subtitle {
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
 }
+
+
+/* Stripe Card Element */
+.stripe-card-element {
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+}
+
+.stripe-card-element:focus-within {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.1);
+}
+
+.card-errors {
+    color: var(--danger);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    min-height: 1.2em;
+}
