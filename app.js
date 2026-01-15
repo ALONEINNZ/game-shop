@@ -1858,6 +1858,85 @@ function sortMods() {
     displayModCards(sorted, 'allGames');
 }
 
+// Clear all filters and reset to default
+function clearAllFilters() {
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    const gameFilter = document.getElementById('gameFilter');
+    const searchInput = document.getElementById('gameSearch');
+    
+    if (categoryFilter) categoryFilter.value = '';
+    if (sortFilter) sortFilter.value = 'featured';
+    if (gameFilter) gameFilter.value = '';
+    if (searchInput) searchInput.value = '';
+    
+    displayModCards(mods, 'allGames');
+    updateFilterStyles();
+    showMessage('Filters cleared', 'info');
+}
+
+// Update filter visual styles based on active selections
+function updateFilterStyles() {
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    const gameFilter = document.getElementById('gameFilter');
+    const searchInput = document.getElementById('gameSearch');
+    const clearBtn = document.getElementById('clearFiltersBtn');
+    const activeFiltersDiv = document.getElementById('activeFilters');
+    
+    let hasActiveFilters = false;
+    let activeFilterBadges = [];
+    
+    // Check category filter
+    if (categoryFilter && categoryFilter.value) {
+        categoryFilter.classList.add('filter-active');
+        hasActiveFilters = true;
+        activeFilterBadges.push(`<span class="filter-badge" onclick="document.getElementById('categoryFilter').value=''; filterAllMods(); updateFilterStyles();"><i class="fas fa-tag"></i> ${categoryFilter.value} <i class="fas fa-times"></i></span>`);
+    } else if (categoryFilter) {
+        categoryFilter.classList.remove('filter-active');
+    }
+    
+    // Check sort filter (not default)
+    if (sortFilter && sortFilter.value !== 'featured') {
+        sortFilter.classList.add('filter-active');
+        hasActiveFilters = true;
+        const sortLabels = { 'newest': 'Newest', 'popular': 'Most Popular', 'rating': 'Highest Rated', 'price-low': 'Price: Low', 'price-high': 'Price: High' };
+        activeFilterBadges.push(`<span class="filter-badge" onclick="document.getElementById('sortFilter').value='featured'; sortMods(); updateFilterStyles();"><i class="fas fa-sort"></i> ${sortLabels[sortFilter.value] || sortFilter.value} <i class="fas fa-times"></i></span>`);
+    } else if (sortFilter) {
+        sortFilter.classList.remove('filter-active');
+    }
+    
+    // Check game filter
+    if (gameFilter && gameFilter.value) {
+        gameFilter.classList.add('filter-active');
+        hasActiveFilters = true;
+        activeFilterBadges.push(`<span class="filter-badge" onclick="document.getElementById('gameFilter').value=''; filterByGameAdvanced(); updateFilterStyles();"><i class="fas fa-gamepad"></i> ${gameFilter.value} <i class="fas fa-times"></i></span>`);
+    } else if (gameFilter) {
+        gameFilter.classList.remove('filter-active');
+    }
+    
+    // Check search
+    if (searchInput && searchInput.value.trim()) {
+        hasActiveFilters = true;
+        activeFilterBadges.push(`<span class="filter-badge" onclick="document.getElementById('gameSearch').value=''; searchAllMods(); updateFilterStyles();"><i class="fas fa-search"></i> "${searchInput.value}" <i class="fas fa-times"></i></span>`);
+    }
+    
+    // Show/hide clear button
+    if (clearBtn) {
+        clearBtn.style.display = hasActiveFilters ? 'flex' : 'none';
+    }
+    
+    // Show active filter badges
+    if (activeFiltersDiv) {
+        if (activeFilterBadges.length > 0) {
+            activeFiltersDiv.innerHTML = activeFilterBadges.join('');
+            activeFiltersDiv.style.display = 'flex';
+        } else {
+            activeFiltersDiv.style.display = 'none';
+        }
+    }
+}
+
 function loadMoreMods() {
     showMessage('All mods are already loaded!', 'info');
 }

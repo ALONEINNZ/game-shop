@@ -347,7 +347,7 @@
                     <input type="text" id="gameSearch" placeholder="Search mods..." onkeyup="searchAllMods()">
                     <i class="fas fa-search"></i>
                 </div>
-                <select id="categoryFilter" onchange="filterAllMods()">
+                <select id="categoryFilter" onchange="filterAllMods(); updateFilterStyles()">
                     <option value="">All Categories</option>
                     <option value="Graphics">Graphics</option>
                     <option value="Gameplay">Gameplay</option>
@@ -360,7 +360,7 @@
                     <option value="Total Conversion">Total Conversion</option>
                     <option value="Utility">Utility</option>
                 </select>
-                <select id="sortFilter" onchange="sortMods()">
+                <select id="sortFilter" onchange="sortMods(); updateFilterStyles()">
                     <option value="featured">Featured</option>
                     <option value="newest">Newest</option>
                     <option value="popular">Most Popular</option>
@@ -368,7 +368,7 @@
                     <option value="price-low">Price: Low to High</option>
                     <option value="price-high">Price: High to Low</option>
                 </select>
-                <select id="gameFilter" onchange="filterByGameAdvanced()">
+                <select id="gameFilter" onchange="filterByGameAdvanced(); updateFilterStyles()">
                     <option value="">All Games</option>
                     <option value="Minecraft">Minecraft</option>
                     <option value="Cyberpunk 2077">Cyberpunk 2077</option>
@@ -379,6 +379,14 @@
                     <option value="Fallout 4">Fallout 4</option>
                     <option value="Counter-Strike 2">Counter-Strike 2</option>
                 </select>
+                <button id="clearFiltersBtn" class="btn-clear-filters" onclick="clearAllFilters()" style="display: none;">
+                    <i class="fas fa-times"></i> Clear Filters
+                </button>
+            </div>
+            
+            <!-- Active Filters Display -->
+            <div class="active-filters" id="activeFilters" style="display: none;">
+                <!-- Active filter badges will appear here -->
             </div>
             
             <div class="games-showcase" id="allGames">
