@@ -3013,7 +3013,7 @@ console.log('ExusCraft app loaded successfully!');
 
 
 // ============================================
-// INTERACTIVE HEXAGON GRID
+// INTERACTIVE HEXAGON GRID - POINTY-TOP TESSELLATION
 // ============================================
 function initHexGrid() {
     const canvas = document.getElementById('hexGrid');
@@ -3028,24 +3028,35 @@ function initHexGrid() {
     let targetMouseY = -1000;
     let animationId;
     let lastFrame = 0;
-    const fps = 60; // Smoother animation
+    const fps = 60;
     const frameInterval = 1000 / fps;
     
-    // Hexagon settings - connected grid
-    const hexSize = 35;
-    const hexHeight = hexSize * Math.sqrt(3);
-    const influenceRadius = 120;
-    const maxScale = 1.6;
+    // Pointy-top hexagon settings for perfect tessellation
+    const hexSize = 30; // Radius (center to vertex)
+    const influenceRadius = 140;
+    const maxScale = 1.5;
+    
+    // Pointy-top hex math:
+    // Width = sqrt(3) * size
+    // Height = 2 * size
+    // Horizontal spacing = width = sqrt(3) * size
+    // Vertical spacing = height * 0.75 = 1.5 * size
+    const hexWidth = Math.sqrt(3) * hexSize;
+    const hexHeight = 2 * hexSize;
+    const horizSpacing = hexWidth;
+    const vertSpacing = hexHeight * 0.75;
     
     function resizeCanvas() {
         canvas.width = hero.offsetWidth;
         canvas.height = hero.offsetHeight;
     }
     
+    // Draw pointy-top hexagon (starts at top vertex)
     function drawHexagon(x, y, size) {
         ctx.beginPath();
         for (let i = 0; i < 6; i++) {
-            const angle = (Math.PI / 3) * i;
+            // Pointy-top: start at -90 degrees (top)
+            const angle = (Math.PI / 3) * i - Math.PI / 2;
             const hx = x + size * Math.cos(angle);
             const hy = y + size * Math.sin(angle);
             if (i === 0) {
@@ -3059,29 +3070,27 @@ function initHexGrid() {
     }
     
     function draw(timestamp) {
-        // Frame limiting
         if (timestamp - lastFrame < frameInterval) {
             animationId = requestAnimationFrame(draw);
             return;
         }
         lastFrame = timestamp;
         
-        // Faster mouse following
-        mouseX += (targetMouseX - mouseX) * 0.3;
-        mouseY += (targetMouseY - mouseY) * 0.3;
+        // Smooth mouse following
+        mouseX += (targetMouseX - mouseX) * 0.25;
+        mouseY += (targetMouseY - mouseY) * 0.25;
         
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Hexagon grid spacing
-        const horizSpacing = hexSize * 1.5;
-        const vertSpacing = hexHeight;
-        const cols = Math.ceil(canvas.width / horizSpacing) + 2;
-        const rows = Math.ceil(canvas.height / vertSpacing) + 2;
+        const cols = Math.ceil(canvas.width / horizSpacing) + 3;
+        const rows = Math.ceil(canvas.height / vertSpacing) + 3;
         
-        for (let row = 0; row < rows; row++) {
-            for (let col = 0; col < cols; col++) {
-                const x = col * horizSpacing;
-                const y = row * vertSpacing + (col % 2 === 1 ? vertSpacing / 2 : 0);
+        for (let row = -1; row < rows; row++) {
+            for (let col = -1; col < cols; col++) {
+                // Offset odd rows by half the horizontal spacing
+                const xOffset = (row % 2 === 1) ? horizSpacing / 2 : 0;
+                const x = col * horizSpacing + xOffset;
+                const y = row * vertSpacing;
                 
                 const dx = x - mouseX;
                 const dy = y - mouseY;
@@ -3091,14 +3100,15 @@ function initHexGrid() {
                 if (distSq < influenceSq) {
                     const distance = Math.sqrt(distSq);
                     const intensity = 1 - distance / influenceRadius;
-                    const scale = 1 + (maxScale - 1) * intensity * intensity;
+                    const eased = intensity * intensity; // Ease out
+                    const scale = 1 + (maxScale - 1) * eased;
                     
-                    const alpha = 0.04 + intensity * 0.2;
+                    const alpha = 0.03 + eased * 0.18;
                     ctx.strokeStyle = `rgba(91, 140, 255, ${alpha})`;
-                    ctx.lineWidth = 0.5 + intensity;
+                    ctx.lineWidth = 0.5 + eased * 1.2;
                     drawHexagon(x, y, hexSize * scale);
                 } else {
-                    ctx.strokeStyle = 'rgba(91, 140, 255, 0.03)';
+                    ctx.strokeStyle = 'rgba(91, 140, 255, 0.025)';
                     ctx.lineWidth = 0.5;
                     drawHexagon(x, y, hexSize);
                 }
@@ -3119,7 +3129,6 @@ function initHexGrid() {
         targetMouseY = -1000;
     }
     
-    // Throttled touch handler
     let touchThrottle = false;
     function handleTouchMove(e) {
         if (touchThrottle) return;
@@ -3138,10 +3147,8 @@ function initHexGrid() {
         targetMouseY = -1000;
     }
     
-    // Initialize
     resizeCanvas();
     
-    // Debounced resize
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
@@ -3153,10 +3160,8 @@ function initHexGrid() {
     hero.addEventListener('touchmove', handleTouchMove, { passive: true });
     hero.addEventListener('touchend', handleTouchEnd);
     
-    // Start animation
     animationId = requestAnimationFrame(draw);
     
-    // Cleanup
     window.addEventListener('beforeunload', () => {
         cancelAnimationFrame(animationId);
     });
