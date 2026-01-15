@@ -2771,10 +2771,10 @@ function submitMod(event, existingId = null) {
     const version = document.getElementById('modVersion').value.trim() || '1.0.0';
     let price = parseFloat(document.getElementById('modPrice').value) || 0;
     
-    // Price cap at $99.99
-    const PRICE_CAP = 99.99;
+    // Price cap - get from localStorage (set in admin panel)
+    const PRICE_CAP = parseFloat(localStorage.getItem('priceCap')) || 99.99;
     if (price > PRICE_CAP) {
-        showMessage(`Price capped at $${PRICE_CAP}. Your price has been adjusted.`, 'info');
+        showMessage(`Price capped at $${PRICE_CAP.toFixed(2)}. Your price has been adjusted.`, 'info');
         price = PRICE_CAP;
     }
     
