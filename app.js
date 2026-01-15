@@ -24,7 +24,9 @@ const realMods = [
         status: 'finalised',
         tags: ['performance', 'optimization', 'fps', 'rendering'],
         requirements: 'Minecraft 1.20+, Fabric Loader',
-        specs: 'Minimum: 4GB RAM, Recommended: 8GB RAM'
+        specs: 'Minimum: 4GB RAM, Recommended: 8GB RAM',
+        downloadUrl: 'https://cdn.modrinth.com/data/AANobbMI/versions/IZskON6d/sodium-fabric-0.5.8%2Bmc1.20.4.jar',
+        fileName: 'sodium-fabric-0.5.8+mc1.20.4.jar'
     },
     {
         _id: 'iris',
@@ -44,7 +46,9 @@ const realMods = [
         status: 'finalised',
         tags: ['shaders', 'graphics', 'visual', 'optifine'],
         requirements: 'Minecraft 1.20+, Fabric Loader, Sodium (recommended)',
-        specs: 'Minimum: 6GB RAM, GTX 1060 or equivalent'
+        specs: 'Minimum: 6GB RAM, GTX 1060 or equivalent',
+        downloadUrl: 'https://cdn.modrinth.com/data/YL57xq9U/versions/Xpn6plO6/iris-mc1.20.4-1.6.17.jar',
+        fileName: 'iris-mc1.20.4-1.6.17.jar'
     },
     {
         _id: 'create',
@@ -64,7 +68,9 @@ const realMods = [
         status: 'finalised',
         tags: ['automation', 'building', 'tech', 'machinery'],
         requirements: 'Minecraft 1.20+, Forge or Fabric',
-        specs: 'Minimum: 4GB RAM, Recommended: 6GB RAM'
+        specs: 'Minimum: 4GB RAM, Recommended: 6GB RAM',
+        downloadUrl: 'https://cdn.modrinth.com/data/LNytGWDc/versions/nFhjBFkV/create-fabric-0.5.1-f-build.1417%2Bmc1.20.1.jar',
+        fileName: 'create-fabric-0.5.1f+mc1.20.1.jar'
     },
     {
         _id: 'lithium',
@@ -84,7 +90,9 @@ const realMods = [
         status: 'finalised',
         tags: ['performance', 'server', 'optimization'],
         requirements: 'Minecraft 1.20+, Fabric Loader',
-        specs: 'Works on any system, server-side optimization'
+        specs: 'Works on any system, server-side optimization',
+        downloadUrl: 'https://cdn.modrinth.com/data/gvQqBUqZ/versions/m6sVgAi6/lithium-fabric-mc1.20.4-0.12.1.jar',
+        fileName: 'lithium-fabric-mc1.20.4-0.12.1.jar'
     },
     {
         _id: 'jei',
@@ -104,7 +112,9 @@ const realMods = [
         status: 'finalised',
         tags: ['utility', 'recipes', 'items', 'gui'],
         requirements: 'Minecraft 1.20+, Forge',
-        specs: 'Minimum: 2GB RAM'
+        specs: 'Minimum: 2GB RAM',
+        downloadUrl: 'https://cdn.modrinth.com/data/u6dRKJwZ/versions/umyGl7zF/jei-1.20.4-forge-17.3.0.49.jar',
+        fileName: 'jei-1.20.4-forge-17.3.0.49.jar'
     },
     {
         _id: 'cs2plugin',
@@ -124,7 +134,9 @@ const realMods = [
         status: 'in-progress',
         tags: ['competitive', 'cs2', 'matchmaking', '5v5', 'esports'],
         requirements: 'Counter-Strike 2 Dedicated Server, SourceMod',
-        specs: 'Dedicated server with 4GB RAM minimum'
+        specs: 'Dedicated server with 4GB RAM minimum',
+        downloadUrl: null,
+        fileName: 'cs2-competitive-plugin-v2.1.0.zip'
     },
     {
         _id: 'skyui',
@@ -144,7 +156,9 @@ const realMods = [
         status: 'finalised',
         tags: ['ui', 'interface', 'inventory', 'essential'],
         requirements: 'Skyrim Special Edition, SKSE64',
-        specs: 'Any system capable of running Skyrim'
+        specs: 'Any system capable of running Skyrim',
+        downloadUrl: 'https://github.com/schlangster/skyui/releases/download/v5.2SE/SkyUI_5_2_SE.7z',
+        fileName: 'SkyUI_5_2_SE.7z'
     },
     {
         _id: 'enb',
@@ -164,7 +178,9 @@ const realMods = [
         status: 'finalised',
         tags: ['graphics', 'lighting', 'shaders', 'visual'],
         requirements: 'Skyrim Special Edition, DirectX 11',
-        specs: 'GTX 1060 or better, 8GB RAM minimum'
+        specs: 'GTX 1060 or better, 8GB RAM minimum',
+        downloadUrl: null,
+        fileName: 'enb-series-0.487.zip'
     },
     {
         _id: 'fabric',
@@ -184,7 +200,9 @@ const realMods = [
         status: 'finalised',
         tags: ['api', 'library', 'fabric', 'essential'],
         requirements: 'Minecraft 1.20+, Fabric Loader',
-        specs: 'Minimum: 2GB RAM'
+        specs: 'Minimum: 2GB RAM',
+        downloadUrl: 'https://cdn.modrinth.com/data/P7dR8mSH/versions/gQS3JbZO/fabric-api-0.92.2%2B1.20.4.jar',
+        fileName: 'fabric-api-0.92.2+1.20.4.jar'
     }
 ];
 
@@ -1498,6 +1516,46 @@ function triggerFileDownload(modId) {
     const mod = mods.find(m => m._id === modId);
     if (!mod) return;
     
+    // If mod has a real download URL, use it
+    if (mod.downloadUrl) {
+        const a = document.createElement('a');
+        a.href = mod.downloadUrl;
+        a.download = mod.fileName || `${mod.title.replace(/[^a-z0-9]/gi, '_')}.jar`;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showMessage(`Downloading ${mod.fileName || mod.title}...`, 'success');
+        return;
+    }
+    
+    // If mod has uploaded file data (base64), download it
+    if (mod.fileData && mod.fileName) {
+        try {
+            const byteCharacters = atob(mod.fileData);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = mod.fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            showMessage(`Downloaded ${mod.fileName}`, 'success');
+            return;
+        } catch (e) {
+            console.error('Error downloading file:', e);
+        }
+    }
+    
+    // Fallback: Create info file if no actual file available
     const content = `===========================================
 ${mod.title} - v${mod.version}
 ===========================================
@@ -1520,13 +1578,17 @@ ${mod.specs}
 Tags: ${mod.tags ? mod.tags.join(', ') : 'N/A'}
 
 Installation Instructions:
-1. Extract the downloaded files
-2. Copy to your game's mod directory
-3. Enable the mod in your game settings
-4. Restart the game and enjoy!
+1. Download the actual mod file from the official source
+2. Extract the downloaded files
+3. Copy to your game's mod directory
+4. Enable the mod in your game settings
+5. Restart the game and enjoy!
+
+NOTE: This is an info file. The actual mod file was not available.
+Please visit the mod's official page to download.
 
 ===========================================
-Thank you for downloading from ExusCraft!
+Thank you for using ExusCraft!
 Proudly made in New Zealand 🇳🇿
 ===========================================`;
     
@@ -1534,7 +1596,7 @@ Proudly made in New Zealand 🇳🇿
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${mod.title.replace(/[^a-z0-9]/gi, '_')}_v${mod.version}_ExusCraft.txt`;
+    a.download = `${mod.title.replace(/[^a-z0-9]/gi, '_')}_INFO.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -2516,12 +2578,12 @@ function showUploadModal(existingMod = null) {
                     <div class="upload-preview" id="uploadPreview">
                         ${existingMod?.images?.[0] ? `<img src="${existingMod.images[0]}" alt="Preview">` : `
                             <i class="fas fa-cloud-upload-alt"></i>
-                            <span>Click to upload image</span>
+                            <span>Click to upload thumbnail</span>
                         `}
                     </div>
                     <input type="file" id="modImage" accept="image/*" onchange="previewImage(this)" style="display: none;">
                     <button type="button" onclick="document.getElementById('modImage').click()" class="btn btn-outline btn-sm">
-                        <i class="fas fa-image"></i> ${existingMod ? 'Change Image' : 'Add Image'}
+                        <i class="fas fa-image"></i> ${existingMod ? 'Change Thumbnail' : 'Add Thumbnail'}
                     </button>
                 </div>
                 
@@ -2579,6 +2641,20 @@ function showUploadModal(existingMod = null) {
                     </div>
                 </div>
                 
+                <!-- MOD FILE UPLOAD -->
+                <div class="form-group">
+                    <label><i class="fas fa-file-archive"></i> Mod File *</label>
+                    <div class="file-upload-zone" id="fileUploadZone" onclick="document.getElementById('modFile').click()">
+                        <input type="file" id="modFile" accept=".jar,.zip,.rar,.7z,.dll,.pak,.esp,.esm,.ba2" onchange="handleModFileSelect(this)" style="display: none;">
+                        <div class="file-upload-content" id="fileUploadContent">
+                            <i class="fas fa-file-upload"></i>
+                            <span>Click to upload mod file</span>
+                            <small>.jar, .zip, .rar, .7z, .dll, .pak, .esp, .esm, .ba2</small>
+                        </div>
+                    </div>
+                    <div id="selectedFileInfo" class="selected-file-info" style="display: none;"></div>
+                </div>
+                
                 <div class="form-group">
                     <label for="modTags">Tags (comma separated)</label>
                     <input type="text" id="modTags" value="${existingMod?.tags?.join(', ') || ''}" placeholder="e.g. graphics, performance, essential">
@@ -2602,6 +2678,8 @@ function showUploadModal(existingMod = null) {
 }
 
 let uploadedImageData = null;
+let uploadedModFile = null;
+let uploadedModFileName = null;
 
 function previewImage(input) {
     const preview = document.getElementById('uploadPreview');
@@ -2613,6 +2691,74 @@ function previewImage(input) {
         };
         reader.readAsDataURL(input.files[0]);
     }
+}
+
+function handleModFileSelect(input) {
+    const fileInfo = document.getElementById('selectedFileInfo');
+    const uploadContent = document.getElementById('fileUploadContent');
+    const uploadZone = document.getElementById('fileUploadZone');
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const maxSize = 100 * 1024 * 1024; // 100MB limit
+        
+        if (file.size > maxSize) {
+            showMessage('File too large! Maximum size is 100MB', 'error');
+            input.value = '';
+            return;
+        }
+        
+        uploadedModFileName = file.name;
+        
+        // Read file as base64 for storage
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Store just the base64 data (remove the data URL prefix)
+            const base64 = e.target.result.split(',')[1];
+            uploadedModFile = base64;
+        };
+        reader.readAsDataURL(file);
+        
+        // Update UI
+        const fileSize = formatFileSize(file.size);
+        uploadZone.classList.add('has-file');
+        uploadContent.innerHTML = `
+            <i class="fas fa-check-circle" style="color: #22C55E;"></i>
+            <span style="color: #22C55E;">File selected!</span>
+        `;
+        fileInfo.innerHTML = `
+            <div class="file-info-card">
+                <i class="fas fa-file-archive"></i>
+                <div class="file-details">
+                    <span class="file-name">${file.name}</span>
+                    <span class="file-size">${fileSize}</span>
+                </div>
+                <button type="button" onclick="removeModFile()" class="remove-file-btn"><i class="fas fa-times"></i></button>
+            </div>
+        `;
+        fileInfo.style.display = 'block';
+    }
+}
+
+function removeModFile() {
+    uploadedModFile = null;
+    uploadedModFileName = null;
+    document.getElementById('modFile').value = '';
+    document.getElementById('selectedFileInfo').style.display = 'none';
+    document.getElementById('fileUploadZone').classList.remove('has-file');
+    document.getElementById('fileUploadContent').innerHTML = `
+        <i class="fas fa-file-upload"></i>
+        <span>Click to upload mod file</span>
+        <small>.jar, .zip, .rar, .7z, .dll, .pak, .esp, .esm, .ba2</small>
+    `;
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 function submitMod(event, existingId = null) {
@@ -2661,8 +2807,16 @@ function submitMod(event, existingId = null) {
         status: 'starting-out',
         featured: false,
         createdAt: existingId ? (userMods.find(m => m._id === existingId)?.createdAt || new Date().toISOString()) : new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        fileData: uploadedModFile || (existingId ? userMods.find(m => m._id === existingId)?.fileData : null),
+        fileName: uploadedModFileName || (existingId ? userMods.find(m => m._id === existingId)?.fileName : null)
     };
+    
+    // Check if mod file is uploaded (required for new mods)
+    if (!existingId && !modData.fileData) {
+        showMessage('Please upload a mod file', 'error');
+        return;
+    }
     
     if (existingId) {
         const index = userMods.findIndex(m => m._id === existingId);
@@ -2679,6 +2833,8 @@ function submitMod(event, existingId = null) {
     
     saveUserData();
     uploadedImageData = null;
+    uploadedModFile = null;
+    uploadedModFileName = null;
     showMyMods();
     
     // Refresh the main page mods display
