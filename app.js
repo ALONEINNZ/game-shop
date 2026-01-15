@@ -1825,21 +1825,194 @@ function checkout() {
         return;
     }
     
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-    const confirmCheckout = confirm(`Complete purchase for $${total.toFixed(2)}?\n\nThis is a demo - no real payment will be processed.`);
+    const total = cart.reduce((sum, item) => sum + (item.price || 0), 0);
     
-    if (confirmCheckout) {
-        showMessage('Processing your order...', 'info');
+    if (total === 0) {
+        // Free items - just add to library
+        showMessage('Processing your free items...', 'info');
         setTimeout(() => {
-            cart.forEach(item => downloadMod(item._id));
+            cart.forEach(item => {
+                if (!library.find(id => id === item._id)) {
+                    library.push(item._id);
+                }
+                downloadMod(item._id);
+            });
+            saveUserData();
             cart = [];
             updateCartDisplay();
             saveData();
             toggleCart();
-            showMessage('🎉 Purchase complete! Your mods are downloading.', 'success');
-        }, 1500);
+            showMessage('🎉 Items added to your library!', 'success');
+        }, 1000);
+        return;
+    }
+    
+    // Show payment modal for paid items
+    showPaymentModal(total);
+}
+
+function showPaymentModal(total) {
+    let modal = document.getElementById('paymentModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'paymentModal';
+        modal.className = 'modal';
+        document.body.appendChild(modal);
+    }
+    
+    modal.innerHTML = `
+        <div class="modal-content payment-modal">
+            <span class="close" onclick="closePaymentModal()">&times;</span>
+            <div class="payment-container">
+                <div class="payment-header">
+                    <h2><i class="fas fa-credit-card"></i> Secure Checkout</h2>
+                    <p>Complete your purchase</p>
+                </div>
+                
+                <div class="payment-summary">
+                    <h3>Order Summary</h3>
+                    <div class="payment-items">
+                        ${cart.filter(item => item.price > 0).map(item => `
+                            <div class="payment-item">
+                                <span class="item-name">${item.title}</span>
+                                <span class="item-price">$${(item.price || 0).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="payment-total">
+                        <span>Total</span>
+                        <span class="total-amount">$${total.toFixed(2)}</span>
+                    </div>
+                </div>
+                
+                <div class="payment-form">
+                    <div class="demo-payment-notice">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Demo Mode - Enter any card details to test</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" id="demoCardNumber" class="form-input" placeholder="4242 4242 4242 4242" maxlength="19">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>Expiry</label>
+                            <input type="text" id="demoExpiry" class="form-input" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group half">
+                            <label>CVC</label>
+                            <input type="text" id="demoCvc" class="form-input" placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Cardholder Name</label>
+                        <input type="text" id="demoName" class="form-input" placeholder="John Doe">
+                    </div>
+                    
+                    <button id="payButton" class="btn btn-primary btn-full btn-large" onclick="processDemoPayment()">
+                        <i class="fas fa-lock"></i> Pay $${total.toFixed(2)}
+                    </button>
+                    
+                    <div class="payment-security">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secured checkout</span>
+                    </div>
+                </div>
+                
+                <div class="payment-methods">
+                    <i class="fab fa-cc-visa"></i>
+                    <i class="fab fa-cc-mastercard"></i>
+                    <i class="fab fa-cc-amex"></i>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+    setupPaymentInputs();
+}
+
+function setupPaymentInputs() {
+    const cardInput = document.getElementById('demoCardNumber');
+    if (cardInput) {
+        cardInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+            value = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = value;
+        });
+    }
+    const expiryInput = document.getElementById('demoExpiry');
+    if (expiryInput) {
+        expiryInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) value = value.slice(0, 2) + '/' + value.slice(2);
+            e.target.value = value;
+        });
     }
 }
+
+function processDemoPayment() {
+    const payButton = document.getElementById('payButton');
+    const cardNumber = document.getElementById('demoCardNumber')?.value || '';
+    const expiry = document.getElementById('demoExpiry')?.value || '';
+    const cvc = document.getElementById('demoCvc')?.value || '';
+    const name = document.getElementById('demoName')?.value || '';
+    
+    if (cardNumber.replace(/\s/g, '').length < 13) { showMessage('Enter valid card number', 'error'); return; }
+    if (expiry.length < 5) { showMessage('Enter valid expiry', 'error'); return; }
+    if (cvc.length < 3) { showMessage('Enter valid CVC', 'error'); return; }
+    if (name.length < 2) { showMessage('Enter cardholder name', 'error'); return; }
+    
+    payButton.disabled = true;
+    payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    
+    setTimeout(() => {
+        cart.forEach(item => {
+            if (!library.find(id => id === item._id)) library.push(item._id);
+            downloadMod(item._id);
+        });
+        saveUserData();
+        cart = [];
+        updateCartDisplay();
+        saveData();
+        closePaymentModal();
+        toggleCart();
+        showCheckoutSuccess();
+    }, 2000);
+}
+
+function showCheckoutSuccess() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'successModal';
+    modal.innerHTML = `
+        <div class="modal-content success-modal">
+            <div class="success-animation"><i class="fas fa-check-circle"></i></div>
+            <h2>Payment Successful!</h2>
+            <p>Your mods are downloading and added to your library.</p>
+            <button class="btn btn-primary btn-large" onclick="closeSuccessModal()">Continue Browsing</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+    showMessage('🎉 Purchase complete!', 'success');
+}
+
+function closePaymentModal() {
+    const modal = document.getElementById('paymentModal');
+    if (modal) { modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300); }
+}
+
+function closeSuccessModal() {
+    const modal = document.getElementById('successModal');
+    if (modal) { modal.classList.remove('show'); setTimeout(() => { modal.style.display = 'none'; modal.remove(); }, 300); }
+}
+
+// PLACEHOLDER - original checkout end
+function _checkoutEnd() {
+    // This function is just a marker
 
 // Search and Filter Functions (NO SIDEBAR)
 function searchAllMods() {
