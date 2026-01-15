@@ -8393,3 +8393,28 @@ p, .mod-card-desc, .game-description, .section-subtitle {
         padding: 0.4rem 0.8rem;
     }
 }
+
+
+/* ============================================
+   INTERACTIVE HEXAGON GRID
+   ============================================ */
+.hex-grid-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.6;
+}
+
+.hero {
+    cursor: crosshair;
+}
+
+@media (max-width: 768px) {
+    .hex-grid-canvas {
+        opacity: 0.3;
+    }
+}

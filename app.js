@@ -217,6 +217,9 @@ document.addEventListener('DOMContentLoaded', function() {
     updateUserNavigation();
     updateCartDisplay();
     
+    // Initialize interactive hexagon grid
+    initHexGrid();
+    
     console.log('ExusCraft loaded successfully!');
 });
 
@@ -2840,3 +2843,154 @@ window.previewImage = previewImage;
 window.addToDownloads = addToDownloads;
 
 console.log('ExusCraft app loaded successfully!');
+
+
+// ============================================
+// INTERACTIVE HEXAGON GRID
+// ============================================
+function initHexGrid() {
+    const canvas = document.getElementById('hexGrid');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    const hero = document.getElementById('hero');
+    
+    let mouseX = -1000;
+    let mouseY = -1000;
+    let animationId;
+    
+    // Hexagon settings
+    const hexSize = 40;
+    const hexHeight = hexSize * Math.sqrt(3);
+    const hexWidth = hexSize * 2;
+    const influenceRadius = 150;
+    const maxScale = 2.5;
+    
+    // Colors
+    const baseColor = 'rgba(91, 140, 255, 0.08)';
+    const hoverColor = 'rgba(91, 140, 255, 0.4)';
+    const glowColor = 'rgba(124, 92, 255, 0.6)';
+    
+    function resizeCanvas() {
+        canvas.width = hero.offsetWidth;
+        canvas.height = hero.offsetHeight;
+    }
+    
+    function drawHexagon(x, y, size, fillColor, strokeColor, strokeWidth) {
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i - Math.PI / 6;
+            const hx = x + size * Math.cos(angle);
+            const hy = y + size * Math.sin(angle);
+            if (i === 0) {
+                ctx.moveTo(hx, hy);
+            } else {
+                ctx.lineTo(hx, hy);
+            }
+        }
+        ctx.closePath();
+        
+        if (fillColor) {
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+        }
+        
+        if (strokeColor) {
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = strokeWidth || 1;
+            ctx.stroke();
+        }
+    }
+    
+    function getDistance(x1, y1, x2, y2) {
+        return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+    }
+    
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const cols = Math.ceil(canvas.width / (hexWidth * 0.75)) + 2;
+        const rows = Math.ceil(canvas.height / hexHeight) + 2;
+        
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                const x = col * hexWidth * 0.75;
+                const y = row * hexHeight + (col % 2 === 1 ? hexHeight / 2 : 0);
+                
+                const distance = getDistance(x, y, mouseX, mouseY);
+                
+                if (distance < influenceRadius) {
+                    // Calculate scale based on distance
+                    const scale = 1 + (maxScale - 1) * (1 - distance / influenceRadius);
+                    const scaledSize = hexSize * scale * 0.4;
+                    
+                    // Calculate color intensity
+                    const intensity = 1 - distance / influenceRadius;
+                    const r = Math.round(91 + (124 - 91) * intensity);
+                    const g = Math.round(140 + (92 - 140) * intensity);
+                    const b = 255;
+                    const alpha = 0.1 + intensity * 0.5;
+                    
+                    const dynamicColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                    const strokeAlpha = 0.2 + intensity * 0.6;
+                    const dynamicStroke = `rgba(${r}, ${g}, ${b}, ${strokeAlpha})`;
+                    
+                    // Draw glow effect for close hexagons
+                    if (intensity > 0.5) {
+                        ctx.shadowColor = glowColor;
+                        ctx.shadowBlur = 15 * intensity;
+                    }
+                    
+                    drawHexagon(x, y, scaledSize, dynamicColor, dynamicStroke, 1 + intensity);
+                    
+                    ctx.shadowBlur = 0;
+                } else {
+                    // Draw base hexagon
+                    drawHexagon(x, y, hexSize * 0.35, null, baseColor, 0.5);
+                }
+            }
+        }
+        
+        animationId = requestAnimationFrame(draw);
+    }
+    
+    function handleMouseMove(e) {
+        const rect = hero.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+    }
+    
+    function handleMouseLeave() {
+        mouseX = -1000;
+        mouseY = -1000;
+    }
+    
+    function handleTouchMove(e) {
+        if (e.touches.length > 0) {
+            const rect = hero.getBoundingClientRect();
+            mouseX = e.touches[0].clientX - rect.left;
+            mouseY = e.touches[0].clientY - rect.top;
+        }
+    }
+    
+    function handleTouchEnd() {
+        mouseX = -1000;
+        mouseY = -1000;
+    }
+    
+    // Initialize
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    hero.addEventListener('mousemove', handleMouseMove);
+    hero.addEventListener('mouseleave', handleMouseLeave);
+    hero.addEventListener('touchmove', handleTouchMove);
+    hero.addEventListener('touchend', handleTouchEnd);
+    
+    // Start animation
+    draw();
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        cancelAnimationFrame(animationId);
+    });
+}
