@@ -2628,10 +2628,8 @@ select:focus {
 .footer-column:nth-child(4) { animation-delay: 0.7s; }
 
 /* Floating buttons animation - bounce in */
-.cart-toggle, .chatbot-toggle {
-    opacity: 0;
-    animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    animation-delay: 2s;
+.cart-toggle, .chatbot-toggle, .download-manager-toggle {
+    opacity: 1 !important;
 }
 
 /* Gradient text shimmer */
@@ -2978,9 +2976,9 @@ select:focus {
     animation: smoothPop 0.35s ease-out forwards;
 }
 
-.cart-toggle, .chatbot-toggle {
-    animation: smoothPop 0.4s ease-out forwards;
-    animation-delay: 1s;
+.cart-toggle, .chatbot-toggle, .download-manager-toggle {
+    opacity: 1 !important;
+    animation: none !important;
 }
 
 .nav-link, .nav-search, .nav-auth .btn, .logo-text {
