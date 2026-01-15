@@ -2368,9 +2368,10 @@ function showFavorites() {
 }
 
 function toggleMobileMenu() {
-    const navMenu = document.querySelector('.nav-menu');
-    if (navMenu) {
-        navMenu.classList.toggle('mobile-open');
+    const mobileNav = document.getElementById('mobileNav');
+    if (mobileNav) {
+        mobileNav.classList.toggle('active');
+        document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
     }
 }
 

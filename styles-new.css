@@ -4873,3 +4873,395 @@ select:focus {
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
 }
+
+/* ============================================
+   ENHANCED MOBILE STYLES
+   ============================================ */
+
+/* Mobile Navigation Menu */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    z-index: 10000;
+    padding: 80px 1.5rem 2rem;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.mobile-nav.active {
+    transform: translateX(0);
+}
+
+.mobile-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.mobile-nav-close {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mobile-nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+}
+
+.mobile-nav-links a:hover,
+.mobile-nav-links a.active {
+    background: var(--bg-secondary);
+    color: var(--accent-primary);
+}
+
+.mobile-nav-links a i {
+    width: 24px;
+    text-align: center;
+    color: var(--accent-primary);
+}
+
+.mobile-nav-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 1rem 0;
+}
+
+.mobile-nav-auth {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.mobile-nav-auth .btn {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 768px) {
+    /* Navbar */
+    .navbar {
+        padding: 0.75rem 1rem;
+    }
+    
+    .nav-container {
+        padding: 0;
+    }
+    
+    .nav-brand .logo-text {
+        font-size: 1.1rem;
+    }
+    
+    .nav-auth {
+        display: none;
+    }
+    
+    .nav-user {
+        margin-left: auto;
+    }
+    
+    .mobile-menu-toggle {
+        display: flex !important;
+        margin-left: 0.75rem;
+    }
+    
+    /* Hero */
+    .hero {
+        min-height: auto;
+        padding: 100px 1rem 2rem;
+    }
+    
+    .hero-badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .hero-title {
+        font-size: 1.75rem;
+        line-height: 1.2;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.95rem;
+        padding: 0 0.5rem;
+    }
+    
+    .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        padding: 0 1rem;
+    }
+    
+    .hero-stat {
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+    }
+    
+    .scroll-indicator {
+        display: none;
+    }
+    
+    /* Sections */
+    .section {
+        padding: 2rem 0;
+    }
+    
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .section-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    /* Game Cards */
+    .games-showcase {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .game-card, .mod-card {
+        margin: 0;
+    }
+    
+    /* Controls/Filters */
+    .games-controls {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .games-controls .search-bar {
+        width: 100%;
+    }
+    
+    .games-controls select {
+        width: 100%;
+    }
+    
+    /* Modals */
+    .modal-content {
+        width: 95%;
+        max-width: none;
+        margin: 1rem;
+        max-height: 90vh;
+        border-radius: var(--radius-lg);
+    }
+    
+    .mod-detail-header {
+        flex-direction: column;
+    }
+    
+    .mod-detail-image {
+        width: 100%;
+        height: 200px;
+    }
+    
+    .mod-detail-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .mod-detail-actions .btn {
+        width: 100%;
+    }
+    
+    /* Profile Modal */
+    .profile-modal {
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .profile-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .profile-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .profile-actions .btn {
+        width: 100%;
+    }
+    
+    /* Library */
+    .library-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Chatbot */
+    .chatbot-panel {
+        width: 100%;
+        height: 100%;
+        right: 0;
+        bottom: 0;
+        border-radius: 0;
+        max-height: 100vh;
+    }
+    
+    .chatbot-toggle,
+    .cart-toggle {
+        width: 50px;
+        height: 50px;
+        bottom: 20px !important;
+    }
+    
+    .chatbot-toggle {
+        right: 80px !important;
+    }
+    
+    .cart-toggle {
+        right: 20px !important;
+    }
+    
+    /* Cart Panel */
+    .cart-panel {
+        width: 100%;
+        max-width: none;
+    }
+    
+    /* Footer */
+    .site-footer {
+        padding: 2rem 1rem;
+    }
+    
+    .footer-brand-section {
+        text-align: center;
+    }
+    
+    .footer-links-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .footer-column h4 {
+        font-size: 0.9rem;
+    }
+    
+    .footer-column a {
+        font-size: 0.85rem;
+    }
+    
+    /* Auth Modal */
+    .auth-form {
+        padding: 1.5rem;
+    }
+    
+    /* Game Filter Cards */
+    .game-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .game-card-filter {
+        padding: 1rem;
+    }
+    
+    .game-card-filter .game-icon {
+        font-size: 2rem;
+    }
+    
+    .game-card-filter h4 {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.5rem;
+    }
+    
+    .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .game-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .footer-links-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .profile-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .stat-number {
+        font-size: 1.25rem;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        min-height: 44px;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .nav-link {
+        padding: 0.75rem 1rem;
+    }
+    
+    select, input {
+        min-height: 44px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    .game-card:hover,
+    .mod-card:hover {
+        transform: none;
+    }
+    
+    .game-card:active,
+    .mod-card:active {
+        transform: scale(0.98);
+    }
+}
