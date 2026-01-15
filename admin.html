@@ -222,7 +222,7 @@
 
     <script>
         const ADMIN_PASSWORD = 'ExusCraft2026Admin';
-        const PRICE_CAP = 99.99;
+        let PRICE_CAP = parseFloat(localStorage.getItem('priceCap')) || 99.99;
         let adminMods = [];
 
         // Sample mods data (in production, fetch from API)
@@ -384,16 +384,33 @@
         }
 
         function saveAdminSettings() {
+            const newPriceCap = parseFloat(document.getElementById('priceCap').value);
             const newPassword = document.getElementById('newAdminPassword').value;
+            
+            if (!isNaN(newPriceCap) && newPriceCap > 0) {
+                PRICE_CAP = newPriceCap;
+                localStorage.setItem('priceCap', newPriceCap);
+                alert(`Price cap updated to $${newPriceCap.toFixed(2)}`);
+            }
+            
             if (newPassword) {
                 alert('Password updated! (In production, this would update the server)');
             }
-            alert('Settings saved!');
+            
+            if (!newPassword && isNaN(newPriceCap)) {
+                alert('No changes made');
+            }
+        }
+
+        // Load saved price cap into input on page load
+        function loadSettings() {
+            document.getElementById('priceCap').value = PRICE_CAP.toFixed(2);
         }
 
         // Check if already logged in
         if (localStorage.getItem('adminLoggedIn') === 'true') {
             showAdminPanel();
+            loadSettings();
         }
     </script>
 </body>
