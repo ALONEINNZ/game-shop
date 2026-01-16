@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const fs = require('fs');
 const path = require('path');
 const Mod = require('../models/Mod');
 const auth = require('../middleware/auth');
@@ -249,7 +250,52 @@ router.delete('/:id', auth, adminAuth, async (req, res) => {
     }
 });
 
-// Download mod (increment download count)
+// Download mod file (serves actual file)
+router.get('/:id/download-file', auth, async (req, res) => {
+    try {
+        const mod = await Mod.findById(req.params.id);
+        
+        if (!mod || !mod.approved || !mod.active) {
+            return res.status(404).json({ message: 'Mod not found' });
+        }
+        
+        // Check if user has purchased (if not free)
+        if (!mod.isFree) {
+            const Order = require('../models/Order');
+            const hasPurchased = await Order.findOne({
+                user: req.userId,
+                'items.id': mod._id.toString(),
+                paymentStatus: 'completed'
+            });
+            
+            if (!hasPurchased) {
+                return res.status(403).json({ message: 'Purchase required to download this mod' });
+            }
+        }
+        
+        // Increment download count
+        mod.downloads += 1;
+        await mod.save();
+        
+        // Serve the file
+        const filePath = path.join(__dirname, '..', mod.downloadUrl);
+        const fileName = `${mod.title.replace(/[^a-z0-9]/gi, '_')}_v${mod.version}.zip`;
+        
+        res.download(filePath, fileName, (err) => {
+            if (err) {
+                console.error('Download error:', err);
+                if (!res.headersSent) {
+                    res.status(500).json({ message: 'Error downloading file' });
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error processing download:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Get download URL (for frontend to initiate download)
 router.post('/:id/download', auth, async (req, res) => {
     try {
         const mod = await Mod.findById(req.params.id);
@@ -258,13 +304,23 @@ router.post('/:id/download', auth, async (req, res) => {
             return res.status(404).json({ message: 'Mod not found' });
         }
         
-        // Increment download count
-        mod.downloads += 1;
-        await mod.save();
+        // Check if user has purchased (if not free)
+        if (!mod.isFree) {
+            const Order = require('../models/Order');
+            const hasPurchased = await Order.findOne({
+                user: req.userId,
+                'items.id': mod._id.toString(),
+                paymentStatus: 'completed'
+            });
+            
+            if (!hasPurchased) {
+                return res.status(403).json({ message: 'Purchase required. Please buy this mod first.' });
+            }
+        }
         
         res.json({
-            message: 'Download started',
-            downloadUrl: mod.downloadUrl,
+            message: 'Download authorized',
+            downloadUrl: `/api/mods/${mod._id}/download-file`,
             mod: {
                 title: mod.title,
                 version: mod.version,

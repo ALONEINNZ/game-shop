@@ -1459,7 +1459,7 @@ function updateDownloadCount() {
     }
 }
 
-function startDownload(modId) {
+async function startDownload(modId) {
     const mod = mods.find(m => m._id === modId);
     if (!mod) return;
     
@@ -1470,39 +1470,82 @@ function startDownload(modId) {
         return;
     }
     
-    const downloadId = 'dl_' + Date.now();
-    const totalSize = Math.floor(Math.random() * 500000000) + 50000000; // 50MB - 550MB
-    
-    const download = {
-        id: downloadId,
-        modId: modId,
-        title: mod.title,
-        game: mod.gameTitle,
-        version: mod.version,
-        image: mod.images?.[0] || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&h=100&fit=crop',
-        totalSize: totalSize,
-        downloaded: 0,
-        progress: 0,
-        speed: '0 MB/s',
-        timeRemaining: 'Calculating...',
-        status: 'downloading',
-        startTime: Date.now()
-    };
-    
-    activeDownloads.unshift(download);
-    updateDownloadCount();
-    
-    // Open download manager
-    if (!downloadManagerOpen) {
-        toggleDownloadManager();
-    } else {
-        renderDownloadManager();
+    // Check if user is logged in
+    if (!currentUser) {
+        showLogin();
+        return;
     }
     
-    showMessage(`Starting download: ${mod.title}`, 'info');
-    
-    // Simulate download progress
-    simulateDownload(downloadId);
+    try {
+        // Call API to authorize download
+        const response = await fetch(`${API_BASE}/mods/${modId}/download`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            showMessage(data.message || 'Download failed', 'error');
+            return;
+        }
+        
+        // Add to download manager UI
+        const downloadId = 'dl_' + Date.now();
+        const download = {
+            id: downloadId,
+            modId: modId,
+            title: mod.title,
+            game: mod.gameTitle,
+            version: mod.version,
+            image: mod.images?.[0] || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&h=100&fit=crop',
+            totalSize: parseSizeToBytes(mod.fileSize),
+            downloaded: 0,
+            progress: 0,
+            speed: '0 MB/s',
+            timeRemaining: 'Starting...',
+            status: 'downloading',
+            startTime: Date.now(),
+            downloadUrl: data.downloadUrl
+        };
+        
+        activeDownloads.unshift(download);
+        updateDownloadCount();
+        
+        // Open download manager
+        if (!downloadManagerOpen) {
+            toggleDownloadManager();
+        } else {
+            renderDownloadManager();
+        }
+        
+        showMessage(`Starting download: ${mod.title}`, 'info');
+        
+        // Add to library
+        if (!library.includes(modId)) {
+            library.push(modId);
+            saveUserData();
+        }
+        
+        // Simulate progress then trigger actual download
+        simulateDownload(downloadId);
+        
+    } catch (error) {
+        console.error('Download error:', error);
+        showMessage('Failed to start download', 'error');
+    }
+}
+
+// Helper to parse file size strings to bytes
+function parseSizeToBytes(sizeStr) {
+    if (!sizeStr) return 100000000; // Default 100MB
+    const num = parseFloat(sizeStr);
+    if (sizeStr.includes('GB')) return num * 1024 * 1024 * 1024;
+    if (sizeStr.includes('MB')) return num * 1024 * 1024;
+    if (sizeStr.includes('KB')) return num * 1024;
+    return num;
 }
 
 function simulateDownload(downloadId) {
@@ -1549,7 +1592,7 @@ function simulateDownload(downloadId) {
             showMessage(`Download complete: ${dl.title}`, 'success');
             
             // Trigger actual file download
-            triggerFileDownload(dl.modId);
+            triggerFileDownload(downloadId);
         }
         
         renderDownloadManager();
@@ -1557,53 +1600,23 @@ function simulateDownload(downloadId) {
     }, 100);
 }
 
-function triggerFileDownload(modId) {
-    const mod = mods.find(m => m._id === modId);
-    if (!mod) return;
+function triggerFileDownload(downloadId) {
+    const dl = activeDownloads.find(d => d.id === downloadId);
+    if (!dl || !dl.downloadUrl) return;
     
-    // If mod has a real download URL, use it
-    if (mod.downloadUrl) {
-        const a = document.createElement('a');
-        a.href = mod.downloadUrl;
-        a.download = mod.fileName || `${mod.title.replace(/[^a-z0-9]/gi, '_')}.jar`;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        showMessage(`Downloading ${mod.fileName || mod.title}...`, 'success');
-        return;
-    }
+    // Create hidden iframe to trigger download
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = dl.downloadUrl;
+    document.body.appendChild(iframe);
     
-    // If mod has uploaded file data (base64), download it
-    if (mod.fileData && mod.fileName) {
-        try {
-            const byteCharacters = atob(mod.fileData);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: 'application/octet-stream' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = mod.fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            showMessage(`Downloaded ${mod.fileName}`, 'success');
-            return;
-        } catch (e) {
-            console.error('Error downloading file:', e);
-        }
-    }
+    // Remove iframe after download starts
+    setTimeout(() => {
+        document.body.removeChild(iframe);
+    }, 5000);
     
-    // Fallback: Create info file if no actual file available
-    const content = `===========================================
-${mod.title} - v${mod.version}
-===========================================
+    showMessage(`Downloading ${dl.title}...`, 'success');
+}
 
 Author: ${mod.author}
 Category: ${mod.category}
