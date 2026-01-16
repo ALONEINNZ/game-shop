@@ -248,28 +248,81 @@ function initScrollZoomEffect() {
     
     if (!hero || !gradientText || !gamesSection) return;
     
-    // Create zoom overlay
+    // Create zoom overlay with 3D logo
     const zoomOverlay = document.createElement('div');
     zoomOverlay.className = 'zoom-overlay';
-    zoomOverlay.innerHTML = '<div class="zoom-text">Game Mods</div>';
+    zoomOverlay.innerHTML = `
+        <div class="zoom-text">Game Mods</div>
+        <div class="zoom-logo-container">
+            <div class="zoom-logo-3d">
+                <div class="logo-face front">
+                    <svg width="120" height="120" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="8" fill="url(#zoomGrad)"/>
+                        <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
+                        <circle cx="16" cy="16" r="3" fill="white"/>
+                        <defs>
+                            <linearGradient id="zoomGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#5B8CFF"/>
+                                <stop offset="50%" style="stop-color:#7C5CFF"/>
+                                <stop offset="100%" style="stop-color:#FF6B9D"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="logo-text-3d">ExusCraft</div>
+            </div>
+        </div>
+    `;
     document.body.appendChild(zoomOverlay);
     
     let isZooming = false;
     let zoomComplete = false;
+    let scrollLocked = false;
+    
+    // Lock scroll function
+    function lockScroll() {
+        scrollLocked = true;
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${window.scrollY}px`;
+        document.body.style.width = '100%';
+    }
+    
+    // Unlock scroll function
+    function unlockScroll() {
+        scrollLocked = false;
+        const scrollY = document.body.style.top;
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+    }
     
     window.addEventListener('scroll', () => {
-        if (zoomComplete) return;
+        if (zoomComplete || isZooming) return;
         
         const heroRect = hero.getBoundingClientRect();
         const heroBottom = heroRect.bottom;
         const scrollProgress = Math.max(0, Math.min(1, 1 - (heroBottom / window.innerHeight)));
         
-        // Start zoom effect when scrolling past 30% of hero
-        if (scrollProgress > 0.3 && !isZooming) {
+        // Start zoom effect when scrolling past 20% of hero
+        if (scrollProgress > 0.2 && !isZooming) {
             isZooming = true;
+            lockScroll();
             triggerZoomTransition();
         }
     });
+    
+    // Also trigger on wheel event to catch scroll attempts
+    window.addEventListener('wheel', (e) => {
+        if (zoomComplete || isZooming) return;
+        
+        if (e.deltaY > 0 && window.scrollY > 50) {
+            isZooming = true;
+            lockScroll();
+            triggerZoomTransition();
+        }
+    }, { passive: true });
     
     function triggerZoomTransition() {
         // Get position of gradient text
@@ -284,31 +337,36 @@ function initScrollZoomEffect() {
         // Show overlay and start animation
         zoomOverlay.classList.add('active');
         
-        // Phase 1: Zoom in on text (0-600ms)
-        setTimeout(() => {
+        // Phase 1: Zoom in on text (0-800ms)
+        requestAnimationFrame(() => {
             zoomText.classList.add('zooming');
-        }, 50);
+        });
         
-        // Phase 2: Flash white and transition (600-900ms)
+        // Phase 2: Show 3D rotating logo (800-2000ms)
         setTimeout(() => {
-            zoomOverlay.classList.add('flash');
-        }, 600);
+            zoomOverlay.classList.add('show-logo');
+        }, 700);
         
-        // Phase 3: Scroll to mods section and fade out (900ms+)
+        // Phase 3: Logo spins and zooms through (1200-2200ms)
+        setTimeout(() => {
+            zoomOverlay.classList.add('logo-spin');
+        }, 1100);
+        
+        // Phase 4: Transition to mods section (2200ms+)
         setTimeout(() => {
             zoomComplete = true;
-            
-            // Smooth scroll to games section
-            gamesSection.scrollIntoView({ behavior: 'auto' });
-            
-            // Fade out overlay
             zoomOverlay.classList.add('fade-out');
+            
+            // Unlock and scroll to games section
+            unlockScroll();
+            gamesSection.scrollIntoView({ behavior: 'auto' });
+            window.scrollTo(0, gamesSection.offsetTop - 80);
             
             // Remove overlay after animation
             setTimeout(() => {
                 zoomOverlay.remove();
-            }, 500);
-        }, 900);
+            }, 600);
+        }, 2000);
     }
 }
 
