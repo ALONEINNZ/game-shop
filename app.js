@@ -242,17 +242,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hide loading screen immediately to prevent stuck loading
     const loadingElement = document.getElementById('loading');
     if (loadingElement) {
-        loadingElement.style.opacity = '0';
-        setTimeout(() => {
-            loadingElement.style.display = 'none';
-        }, 300);
+        loadingElement.style.display = 'none';
     }
     
     try {
-        // Run intro animation FIRST
-        if (typeof initIntroAnimation === 'function') {
-            initIntroAnimation();
-        }
+        // Skip intro animation - causes loading issues
+        // if (typeof initIntroAnimation === 'function') {
+        //     initIntroAnimation();
+        // }
         
         initializeTheme();
         loadSavedData();
