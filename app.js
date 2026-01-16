@@ -4,6 +4,35 @@ let mods = [];
 let cart = [];
 let currentTheme = 'dark';
 
+// IMMEDIATE: Hide loading screen as soon as script loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', hideLoadingScreen);
+} else {
+    hideLoadingScreen();
+}
+
+function hideLoadingScreen() {
+    const loadingElement = document.getElementById('loading');
+    if (loadingElement) {
+        loadingElement.style.opacity = '0';
+        setTimeout(() => {
+            loadingElement.style.display = 'none';
+        }, 300);
+    }
+}
+
+// Fallback: Hide loading screen after 1 second no matter what
+setTimeout(() => {
+    const loadingElement = document.getElementById('loading');
+    if (loadingElement && loadingElement.style.display !== 'none') {
+        console.warn('Loading screen timeout - forcing hide');
+        loadingElement.style.opacity = '0';
+        setTimeout(() => {
+            loadingElement.style.display = 'none';
+        }, 300);
+    }
+}, 1000);
+
 // Real mod data with proper images and functionality
 const realMods = [
     {
@@ -210,49 +239,48 @@ const realMods = [
 document.addEventListener('DOMContentLoaded', function() {
     console.log('ExusCraft loading...');
     
+    // Hide loading screen immediately to prevent stuck loading
+    const loadingElement = document.getElementById('loading');
+    if (loadingElement) {
+        loadingElement.style.opacity = '0';
+        setTimeout(() => {
+            loadingElement.style.display = 'none';
+        }, 300);
+    }
+    
     try {
-        // Skip intro animation for now - causing loading issues
-        // initIntroAnimation();
+        // Run intro animation FIRST
+        if (typeof initIntroAnimation === 'function') {
+            initIntroAnimation();
+        }
         
         initializeTheme();
         loadSavedData();
         
         // Load mods immediately
-        console.log('Loading mods...', realMods ? realMods.length : 0);
         mods = realMods;
         displayModsInSections(mods);
         
-        initNavbarScroll();
+        if (typeof initNavbarScroll === 'function') {
+            initNavbarScroll();
+        }
         updateUserNavigation();
         updateCartDisplay();
         
         // Initialize hex grid after a short delay to not block rendering
         setTimeout(() => {
-            try {
+            if (typeof initHexGrid === 'function') {
                 initHexGrid();
-            } catch (e) {
-                console.error('Hex grid error:', e);
             }
         }, 100);
         
-        // Hide loading screen
-        const loadingElement = document.getElementById('loading');
-        if (loadingElement) {
-            loadingElement.style.opacity = '0';
-            setTimeout(() => {
-                loadingElement.style.display = 'none';
-            }, 300);
-        }
-        
         console.log('ExusCraft loaded successfully!');
     } catch (error) {
-        console.error('Error loading ExusCraft:', error);
-        // Hide loading screen even on error
-        const loadingElement = document.getElementById('loading');
+        console.error('Error during initialization:', error);
+        // Ensure loading screen is hidden even if there's an error
         if (loadingElement) {
             loadingElement.style.display = 'none';
         }
-        alert('Error loading site. Please refresh the page.');
     }
 });
 
