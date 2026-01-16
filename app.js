@@ -4,7 +4,24 @@ let mods = [];
 let cart = [];
 let currentTheme = 'dark';
 
-// Fallback: Hide loading screen after 3 seconds no matter what
+// IMMEDIATE: Hide loading screen as soon as script loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', hideLoadingScreen);
+} else {
+    hideLoadingScreen();
+}
+
+function hideLoadingScreen() {
+    const loadingElement = document.getElementById('loading');
+    if (loadingElement) {
+        loadingElement.style.opacity = '0';
+        setTimeout(() => {
+            loadingElement.style.display = 'none';
+        }, 300);
+    }
+}
+
+// Fallback: Hide loading screen after 1 second no matter what
 setTimeout(() => {
     const loadingElement = document.getElementById('loading');
     if (loadingElement && loadingElement.style.display !== 'none') {
@@ -14,7 +31,7 @@ setTimeout(() => {
             loadingElement.style.display = 'none';
         }, 300);
     }
-}, 3000);
+}, 1000);
 
 // Real mod data with proper images and functionality
 const realMods = [
@@ -225,12 +242,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hide loading screen immediately to prevent stuck loading
     const loadingElement = document.getElementById('loading');
     if (loadingElement) {
+        loadingElement.style.opacity = '0';
         setTimeout(() => {
-            loadingElement.style.opacity = '0';
-            setTimeout(() => {
-                loadingElement.style.display = 'none';
-            }, 300);
-        }, 500); // Small delay to show loading briefly
+            loadingElement.style.display = 'none';
+        }, 300);
     }
     
     try {
