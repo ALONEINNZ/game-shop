@@ -21,66 +21,68 @@ window.addEventListener('scroll', () => {
 // INITIAL PAGE LOAD ANIMATIONS
 // ============================================
 window.addEventListener('load', () => {
-    // Hide loading screen
+    // Hide loading screen with delay to show intro
     const loading = document.getElementById('loading');
     if (loading) {
         setTimeout(() => {
             loading.classList.add('hidden');
-        }, 1000);
+        }, 2000); // Show for 2 seconds
     }
 
-    // Animate navbar items
-    gsap.from('.nav-link', {
-        y: -20,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: 'power3.out',
-        delay: 0.3
-    });
+    // Animate navbar items after loading
+    setTimeout(() => {
+        gsap.from('.nav-link', {
+            y: -20,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: 'power3.out'
+        });
+    }, 2200);
 
     // Animate hero content
-    gsap.from('.hero-badge', {
-        scale: 0,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'back.out(1.7)',
-        delay: 0.5
-    });
+    setTimeout(() => {
+        gsap.from('.hero-badge', {
+            scale: 0,
+            opacity: 0,
+            duration: 0.8,
+            ease: 'back.out(1.7)'
+        });
 
-    gsap.from('.hero-title', {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        ease: 'power4.out',
-        delay: 0.7
-    });
+        gsap.from('.hero-title', {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power4.out',
+            delay: 0.2
+        });
 
-    gsap.from('.hero-subtitle', {
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out',
-        delay: 0.9
-    });
+        gsap.from('.hero-subtitle', {
+            y: 30,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out',
+            delay: 0.4
+        });
 
-    gsap.from('.hero-cta .btn', {
-        scale: 0,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: 'back.out(1.7)',
-        delay: 1.1
-    });
+        gsap.from('.hero-cta .btn', {
+            scale: 0,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'back.out(1.7)',
+            delay: 0.6
+        });
 
-    gsap.from('.hero-stat', {
-        y: 30,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: 'power3.out',
-        delay: 1.3
-    });
+        gsap.from('.hero-stat', {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: 'power3.out',
+            delay: 0.8
+        });
+    }, 2200);
 });
 
 // ============================================
