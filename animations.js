@@ -101,20 +101,21 @@ gsap.utils.toArray('.section-title').forEach(title => {
     });
 });
 
-// Animate game cards on scroll
-gsap.utils.toArray('.game-card').forEach((card, index) => {
-    gsap.from(card, {
-        scrollTrigger: {
-            trigger: card,
-            start: 'top 85%',
-            end: 'top 60%',
-            scrub: 1
-        },
-        y: 100,
-        opacity: 0,
-        scale: 0.8
+// Animate game cards on scroll - only after they're loaded
+setTimeout(() => {
+    gsap.utils.toArray('.game-card').forEach((card, index) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 85%',
+                end: 'top 60%',
+                scrub: 1
+            },
+            y: 50,
+            opacity: 0
+        });
     });
-});
+}, 1000);
 
 // Animate trust bar items
 gsap.from('.trust-item', {
@@ -173,35 +174,44 @@ gsap.to('.glow-effect', {
 // ============================================
 // HOVER ANIMATIONS FOR CARDS
 // ============================================
-document.querySelectorAll('.game-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        gsap.to(this, {
-            y: -10,
-            duration: 0.3,
-            ease: 'power2.out'
+// Wait for cards to load before adding hover animations
+setTimeout(() => {
+    document.querySelectorAll('.game-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            gsap.to(this, {
+                y: -10,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+            
+            const img = this.querySelector('.game-image img');
+            if (img) {
+                gsap.to(img, {
+                    scale: 1.1,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            }
         });
-        
-        gsap.to(this.querySelector('.game-image img'), {
-            scale: 1.1,
-            duration: 0.5,
-            ease: 'power2.out'
-        });
-    });
 
-    card.addEventListener('mouseleave', function() {
-        gsap.to(this, {
-            y: 0,
-            duration: 0.3,
-            ease: 'power2.out'
-        });
-        
-        gsap.to(this.querySelector('.game-image img'), {
-            scale: 1,
-            duration: 0.5,
-            ease: 'power2.out'
+        card.addEventListener('mouseleave', function() {
+            gsap.to(this, {
+                y: 0,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+            
+            const img = this.querySelector('.game-image img');
+            if (img) {
+                gsap.to(img, {
+                    scale: 1,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            }
         });
     });
-});
+}, 1000);
 
 // ============================================
 // FLOATING ANIMATION FOR BUTTONS
@@ -401,10 +411,12 @@ const fadeInObserver = new IntersectionObserver((entries) => {
     });
 }, { threshold: 0.1 });
 
-// Observe all fade-in elements
-document.querySelectorAll('.fade-in').forEach(el => {
-    gsap.set(el, { opacity: 0, y: 30 });
-    fadeInObserver.observe(el);
-});
+// Observe all fade-in elements - wait for them to load
+setTimeout(() => {
+    document.querySelectorAll('.fade-in').forEach(el => {
+        gsap.set(el, { opacity: 0, y: 30 });
+        fadeInObserver.observe(el);
+    });
+}, 500);
 
 console.log('🎮 ExusCraft Enhanced Animations Loaded!');

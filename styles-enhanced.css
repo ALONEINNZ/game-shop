@@ -1485,3 +1485,15 @@ body {
         right: -100%;
     }
 }
+
+
+/* Ensure game cards are visible by default */
+.game-card {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.games-showcase {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
