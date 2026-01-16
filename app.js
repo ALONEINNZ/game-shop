@@ -210,6 +210,9 @@ const realMods = [
 document.addEventListener('DOMContentLoaded', function() {
     console.log('ExusCraft loading...');
     
+    // Run intro animation FIRST
+    initIntroAnimation();
+    
     initializeTheme();
     loadSavedData();
     
@@ -223,9 +226,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize hex grid after a short delay to not block rendering
     setTimeout(() => initHexGrid(), 100);
-    
-    // Initialize scroll zoom effect
-    setTimeout(() => initScrollZoomEffect(), 200);
     
     // Hide loading screen
     const loadingElement = document.getElementById('loading');
@@ -241,133 +241,120 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Scroll Zoom Effect - Zooms into "Game Mods" text then transitions to mods section
 function initScrollZoomEffect() {
-    const hero = document.querySelector('.hero');
-    const gradientText = document.querySelector('.gradient-text');
-    const heroContent = document.querySelector('.hero-content');
-    const gamesSection = document.getElementById('games');
-    
-    if (!hero || !gradientText || !gamesSection) return;
-    
-    // Create zoom overlay with 3D logo
-    const zoomOverlay = document.createElement('div');
-    zoomOverlay.className = 'zoom-overlay';
-    zoomOverlay.innerHTML = `
-        <div class="zoom-text">Game Mods</div>
-        <div class="zoom-logo-container">
-            <div class="zoom-logo-3d">
-                <div class="logo-face front">
-                    <svg width="120" height="120" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="8" fill="url(#zoomGrad)"/>
-                        <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
+    // Disabled - replaced by intro animation
+}
+
+// 3D Intro Animation - Fly through ExusCraft logo on page load
+function initIntroAnimation() {
+    // Create intro overlay
+    const introOverlay = document.createElement('div');
+    introOverlay.className = 'intro-overlay';
+    introOverlay.innerHTML = `
+        <div class="intro-tunnel">
+            <div class="tunnel-ring ring-1"></div>
+            <div class="tunnel-ring ring-2"></div>
+            <div class="tunnel-ring ring-3"></div>
+            <div class="tunnel-ring ring-4"></div>
+            <div class="tunnel-ring ring-5"></div>
+            <div class="tunnel-ring ring-6"></div>
+            <div class="tunnel-ring ring-7"></div>
+            <div class="tunnel-ring ring-8"></div>
+        </div>
+        <div class="intro-logo-3d">
+            <div class="logo-cube">
+                <div class="cube-face cube-front">
+                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="6" fill="url(#introGrad1)"/>
+                        <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.1)"/>
                         <circle cx="16" cy="16" r="3" fill="white"/>
-                        <defs>
-                            <linearGradient id="zoomGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#5B8CFF"/>
-                                <stop offset="50%" style="stop-color:#7C5CFF"/>
-                                <stop offset="100%" style="stop-color:#FF6B9D"/>
-                            </linearGradient>
-                        </defs>
                     </svg>
                 </div>
-                <div class="logo-text-3d">ExusCraft</div>
+                <div class="cube-face cube-back">
+                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="6" fill="url(#introGrad2)"/>
+                        <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.1)"/>
+                        <circle cx="16" cy="16" r="3" fill="white"/>
+                    </svg>
+                </div>
+                <div class="cube-face cube-left"></div>
+                <div class="cube-face cube-right"></div>
+                <div class="cube-face cube-top"></div>
+                <div class="cube-face cube-bottom"></div>
             </div>
         </div>
+        <div class="intro-text-3d">
+            <span class="intro-letter" style="--i:0">E</span>
+            <span class="intro-letter" style="--i:1">x</span>
+            <span class="intro-letter" style="--i:2">u</span>
+            <span class="intro-letter" style="--i:3">s</span>
+            <span class="intro-letter" style="--i:4">C</span>
+            <span class="intro-letter" style="--i:5">r</span>
+            <span class="intro-letter" style="--i:6">a</span>
+            <span class="intro-letter" style="--i:7">f</span>
+            <span class="intro-letter" style="--i:8">t</span>
+        </div>
+        <div class="intro-tagline">Enter the Mod Universe</div>
+        <div class="speed-lines">
+            <div class="speed-line"></div>
+            <div class="speed-line"></div>
+            <div class="speed-line"></div>
+            <div class="speed-line"></div>
+            <div class="speed-line"></div>
+            <div class="speed-line"></div>
+            <div class="speed-line"></div>
+            <div class="speed-line"></div>
+            <div class="speed-line"></div>
+            <div class="speed-line"></div>
+            <div class="speed-line"></div>
+            <div class="speed-line"></div>
+        </div>
+        <svg style="position:absolute;width:0;height:0;">
+            <defs>
+                <linearGradient id="introGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#5B8CFF"/>
+                    <stop offset="50%" style="stop-color:#7C5CFF"/>
+                    <stop offset="100%" style="stop-color:#FF6B9D"/>
+                </linearGradient>
+                <linearGradient id="introGrad2" x1="100%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" style="stop-color:#FF6B9D"/>
+                    <stop offset="50%" style="stop-color:#7C5CFF"/>
+                    <stop offset="100%" style="stop-color:#5B8CFF"/>
+                </linearGradient>
+            </defs>
+        </svg>
     `;
-    document.body.appendChild(zoomOverlay);
     
-    let isZooming = false;
-    let zoomComplete = false;
-    let scrollLocked = false;
+    // Insert at beginning of body
+    document.body.insertBefore(introOverlay, document.body.firstChild);
     
-    // Lock scroll function
-    function lockScroll() {
-        scrollLocked = true;
-        document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${window.scrollY}px`;
-        document.body.style.width = '100%';
-    }
+    // Lock scroll during intro
+    document.body.style.overflow = 'hidden';
     
-    // Unlock scroll function
-    function unlockScroll() {
-        scrollLocked = false;
-        const scrollY = document.body.style.top;
+    // Start animation sequence
+    setTimeout(() => {
+        introOverlay.classList.add('phase-1'); // Logo appears from distance
+    }, 100);
+    
+    setTimeout(() => {
+        introOverlay.classList.add('phase-2'); // Text appears
+    }, 800);
+    
+    setTimeout(() => {
+        introOverlay.classList.add('phase-3'); // Fly through begins
+    }, 2000);
+    
+    setTimeout(() => {
+        introOverlay.classList.add('phase-4'); // Speed up, tunnel effect
+    }, 2800);
+    
+    setTimeout(() => {
+        introOverlay.classList.add('phase-5'); // Final zoom through
         document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-    }
+    }, 3500);
     
-    window.addEventListener('scroll', () => {
-        if (zoomComplete || isZooming) return;
-        
-        const heroRect = hero.getBoundingClientRect();
-        const heroBottom = heroRect.bottom;
-        const scrollProgress = Math.max(0, Math.min(1, 1 - (heroBottom / window.innerHeight)));
-        
-        // Start zoom effect when scrolling past 20% of hero
-        if (scrollProgress > 0.2 && !isZooming) {
-            isZooming = true;
-            lockScroll();
-            triggerZoomTransition();
-        }
-    });
-    
-    // Also trigger on wheel event to catch scroll attempts
-    window.addEventListener('wheel', (e) => {
-        if (zoomComplete || isZooming) return;
-        
-        if (e.deltaY > 0 && window.scrollY > 50) {
-            isZooming = true;
-            lockScroll();
-            triggerZoomTransition();
-        }
-    }, { passive: true });
-    
-    function triggerZoomTransition() {
-        // Get position of gradient text
-        const textRect = gradientText.getBoundingClientRect();
-        const zoomText = zoomOverlay.querySelector('.zoom-text');
-        
-        // Position zoom text at same location as original
-        zoomText.style.left = textRect.left + 'px';
-        zoomText.style.top = textRect.top + 'px';
-        zoomText.style.fontSize = window.getComputedStyle(gradientText).fontSize;
-        
-        // Show overlay and start animation
-        zoomOverlay.classList.add('active');
-        
-        // Phase 1: Zoom in on text (0-800ms)
-        requestAnimationFrame(() => {
-            zoomText.classList.add('zooming');
-        });
-        
-        // Phase 2: Show 3D rotating logo (800-2000ms)
-        setTimeout(() => {
-            zoomOverlay.classList.add('show-logo');
-        }, 700);
-        
-        // Phase 3: Logo spins and zooms through (1200-2200ms)
-        setTimeout(() => {
-            zoomOverlay.classList.add('logo-spin');
-        }, 1100);
-        
-        // Phase 4: Transition to mods section (2200ms+)
-        setTimeout(() => {
-            zoomComplete = true;
-            zoomOverlay.classList.add('fade-out');
-            
-            // Unlock and scroll to games section
-            unlockScroll();
-            gamesSection.scrollIntoView({ behavior: 'auto' });
-            window.scrollTo(0, gamesSection.offsetTop - 80);
-            
-            // Remove overlay after animation
-            setTimeout(() => {
-                zoomOverlay.remove();
-            }, 600);
-        }, 2000);
-    }
+    setTimeout(() => {
+        introOverlay.remove();
+    }, 4200);
 }
 
 // Skeleton Loaders
