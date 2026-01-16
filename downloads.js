@@ -136,13 +136,25 @@ function addToDownloads(mod) {
         return;
     }
     
+    // Parse file size string to bytes
+    let sizeBytes = 0;
+    if (mod.fileSize) {
+        const sizeStr = mod.fileSize.toString().toUpperCase();
+        const num = parseFloat(sizeStr);
+        if (sizeStr.includes('GB')) sizeBytes = num * 1024 * 1024 * 1024;
+        else if (sizeStr.includes('MB')) sizeBytes = num * 1024 * 1024;
+        else if (sizeStr.includes('KB')) sizeBytes = num * 1024;
+        else sizeBytes = num;
+    }
+    
     downloads.unshift({
-        id: mod.id || Date.now(),
+        id: mod.id || mod._id || Date.now(),
         name: mod.name || mod.title,
-        game: mod.game,
+        game: mod.game || mod.gameTitle,
         author: mod.author,
-        image: mod.image,
-        size: mod.fileSize || Math.floor(Math.random() * 500 + 50) * 1024 * 1024,
+        image: mod.image || (mod.images && mod.images[0]),
+        size: sizeBytes || Math.floor(Math.random() * 500 + 50) * 1024 * 1024,
+        downloadUrl: mod.downloadUrl,
         status: 'downloading',
         progress: 0,
         speed: '0',
@@ -194,17 +206,54 @@ function openFile(index) {
 }
 
 function triggerRealDownload(dl) {
-    // Create actual file download
-    const content = `ExusCraft Mod: ${dl.name}\nGame: ${dl.game}\nAuthor: ${dl.author}\n\nThank you for downloading from ExusCraft!`;
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${dl.name.replace(/[^a-z0-9]/gi, '_')}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // If mod has a real download URL, use it
+    if (dl.downloadUrl && dl.downloadUrl.startsWith('http')) {
+        // External URL - open in new tab or trigger download
+        const a = document.createElement('a');
+        a.href = dl.downloadUrl;
+        a.download = dl.name.replace(/[^a-z0-9]/gi, '_') + '.zip';
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    } else if (dl.downloadUrl && dl.downloadUrl.startsWith('/')) {
+        // Server-hosted file
+        const baseUrl = window.location.origin;
+        const a = document.createElement('a');
+        a.href = baseUrl + dl.downloadUrl;
+        a.download = dl.name.replace(/[^a-z0-9]/gi, '_') + '.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    } else {
+        // Fallback: Create a readme file with mod info
+        const content = `# ${dl.name}
+
+## Mod Information
+- **Game:** ${dl.game}
+- **Author:** ${dl.author}
+- **Downloaded from:** ExusCraft (https://exuscraft.com)
+
+## Installation Instructions
+1. Extract this file to your game's mod folder
+2. Enable the mod in your game's mod manager
+3. Restart the game
+
+## Support
+Visit https://exuscraft.com for support and more mods!
+
+Thank you for downloading from ExusCraft! 🎮
+`;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${dl.name.replace(/[^a-z0-9]/gi, '_')}_README.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
     
     showNotification(`${dl.name} downloaded!`, 'success');
 }
