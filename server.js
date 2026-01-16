@@ -37,6 +37,7 @@ app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/comments', require('./routes/comments'));
 app.use('/api/collections', require('./routes/collections'));
 app.use('/api/chatbot', require('./routes/chatbot'));
+app.use('/api/refunds', require('./routes/refunds'));
 
 // Admin route
 app.get('/admin', (req, res) => {

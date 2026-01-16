@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Refund - ExusCraft</title>
+    <link rel="stylesheet" href="styles-new.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <style>
+        .refund-container {
+            max-width: 800px;
+            margin: 120px auto 60px;
+            padding: 0 20px;
+        }
+        .refund-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .refund-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        .refund-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        .refund-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .refund-card h2 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .refund-card h2 i {
+            color: #ff6b6b;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group select,
+        .form-group textarea,
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group select:focus,
+        .form-group textarea:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+        }
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .policy-box {
+            background: rgba(78, 205, 196, 0.1);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .policy-box h3 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+        }
+        .policy-box ul {
+            color: var(--text-secondary);
+            padding-left: 20px;
+            margin: 0;
+        }
+        .policy-box li {
+            margin-bottom: 8px;
+        }
+        .requests-list {
+            margin-top: 20px;
+        }
+        .request-item {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .request-info h4 {
+            color: var(--text-primary);
+            margin: 0 0 5px 0;
+        }
+        .request-info p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .status-pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .status-approved { background: rgba(40, 167, 69, 0.2); color: #28a745; }
+        .status-denied { background: rgba(220, 53, 69, 0.2); color: #dc3545; }
+        .status-processed { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; }
+        .no-orders {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+        .no-orders i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        .login-prompt {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .login-prompt i {
+            font-size: 4rem;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+        .login-prompt h2 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        .login-prompt p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        .login-btn {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .success-message {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            display: none;
+        }
+        .success-message i {
+            font-size: 3rem;
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        .success-message h3 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        .ticket-number {
+            font-family: monospace;
+            font-size: 1.2rem;
+            background: var(--bg-secondary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation will be loaded by app.js -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="8" fill="url(#logoGradient)"/>
+                    <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
+                    <circle cx="16" cy="16" r="3" fill="white"/>
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#5B8CFF"/>
+                            <stop offset="50%" style="stop-color:#7C5CFF"/>
+                            <stop offset="100%" style="stop-color:#FF6B9D"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">ExusCraft</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#games">Mods</a>
+                <a href="downloads.html">Downloads</a>
+            </div>
+            <div class="nav-actions">
+                <div class="nav-auth" id="navAuth"></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="refund-container">
+        <div class="refund-header">
+            <h1><i class="fas fa-receipt"></i> Request a Refund</h1>
+            <p>We're here to help if something isn't right with your purchase</p>
+        </div>
+
+        <!-- Login prompt (shown when not logged in) -->
+        <div id="loginPrompt" class="refund-card login-prompt" style="display: none;">
+            <i class="fas fa-user-lock"></i>
+            <h2>Login Required</h2>
+            <p>Please log in to view your orders and submit a refund request.</p>
+            <a href="index.html?action=login" class="login-btn">Log In</a>
+        </div>
+
+        <!-- Main content (shown when logged in) -->
+        <div id="refundContent" style="display: none;">
+            <!-- Refund Policy -->
+            <div class="refund-card">
+                <h2><i class="fas fa-info-circle"></i> Refund Policy</h2>
+                <div class="policy-box">
+                    <h3>📋 What you need to know:</h3>
+                    <ul>
+                        <li>Refund requests must be submitted within <strong>14 days</strong> of purchase</li>
+                        <li>Requests are reviewed within 2-3 business days</li>
+                        <li>Approved refunds are processed back to your original payment method</li>
+                        <li>You'll receive email updates on your request status</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Refund Form -->
+            <div class="refund-card" id="refundFormCard">
+                <h2><i class="fas fa-file-alt"></i> Submit Request</h2>
+                
+                <div id="successMessage" class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Request Submitted!</h3>
+                    <p>Your refund request has been received. Here's your ticket number:</p>
+                    <div class="ticket-number" id="ticketNumber"></div>
+                    <p>We've sent a confirmation email with these details.</p>
+                </div>
+
+                <form id="refundForm">
+                    <div class="form-group">
+                        <label for="orderSelect">Select Order</label>
+                        <select id="orderSelect" required>
+                            <option value="">Loading orders...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundReason">Reason for Refund</label>
+                        <textarea id="refundReason" placeholder="Please describe why you're requesting a refund..." required maxlength="1000"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Submit Refund Request
+                    </button>
+                </form>
+            </div>
+
+            <!-- Previous Requests -->
+            <div class="refund-card">
+                <h2><i class="fas fa-history"></i> Your Refund Requests</h2>
+                <div id="requestsList" class="requests-list">
+                    <div class="no-orders">
+                        <i class="fas fa-inbox"></i>
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? `http://localhost:${window.location.port || 3007}/api`
+            : '/api';
+
+        // Check auth and load data
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                document.getElementById('loginPrompt').style.display = 'block';
+                document.getElementById('refundContent').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('loginPrompt').style.display = 'none';
+            document.getElementById('refundContent').style.display = 'block';
+            
+            await loadOrders();
+            await loadRefundRequests();
+        });
+
+        // Load user's orders
+        async function loadOrders() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/refunds/my-orders`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const orders = await response.json();
+                const select = document.getElementById('orderSelect');
+                
+                if (orders.length === 0) {
+                    select.innerHTML = '<option value="">No orders found</option>';
+                    document.getElementById('submitBtn').disabled = true;
+                    return;
+                }
+                
+                select.innerHTML = '<option value="">Select an order...</option>';
+                orders.forEach(order => {
+                    const date = new Date(order.createdAt).toLocaleDateString();
+                    const option = document.createElement('option');
+                    option.value = order.orderNumber;
+                    option.textContent = `${order.orderNumber} - $${order.totalAmount.toFixed(2)} NZD (${date})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('orderSelect').innerHTML = '<option value="">Error loading orders</option>';
+            }
+        }
+
+        // Load existing refund requests
+        async function loadRefundRequests() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/refunds/my-requests`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const requests = await response.json();
+                const container = document.getElementById('requestsList');
+                
+                if (requests.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-orders">
+                            <i class="fas fa-inbox"></i>
+                            <p>No refund requests yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = requests.map(req => `
+                    <div class="request-item">
+                        <div class="request-info">
+                            <h4>${req.ticketNumber}</h4>
+                            <p>Order: ${req.orderNumber} • ${new Date(req.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <span class="status-badge status-${req.status}">${req.status.charAt(0).toUpperCase() + req.status.slice(1)}</span>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading requests:', error);
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('refundForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const orderNumber = document.getElementById('orderSelect').value;
+            const reason = document.getElementById('refundReason').value;
+            
+            if (!orderNumber || !reason) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/refunds/request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ orderNumber, reason })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to submit request');
+                }
+                
+                // Show success
+                document.getElementById('refundForm').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('ticketNumber').textContent = data.ticketNumber;
+                
+                // Reload requests list
+                await loadRefundRequests();
+                
+            } catch (error) {
+                alert(error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Refund Request';
+            }
+        });
+    </script>
+</body>
+</html>

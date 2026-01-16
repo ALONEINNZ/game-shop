@@ -9,13 +9,16 @@ const orderSchema = new mongoose.Schema({
   games: [{
     game: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Game',
-      required: true
+      ref: 'Game'
     },
     price: {
-      type: Number,
-      required: true
+      type: Number
     }
+  }],
+  items: [{
+    name: String,
+    price: Number,
+    id: String
   }],
   totalAmount: {
     type: Number,

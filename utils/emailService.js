@@ -286,8 +286,211 @@ This is a demo - in production, this would be sent via email.
   }
 };
 
+// Send order confirmation email
+const sendOrderConfirmationEmail = async (email, username, orderDetails) => {
+  try {
+    const transporter = createTransporter();
+    const { orderNumber, items, totalAmount } = orderDetails;
+    
+    // Build items list HTML
+    const itemsHtml = items && items.length > 0 
+      ? items.map(item => `
+        <tr>
+          <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.name || 'Item'}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">$${(item.price || 0).toFixed(2)} NZD</td>
+        </tr>
+      `).join('')
+      : '<tr><td colspan="2" style="padding: 12px;">Purchase items</td></tr>';
+    
+    // If no transporter available, log to console (demo mode)
+    if (!transporter) {
+      console.log(`
+🔥 DEMO EMAIL SERVICE 🔥
+========================
+TO: ${email}
+SUBJECT: Order Confirmed - ${orderNumber} 🎮
+
+Hi ${username}!
+
+Your order has been confirmed!
+Order Number: ${orderNumber}
+Total: $${totalAmount.toFixed(2)} NZD
+
+This is a demo - in production, this would be sent via email.
+========================
+      `);
+      return true;
+    }
+    
+    const content = `
+      <p style="font-size: 1.1rem; line-height: 1.8; color: #34495e; margin-bottom: 25px;">
+        Hi <strong>${username}</strong>! 🎉
+      </p>
+      
+      <p style="font-size: 1rem; line-height: 1.7; color: #34495e; margin-bottom: 25px;">
+        Thank you for your purchase! Your order has been confirmed and is ready for download.
+      </p>
+      
+      <div style="background: linear-gradient(135deg, #d4edda, #c3e6cb); padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 4px solid #28a745;">
+        <p style="margin: 0; color: #155724; font-weight: 600; font-size: 1.2rem;">
+          📦 Order Number: <span style="font-family: monospace;">${orderNumber}</span>
+        </p>
+      </div>
+      
+      <div style="background: #f8f9fa; border-radius: 10px; padding: 20px; margin: 25px 0;">
+        <h3 style="margin-top: 0; color: #2c3e50; font-size: 1.1rem;">Order Summary</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #e9ecef;">
+              <th style="padding: 12px; text-align: left; color: #495057;">Item</th>
+              <th style="padding: 12px; text-align: right; color: #495057;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+          <tfoot>
+            <tr style="background: linear-gradient(135deg, #ff6b6b, #4ecdc4);">
+              <td style="padding: 15px; color: white; font-weight: 600; font-size: 1.1rem;">Total</td>
+              <td style="padding: 15px; color: white; font-weight: 600; font-size: 1.1rem; text-align: right;">$${totalAmount.toFixed(2)} NZD</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      
+      <div style="background: linear-gradient(135deg, #fff3cd, #ffeaa7); padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 4px solid #f39c12;">
+        <p style="margin: 0; color: #856404; font-weight: 500;">
+          💡 <strong>Need help?</strong> If you have any issues with your purchase, you can request a refund within 14 days.
+        </p>
+      </div>
+      
+      <p style="font-size: 0.95rem; color: #7f8c8d; margin-bottom: 0; text-align: center;">
+        Keep this email for your records. Happy gaming! 🎮
+      </p>
+    `;
+    
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || 'ExusCraft <noreply@exuscraft.demo>',
+      to: email,
+      subject: `Order Confirmed - ${orderNumber} 🎮`,
+      html: getEmailTemplate('Order Confirmed! 🎉', content, 'View My Downloads', `${process.env.BASE_URL || 'http://localhost:3003'}/downloads.html`),
+      text: `
+        Order Confirmed - ExusCraft
+        
+        Hi ${username}!
+        
+        Thank you for your purchase! Your order has been confirmed.
+        
+        Order Number: ${orderNumber}
+        Total: $${totalAmount.toFixed(2)} NZD
+        
+        Visit your downloads: ${process.env.BASE_URL || 'http://localhost:3003'}/downloads.html
+        
+        Need a refund? Visit: ${process.env.BASE_URL || 'http://localhost:3003'}/refund.html
+        
+        Happy gaming!
+        ExusCraft Team
+      `
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`Order confirmation email sent to ${email}:`, nodemailer.getTestMessageUrl(info));
+    return true;
+  } catch (error) {
+    console.error('Error sending order confirmation email:', error);
+    console.log(`DEMO: Order confirmation email would be sent to ${email}`);
+    return true;
+  }
+};
+
+// Send refund request confirmation email
+const sendRefundRequestEmail = async (email, username, refundDetails) => {
+  try {
+    const transporter = createTransporter();
+    const { ticketNumber, orderNumber, reason } = refundDetails;
+    
+    if (!transporter) {
+      console.log(`
+🔥 DEMO EMAIL SERVICE 🔥
+========================
+TO: ${email}
+SUBJECT: Refund Request Received - ${ticketNumber}
+
+Hi ${username}!
+
+Your refund request has been received.
+Ticket: ${ticketNumber}
+Order: ${orderNumber}
+
+This is a demo - in production, this would be sent via email.
+========================
+      `);
+      return true;
+    }
+    
+    const content = `
+      <p style="font-size: 1.1rem; line-height: 1.8; color: #34495e; margin-bottom: 25px;">
+        Hi <strong>${username}</strong>,
+      </p>
+      
+      <p style="font-size: 1rem; line-height: 1.7; color: #34495e; margin-bottom: 25px;">
+        We've received your refund request and our team will review it within 2-3 business days.
+      </p>
+      
+      <div style="background: linear-gradient(135deg, #d1ecf1, #bee5eb); padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 4px solid #17a2b8;">
+        <p style="margin: 0 0 10px 0; color: #0c5460; font-weight: 600;">
+          🎫 Ticket Number: <span style="font-family: monospace;">${ticketNumber}</span>
+        </p>
+        <p style="margin: 0; color: #0c5460;">
+          📦 Order: ${orderNumber}
+        </p>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 25px 0;">
+        <h4 style="margin-top: 0; color: #2c3e50;">Your Reason:</h4>
+        <p style="margin: 0; color: #495057; font-style: italic;">"${reason}"</p>
+      </div>
+      
+      <p style="font-size: 0.95rem; color: #7f8c8d; margin-bottom: 0; text-align: center;">
+        We'll email you once your request has been reviewed.
+      </p>
+    `;
+    
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || 'ExusCraft <noreply@exuscraft.demo>',
+      to: email,
+      subject: `Refund Request Received - ${ticketNumber}`,
+      html: getEmailTemplate('Refund Request Received', content, null, null),
+      text: `
+        Refund Request Received - ExusCraft
+        
+        Hi ${username}!
+        
+        We've received your refund request.
+        
+        Ticket Number: ${ticketNumber}
+        Order: ${orderNumber}
+        Reason: ${reason}
+        
+        We'll review your request within 2-3 business days.
+        
+        ExusCraft Team
+      `
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`Refund request email sent to ${email}`);
+    return true;
+  } catch (error) {
+    console.error('Error sending refund request email:', error);
+    return true;
+  }
+};
+
 module.exports = {
   sendWelcomeEmail,
   sendVerificationEmail,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendOrderConfirmationEmail,
+  sendRefundRequestEmail
 };

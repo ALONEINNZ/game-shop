@@ -3,6 +3,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const { sendOrderConfirmationEmail } = require('../utils/emailService');
 
 const router = express.Router();
 
@@ -60,9 +61,22 @@ router.post('/confirm-purchase', auth, async (req, res) => {
 
     await order.save();
 
+    // Get user info for email
+    const user = await User.findById(req.userId);
+    
+    // Send order confirmation email
+    if (user && user.email) {
+      await sendOrderConfirmationEmail(user.email, user.username, {
+        orderNumber: order.orderNumber,
+        items: items || [],
+        totalAmount: order.totalAmount
+      });
+    }
+
     res.json({
       message: 'Purchase completed successfully',
-      order: order
+      order: order,
+      orderNumber: order.orderNumber
     });
   } catch (error) {
     console.error('Confirm purchase error:', error);
