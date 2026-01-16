@@ -2452,13 +2452,6 @@ select:focus {
     }
 }
 
-/* Navbar animation - slide down */
-.navbar {
-    opacity: 0;
-    animation: slideUpBounce 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    animation-delay: 0.1s;
-}
-
 /* Hero animations - staggered POP effect */
 .hero-badge {
     opacity: 0;
@@ -2888,12 +2881,6 @@ select:focus {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-/* Apply smoother animations */
-.navbar {
-    animation: smoothSlideUp 0.5s ease-out forwards;
-    animation-delay: 0.1s;
 }
 
 .hero-badge {
