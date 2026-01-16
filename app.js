@@ -4,6 +4,18 @@ let mods = [];
 let cart = [];
 let currentTheme = 'dark';
 
+// Fallback: Hide loading screen after 3 seconds no matter what
+setTimeout(() => {
+    const loadingElement = document.getElementById('loading');
+    if (loadingElement && loadingElement.style.display !== 'none') {
+        console.warn('Loading screen timeout - forcing hide');
+        loadingElement.style.opacity = '0';
+        setTimeout(() => {
+            loadingElement.style.display = 'none';
+        }, 300);
+    }
+}, 3000);
+
 // Real mod data with proper images and functionality
 const realMods = [
     {
@@ -210,33 +222,51 @@ const realMods = [
 document.addEventListener('DOMContentLoaded', function() {
     console.log('ExusCraft loading...');
     
-    // Run intro animation FIRST
-    initIntroAnimation();
-    
-    initializeTheme();
-    loadSavedData();
-    
-    // Load mods immediately
-    mods = realMods;
-    displayModsInSections(mods);
-    
-    initNavbarScroll();
-    updateUserNavigation();
-    updateCartDisplay();
-    
-    // Initialize hex grid after a short delay to not block rendering
-    setTimeout(() => initHexGrid(), 100);
-    
-    // Hide loading screen
+    // Hide loading screen immediately to prevent stuck loading
     const loadingElement = document.getElementById('loading');
     if (loadingElement) {
-        loadingElement.style.opacity = '0';
         setTimeout(() => {
-            loadingElement.style.display = 'none';
-        }, 300);
+            loadingElement.style.opacity = '0';
+            setTimeout(() => {
+                loadingElement.style.display = 'none';
+            }, 300);
+        }, 500); // Small delay to show loading briefly
     }
     
-    console.log('ExusCraft loaded successfully!');
+    try {
+        // Run intro animation FIRST
+        if (typeof initIntroAnimation === 'function') {
+            initIntroAnimation();
+        }
+        
+        initializeTheme();
+        loadSavedData();
+        
+        // Load mods immediately
+        mods = realMods;
+        displayModsInSections(mods);
+        
+        if (typeof initNavbarScroll === 'function') {
+            initNavbarScroll();
+        }
+        updateUserNavigation();
+        updateCartDisplay();
+        
+        // Initialize hex grid after a short delay to not block rendering
+        setTimeout(() => {
+            if (typeof initHexGrid === 'function') {
+                initHexGrid();
+            }
+        }, 100);
+        
+        console.log('ExusCraft loaded successfully!');
+    } catch (error) {
+        console.error('Error during initialization:', error);
+        // Ensure loading screen is hidden even if there's an error
+        if (loadingElement) {
+            loadingElement.style.display = 'none';
+        }
+    }
 });
 
 // Scroll Zoom Effect - Zooms into "Game Mods" text then transitions to mods section
