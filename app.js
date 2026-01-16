@@ -271,6 +271,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 100);
         
+        // Initialize GSAP animations
+        setTimeout(() => {
+            if (typeof gsap !== 'undefined') {
+                initGSAPAnimations();
+            }
+        }, 200);
+        
         console.log('ExusCraft loaded successfully!');
     } catch (error) {
         console.error('Error during initialization:', error);
@@ -3467,4 +3474,180 @@ function initHexGrid() {
     window.addEventListener('beforeunload', () => {
         cancelAnimationFrame(animationId);
     });
+}
+
+
+// ============================================
+// GSAP SCROLL ANIMATIONS
+// ============================================
+function initGSAPAnimations() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+        console.log('GSAP not loaded, skipping animations');
+        return;
+    }
+    
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Hero section animations
+    gsap.from('.hero-badge', {
+        opacity: 0,
+        y: -30,
+        duration: 0.8,
+        ease: 'power3.out'
+    });
+    
+    gsap.from('.hero-title', {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        delay: 0.2,
+        ease: 'power3.out'
+    });
+    
+    gsap.from('.hero-subtitle', {
+        opacity: 0,
+        y: 30,
+        duration: 0.8,
+        delay: 0.4,
+        ease: 'power3.out'
+    });
+    
+    gsap.from('.hero-cta .btn', {
+        opacity: 0,
+        y: 20,
+        duration: 0.6,
+        delay: 0.6,
+        stagger: 0.1,
+        ease: 'power3.out'
+    });
+    
+    gsap.from('.hero-stat', {
+        opacity: 0,
+        scale: 0.8,
+        duration: 0.6,
+        delay: 0.8,
+        stagger: 0.1,
+        ease: 'back.out(1.7)'
+    });
+    
+    // Scroll indicator animation
+    gsap.to('.scroll-indicator', {
+        y: 10,
+        duration: 1.5,
+        repeat: -1,
+        yoyo: true,
+        ease: 'power1.inOut'
+    });
+    
+    // Section headers with scroll trigger
+    gsap.utils.toArray('.section-header').forEach(header => {
+        gsap.from(header, {
+            scrollTrigger: {
+                trigger: header,
+                start: 'top 80%',
+                toggleActions: 'play none none reverse'
+            },
+            opacity: 0,
+            y: 50,
+            duration: 0.8,
+            ease: 'power3.out'
+        });
+    });
+    
+    // Mod cards stagger animation
+    gsap.utils.toArray('.mod-card, .game-card').forEach((card, index) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 85%',
+                toggleActions: 'play none none reverse'
+            },
+            opacity: 0,
+            y: 60,
+            scale: 0.9,
+            duration: 0.6,
+            delay: (index % 4) * 0.1,
+            ease: 'power3.out'
+        });
+    });
+    
+    // Parallax effect on hero background
+    gsap.to('.hero', {
+        scrollTrigger: {
+            trigger: '.hero',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 1
+        },
+        y: 200,
+        opacity: 0.5,
+        ease: 'none'
+    });
+    
+    // Navbar background on scroll
+    ScrollTrigger.create({
+        start: 'top -80',
+        end: 99999,
+        toggleClass: {
+            className: 'scrolled',
+            targets: '.navbar'
+        }
+    });
+    
+    // Fade in game grid items
+    gsap.utils.toArray('.game-grid-item').forEach(item => {
+        gsap.from(item, {
+            scrollTrigger: {
+                trigger: item,
+                start: 'top 90%',
+                toggleActions: 'play none none reverse'
+            },
+            opacity: 0,
+            scale: 0.8,
+            duration: 0.5,
+            ease: 'power2.out'
+        });
+    });
+    
+    // Smooth reveal for footer
+    gsap.from('.site-footer', {
+        scrollTrigger: {
+            trigger: '.site-footer',
+            start: 'top 90%',
+            toggleActions: 'play none none reverse'
+        },
+        opacity: 0,
+        y: 50,
+        duration: 0.8,
+        ease: 'power3.out'
+    });
+    
+    // Add hover animations to buttons
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            gsap.to(btn, {
+                scale: 1.05,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+        });
+        
+        btn.addEventListener('mouseleave', () => {
+            gsap.to(btn, {
+                scale: 1,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+        });
+    });
+    
+    // Gradient text shimmer effect
+    gsap.to('.gradient-text', {
+        backgroundPosition: '200% center',
+        duration: 3,
+        repeat: -1,
+        ease: 'none'
+    });
+    
+    console.log('GSAP animations initialized');
 }

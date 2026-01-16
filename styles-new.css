@@ -9451,3 +9451,237 @@ p, .mod-card-desc, .game-description, .section-subtitle {
     .intro-title { font-size: 1.8rem; }
     .intro-sub { font-size: 0.7rem; letter-spacing: 2px; }
 }
+
+
+/* ============================================
+   ENHANCED GAMING AESTHETICS
+   ============================================ */
+
+/* Neon glow effects */
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(91, 140, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 0 30px rgba(91, 140, 255, 0.6),
+                0 0 60px rgba(91, 140, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Enhanced gradient text */
+.gradient-text {
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #ff6b6b);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s linear infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+/* Card hover effects with glow */
+.mod-card, .game-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.mod-card::after, .game-card::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, #5B8CFF, #7C5CFF, #FF6B9D, #4ecdc4);
+    border-radius: inherit;
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.4s;
+    filter: blur(10px);
+}
+
+.mod-card:hover::after, .game-card:hover::after {
+    opacity: 0.6;
+}
+
+.mod-card:hover, .game-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(91, 140, 255, 0.2);
+}
+
+/* Neon border effect */
+.hero {
+    position: relative;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent,
+        #5B8CFF,
+        #7C5CFF,
+        #FF6B9D,
+        #4ecdc4,
+        transparent
+    );
+    animation: neonScan 3s linear infinite;
+}
+
+@keyframes neonScan {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Glowing stats */
+.hero-stat {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.hero-stat:hover {
+    transform: scale(1.1);
+}
+
+.hero-stat:hover .stat-number {
+    text-shadow: 0 0 20px rgba(91, 140, 255, 0.8),
+                 0 0 40px rgba(124, 92, 255, 0.4);
+}
+
+/* Section dividers with glow */
+.section {
+    position: relative;
+}
+
+.section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #5B8CFF, transparent);
+    box-shadow: 0 0 10px rgba(91, 140, 255, 0.5);
+}
+
+/* Animated background particles */
+@keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-20px) translateX(10px); }
+    50% { transform: translateY(-10px) translateX(-10px); }
+    75% { transform: translateY(-30px) translateX(5px); }
+}
+
+.particle {
+    animation: float 6s ease-in-out infinite;
+}
+
+.particle:nth-child(2n) {
+    animation-duration: 8s;
+    animation-delay: -2s;
+}
+
+.particle:nth-child(3n) {
+    animation-duration: 10s;
+    animation-delay: -4s;
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Enhanced navbar with blur */
+.navbar.scrolled {
+    background: rgba(10, 10, 25, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(91, 140, 255, 0.1);
+}
+
+/* Glowing icons */
+.nav-links a:hover,
+.footer-social a:hover {
+    color: #5B8CFF;
+    text-shadow: 0 0 10px rgba(91, 140, 255, 0.8);
+}
+
+/* Enhanced scroll indicator */
+.scroll-indicator {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.scroll-indicator:hover {
+    transform: translateY(5px);
+    color: #5B8CFF;
+    text-shadow: 0 0 10px rgba(91, 140, 255, 0.8);
+}
+
+/* Cyberpunk grid overlay */
+.hero-content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(91, 140, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(91, 140, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Pulsing effect for featured badges */
+@keyframes pulse {
+    0%, 100% { 
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(255, 193, 7, 0.8),
+                    0 0 40px rgba(255, 193, 7, 0.4);
+    }
+}
+
+.featured-badge {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Smooth transitions for all interactive elements */
+a, button, .btn, .mod-card, .game-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced focus states for accessibility */
+a:focus, button:focus, .btn:focus {
+    outline: 2px solid #5B8CFF;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(91, 140, 255, 0.2);
+}
