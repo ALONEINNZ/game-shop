@@ -244,117 +244,46 @@ function initScrollZoomEffect() {
     // Disabled - replaced by intro animation
 }
 
-// 3D Intro Animation - Fly through ExusCraft logo on page load
+// 3D Intro Animation - Simplified for performance
 function initIntroAnimation() {
-    // Create intro overlay
     const introOverlay = document.createElement('div');
     introOverlay.className = 'intro-overlay';
     introOverlay.innerHTML = `
-        <div class="intro-tunnel">
-            <div class="tunnel-ring ring-1"></div>
-            <div class="tunnel-ring ring-2"></div>
-            <div class="tunnel-ring ring-3"></div>
-            <div class="tunnel-ring ring-4"></div>
-            <div class="tunnel-ring ring-5"></div>
-            <div class="tunnel-ring ring-6"></div>
-            <div class="tunnel-ring ring-7"></div>
-            <div class="tunnel-ring ring-8"></div>
+        <div class="intro-logo">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="32" height="32" rx="6" fill="url(#introG)"/>
+                <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.1)"/>
+                <circle cx="16" cy="16" r="3" fill="white"/>
+                <defs>
+                    <linearGradient id="introG" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#5B8CFF"/>
+                        <stop offset="50%" stop-color="#7C5CFF"/>
+                        <stop offset="100%" stop-color="#FF6B9D"/>
+                    </linearGradient>
+                </defs>
+            </svg>
         </div>
-        <div class="intro-logo-3d">
-            <div class="logo-cube">
-                <div class="cube-face cube-front">
-                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="6" fill="url(#introGrad1)"/>
-                        <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.1)"/>
-                        <circle cx="16" cy="16" r="3" fill="white"/>
-                    </svg>
-                </div>
-                <div class="cube-face cube-back">
-                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="6" fill="url(#introGrad2)"/>
-                        <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.1)"/>
-                        <circle cx="16" cy="16" r="3" fill="white"/>
-                    </svg>
-                </div>
-                <div class="cube-face cube-left"></div>
-                <div class="cube-face cube-right"></div>
-                <div class="cube-face cube-top"></div>
-                <div class="cube-face cube-bottom"></div>
-            </div>
-        </div>
-        <div class="intro-text-3d">
-            <span class="intro-letter" style="--i:0">E</span>
-            <span class="intro-letter" style="--i:1">x</span>
-            <span class="intro-letter" style="--i:2">u</span>
-            <span class="intro-letter" style="--i:3">s</span>
-            <span class="intro-letter" style="--i:4">C</span>
-            <span class="intro-letter" style="--i:5">r</span>
-            <span class="intro-letter" style="--i:6">a</span>
-            <span class="intro-letter" style="--i:7">f</span>
-            <span class="intro-letter" style="--i:8">t</span>
-        </div>
-        <div class="intro-tagline">Enter the Mod Universe</div>
-        <div class="speed-lines">
-            <div class="speed-line"></div>
-            <div class="speed-line"></div>
-            <div class="speed-line"></div>
-            <div class="speed-line"></div>
-            <div class="speed-line"></div>
-            <div class="speed-line"></div>
-            <div class="speed-line"></div>
-            <div class="speed-line"></div>
-            <div class="speed-line"></div>
-            <div class="speed-line"></div>
-            <div class="speed-line"></div>
-            <div class="speed-line"></div>
-        </div>
-        <svg style="position:absolute;width:0;height:0;">
-            <defs>
-                <linearGradient id="introGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#5B8CFF"/>
-                    <stop offset="50%" style="stop-color:#7C5CFF"/>
-                    <stop offset="100%" style="stop-color:#FF6B9D"/>
-                </linearGradient>
-                <linearGradient id="introGrad2" x1="100%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" style="stop-color:#FF6B9D"/>
-                    <stop offset="50%" style="stop-color:#7C5CFF"/>
-                    <stop offset="100%" style="stop-color:#5B8CFF"/>
-                </linearGradient>
-            </defs>
-        </svg>
+        <div class="intro-title">ExusCraft</div>
+        <div class="intro-sub">Enter the Mod Universe</div>
     `;
     
-    // Insert at beginning of body
     document.body.insertBefore(introOverlay, document.body.firstChild);
-    
-    // Lock scroll during intro
     document.body.style.overflow = 'hidden';
     
-    // Start animation sequence
-    setTimeout(() => {
-        introOverlay.classList.add('phase-1'); // Logo appears from distance
-    }, 100);
+    // Force GPU layer
+    introOverlay.style.willChange = 'opacity';
     
-    setTimeout(() => {
-        introOverlay.classList.add('phase-2'); // Text appears
-    }, 800);
+    // Simple timeline
+    requestAnimationFrame(() => {
+        introOverlay.classList.add('show');
+    });
     
+    setTimeout(() => introOverlay.classList.add('zoom'), 1500);
     setTimeout(() => {
-        introOverlay.classList.add('phase-3'); // Fly through begins
-    }, 2000);
-    
-    setTimeout(() => {
-        introOverlay.classList.add('phase-4'); // Speed up, tunnel effect
-    }, 2800);
-    
-    setTimeout(() => {
-        introOverlay.classList.add('phase-5'); // Final zoom through
+        introOverlay.classList.add('exit');
         document.body.style.overflow = '';
-    }, 3500);
-    
-    setTimeout(() => {
-        introOverlay.remove();
-    }, 4200);
+    }, 2500);
+    setTimeout(() => introOverlay.remove(), 3200);
 }
 
 // Skeleton Loaders
