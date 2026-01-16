@@ -86,10 +86,11 @@ window.addEventListener('load', () => {
 });
 
 // ============================================
-// SCROLL-TRIGGERED ANIMATIONS
+// SCROLL-TRIGGERED ANIMATIONS - DISABLED TO FIX VISIBILITY
 // ============================================
 
-// Animate section titles
+// Animate section titles - DISABLED
+/*
 gsap.utils.toArray('.section-title').forEach(title => {
     gsap.from(title, {
         scrollTrigger: {
@@ -102,8 +103,10 @@ gsap.utils.toArray('.section-title').forEach(title => {
         opacity: 0
     });
 });
+*/
 
-// Animate game cards on scroll - only after they're loaded
+// Animate game cards on scroll - DISABLED
+/*
 setTimeout(() => {
     gsap.utils.toArray('.game-card').forEach((card, index) => {
         gsap.from(card, {
@@ -118,8 +121,10 @@ setTimeout(() => {
         });
     });
 }, 1000);
+*/
 
-// Animate trust bar items
+// Animate trust bar items - DISABLED
+/*
 gsap.from('.trust-item', {
     scrollTrigger: {
         trigger: '.trust-bar',
@@ -131,8 +136,10 @@ gsap.from('.trust-item', {
     opacity: 0,
     stagger: 0.1
 });
+*/
 
-// Animate game filter cards
+// Animate game filter cards - DISABLED
+/*
 gsap.from('.game-card-filter', {
     scrollTrigger: {
         trigger: '.game-grid',
@@ -144,6 +151,7 @@ gsap.from('.game-card-filter', {
     opacity: 0,
     stagger: 0.1
 });
+*/
 
 // ============================================
 // PARALLAX EFFECTS
@@ -397,8 +405,9 @@ function createParticles() {
 window.addEventListener('load', createParticles);
 
 // ============================================
-// INTERSECTION OBSERVER FOR FADE-IN EFFECTS
+// INTERSECTION OBSERVER FOR FADE-IN EFFECTS - DISABLED
 // ============================================
+/*
 const fadeInObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -420,5 +429,6 @@ setTimeout(() => {
         fadeInObserver.observe(el);
     });
 }, 500);
+*/
 
 console.log('🎮 ExusCraft Enhanced Animations Loaded!');
