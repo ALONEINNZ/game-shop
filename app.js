@@ -224,6 +224,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize hex grid after a short delay to not block rendering
     setTimeout(() => initHexGrid(), 100);
     
+    // Initialize scroll zoom effect
+    setTimeout(() => initScrollZoomEffect(), 200);
+    
     // Hide loading screen
     const loadingElement = document.getElementById('loading');
     if (loadingElement) {
@@ -235,6 +238,79 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('ExusCraft loaded successfully!');
 });
+
+// Scroll Zoom Effect - Zooms into "Game Mods" text then transitions to mods section
+function initScrollZoomEffect() {
+    const hero = document.querySelector('.hero');
+    const gradientText = document.querySelector('.gradient-text');
+    const heroContent = document.querySelector('.hero-content');
+    const gamesSection = document.getElementById('games');
+    
+    if (!hero || !gradientText || !gamesSection) return;
+    
+    // Create zoom overlay
+    const zoomOverlay = document.createElement('div');
+    zoomOverlay.className = 'zoom-overlay';
+    zoomOverlay.innerHTML = '<div class="zoom-text">Game Mods</div>';
+    document.body.appendChild(zoomOverlay);
+    
+    let isZooming = false;
+    let zoomComplete = false;
+    
+    window.addEventListener('scroll', () => {
+        if (zoomComplete) return;
+        
+        const heroRect = hero.getBoundingClientRect();
+        const heroBottom = heroRect.bottom;
+        const scrollProgress = Math.max(0, Math.min(1, 1 - (heroBottom / window.innerHeight)));
+        
+        // Start zoom effect when scrolling past 30% of hero
+        if (scrollProgress > 0.3 && !isZooming) {
+            isZooming = true;
+            triggerZoomTransition();
+        }
+    });
+    
+    function triggerZoomTransition() {
+        // Get position of gradient text
+        const textRect = gradientText.getBoundingClientRect();
+        const zoomText = zoomOverlay.querySelector('.zoom-text');
+        
+        // Position zoom text at same location as original
+        zoomText.style.left = textRect.left + 'px';
+        zoomText.style.top = textRect.top + 'px';
+        zoomText.style.fontSize = window.getComputedStyle(gradientText).fontSize;
+        
+        // Show overlay and start animation
+        zoomOverlay.classList.add('active');
+        
+        // Phase 1: Zoom in on text (0-600ms)
+        setTimeout(() => {
+            zoomText.classList.add('zooming');
+        }, 50);
+        
+        // Phase 2: Flash white and transition (600-900ms)
+        setTimeout(() => {
+            zoomOverlay.classList.add('flash');
+        }, 600);
+        
+        // Phase 3: Scroll to mods section and fade out (900ms+)
+        setTimeout(() => {
+            zoomComplete = true;
+            
+            // Smooth scroll to games section
+            gamesSection.scrollIntoView({ behavior: 'auto' });
+            
+            // Fade out overlay
+            zoomOverlay.classList.add('fade-out');
+            
+            // Remove overlay after animation
+            setTimeout(() => {
+                zoomOverlay.remove();
+            }, 500);
+        }, 900);
+    }
+}
 
 // Skeleton Loaders
 function showSkeletonLoaders() {

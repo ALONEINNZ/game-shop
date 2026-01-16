@@ -3,13 +3,20 @@ const nodemailer = require('nodemailer');
 // Create transporter - Gmail configuration
 const createTransporter = () => {
   // Check if we have real email credentials
+  console.log('📧 Email config check:', {
+    hasUser: !!process.env.EMAIL_USER,
+    hasPass: !!process.env.EMAIL_PASS,
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT
+  });
+  
   if (process.env.EMAIL_USER && process.env.EMAIL_PASS && 
       process.env.EMAIL_USER !== 'your_email@gmail.com') {
     
-    console.log('📧 Creating Gmail transporter...');
+    console.log('📧 Creating Gmail transporter for:', process.env.EMAIL_USER);
     return nodemailer.createTransporter({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT),
+      host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.EMAIL_PORT) || 587,
       secure: false, // true for 465, false for other ports
       auth: {
         user: process.env.EMAIL_USER,
