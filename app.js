@@ -256,7 +256,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Load mods immediately
         mods = realMods;
+        console.log('Loading mods:', mods.length, 'mods found');
         displayModsInSections(mods);
+        console.log('Mods displayed in sections');
         
         if (typeof initNavbarScroll === 'function') {
             initNavbarScroll();
@@ -1191,7 +1193,12 @@ function displayModsInSections(modsToShow) {
 
 function displayModCards(modsToShow, containerId) {
     const container = document.getElementById(containerId);
-    if (!container) return;
+    if (!container) {
+        console.error('Container not found:', containerId);
+        return;
+    }
+
+    console.log(`Displaying ${modsToShow.length} mods in ${containerId}`);
     
     container.innerHTML = modsToShow.map((mod) => {
         const stars = '★'.repeat(Math.floor(mod.rating || 4)) + '☆'.repeat(5 - Math.floor(mod.rating || 4));
