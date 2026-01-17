@@ -1,4 +1,5 @@
 ﻿// Global variables
+const API_BASE = window.location.origin; // e.g., http://localhost:3007
 let currentUser = null;
 let mods = [];
 let cart = [];
