@@ -1534,19 +1534,14 @@ async function startDownload(modId) {
     }
     
     try {
-        // Call API to authorize download
-        const response = await fetch(`${API_BASE}/mods/${modId}/download`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+        // For free mods, download directly. For paid mods, check if user owns it
+        if (!mod.isFree) {
+            // Check if user has purchased this mod
+            const hasPurchased = purchases.some(p => p.modId === modId);
+            if (!hasPurchased) {
+                showMessage('Please purchase this mod first', 'error');
+                return;
             }
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            showMessage(data.message || 'Download failed', 'error');
-            return;
         }
         
         // Add to download manager UI
@@ -1558,14 +1553,14 @@ async function startDownload(modId) {
             game: mod.gameTitle,
             version: mod.version,
             image: mod.images?.[0] || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&h=100&fit=crop',
-            totalSize: parseSizeToBytes(mod.fileSize),
+            totalSize: parseSizeToBytes(mod.fileSize || '100 MB'),
             downloaded: 0,
             progress: 0,
             speed: '0 MB/s',
             timeRemaining: 'Starting...',
             status: 'downloading',
             startTime: Date.now(),
-            downloadUrl: data.downloadUrl
+            downloadUrl: mod.downloadUrl || mod.fileName
         };
         
         activeDownloads.unshift(download);
