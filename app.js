@@ -1684,39 +1684,8 @@ function formatDownloads(count) {
     return count.toString();
 }
 
-System Requirements:
-${mod.requirements}
-
-Recommended Specs:
-${mod.specs}
-
-Tags: ${mod.tags ? mod.tags.join(', ') : 'N/A'}
-
-Installation Instructions:
-1. Download the actual mod file from the official source
-2. Extract the downloaded files
-3. Copy to your game's mod directory
-4. Enable the mod in your game settings
-5. Restart the game and enjoy!
-
-NOTE: This is an info file. The actual mod file was not available.
-Please visit the mod's official page to download.
-
-===========================================
-Thank you for using ExusCraft!
-Proudly made in New Zealand 🇳🇿
-===========================================`;
-    
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${mod.title.replace(/[^a-z0-9]/gi, '_')}_INFO.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-}
+// GSAP Animations - Disabled to prevent hiding elements
+// All GSAP code has been moved to animations.js and disabled
 
 function pauseDownload(downloadId) {
     const dl = activeDownloads.find(d => d.id === downloadId);
