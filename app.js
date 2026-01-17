@@ -1674,14 +1674,15 @@ function triggerFileDownload(downloadId) {
     showMessage(`Downloading ${dl.title}...`, 'success');
 }
 
-Author: ${mod.author}
-Category: ${mod.category}
-Game: ${mod.gameTitle}
-Rating: ${mod.rating}/5.0
-Downloads: ${formatDownloads(mod.downloads)}
-
-Description:
-${mod.description}
+// Helper function to format download counts
+function formatDownloads(count) {
+    if (count >= 1000000) {
+        return (count / 1000000).toFixed(1) + 'M';
+    } else if (count >= 1000) {
+        return (count / 1000).toFixed(1) + 'K';
+    }
+    return count.toString();
+}
 
 System Requirements:
 ${mod.requirements}
