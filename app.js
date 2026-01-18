@@ -1,4 +1,4 @@
-﻿// Global variables
+// Global variables
 const API_BASE = window.location.origin; // e.g., http://localhost:3007
 let currentUser = null;
 let mods = [];
@@ -549,7 +549,7 @@ async function handleGoogleCredentialResponse(response) {
         localStorage.setItem('user', JSON.stringify(currentUser));
         updateUserNavigation();
         closeAuthModal();
-        showMessage(`Welcome, ${currentUser.name}! 🎉`, 'success');
+        showMessage(`Welcome, ${currentUser.name}! ??`, 'success');
     } catch (error) {
         console.error('Error processing Google response:', error);
         showMessage('Google login failed. Please try again.', 'error');
@@ -714,7 +714,7 @@ function showMyMods() {
                         <img src="${mod.images?.[0] || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=200&fit=crop'}" alt="${mod.title}">
                         <div class="my-mod-info">
                             <h4>${mod.title}</h4>
-                            <p>${mod.gameTitle} • ${mod.category}</p>
+                            <p>${mod.gameTitle} � ${mod.category}</p>
                             <div class="my-mod-stats">
                                 <span><i class="fas fa-download"></i> ${formatDownloads(mod.downloads || 0)}</span>
                                 <span><i class="fas fa-star"></i> ${mod.rating || 0}</span>
@@ -784,7 +784,7 @@ function showFavorites() {
                         <button class="remove-fav-btn" onclick="event.stopPropagation(); toggleFavorite('${mod._id}')"><i class="fas fa-heart-broken"></i></button>
                         <div class="favorite-info">
                             <h4>${mod.title}</h4>
-                            <p>${mod.gameTitle} • ${mod.category}</p>
+                            <p>${mod.gameTitle} � ${mod.category}</p>
                             <span class="favorite-price">${mod.isFree ? 'FREE' : '$' + mod.price.toFixed(2)}</span>
                         </div>
                     </div>
@@ -810,7 +810,7 @@ function toggleFavorite(modId) {
         showMessage('Removed from favorites', 'info');
     } else {
         favorites.push(modId);
-        showMessage('Added to favorites! ❤️', 'success');
+        showMessage('Added to favorites! ??', 'success');
     }
     saveUserData();
     
@@ -861,7 +861,7 @@ function showLibrary() {
                         <img src="${mod.images?.[0] || mod.image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=200&fit=crop'}" alt="${mod.title}">
                         <div class="library-card-content">
                             <h4>${mod.title}</h4>
-                            <p class="library-game">${mod.gameTitle || mod.game} • ${mod.category}</p>
+                            <p class="library-game">${mod.gameTitle || mod.game} � ${mod.category}</p>
                             <p class="library-added">Added ${new Date(mod.addedAt).toLocaleDateString()}</p>
                             <div class="library-actions">
                                 <button onclick="installFromLibrary('${mod.modId || mod._id}')" class="btn btn-primary btn-sm">
@@ -906,7 +906,7 @@ function addToLibrary(modId) {
     });
     
     saveUserData();
-    showMessage(`"${mod.title}" added to your library! 📚`, 'success');
+    showMessage(`"${mod.title}" added to your library! ??`, 'success');
 }
 
 function removeFromLibrary(modId) {
@@ -962,7 +962,7 @@ function showDownloads() {
                             <img src="${mod.images?.[0] || dl.image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=60&h=60&fit=crop'}" alt="${mod.title || dl.title}">
                             <div class="download-info">
                                 <h4>${mod.title || dl.title}</h4>
-                                <p>${mod.gameTitle || dl.game} • v${mod.version || dl.version || '1.0'}</p>
+                                <p>${mod.gameTitle || dl.game} � v${mod.version || dl.version || '1.0'}</p>
                                 <span class="download-date">Downloaded ${new Date(dl.date).toLocaleDateString()}</span>
                             </div>
                             <div class="download-actions">
@@ -1202,7 +1202,7 @@ function displayModCards(modsToShow, containerId) {
     console.log(`Displaying ${modsToShow.length} mods in ${containerId}`);
     
     container.innerHTML = modsToShow.map((mod) => {
-        const stars = '★'.repeat(Math.floor(mod.rating || 4)) + '☆'.repeat(5 - Math.floor(mod.rating || 4));
+        const stars = '?'.repeat(Math.floor(mod.rating || 4)) + '?'.repeat(5 - Math.floor(mod.rating || 4));
         const priceDisplay = mod.isFree ? 'FREE' : '$' + mod.price.toFixed(2);
         
         const statusConfig = {
@@ -1270,15 +1270,15 @@ function showModDetails(modId) {
     const gameDetails = document.getElementById('gameDetails');
     if (!modal || !gameDetails) return;
     
-    const stars = '★'.repeat(Math.floor(mod.rating || 4)) + '☆'.repeat(5 - Math.floor(mod.rating || 4));
+    const stars = '?'.repeat(Math.floor(mod.rating || 4)) + '?'.repeat(5 - Math.floor(mod.rating || 4));
     const priceDisplay = mod.isFree ? 'FREE' : '$' + mod.price.toFixed(2);
     
     const statusConfig = {
-        'in-progress': { color: '#f59e0b', label: 'In Progress', icon: '🔧' },
-        'finalised': { color: '#10b981', label: 'Finalised', icon: '✅' },
-        'bug-tested': { color: '#3b82f6', label: 'Bug Tested', icon: '🐛' },
-        'beta': { color: '#8b5cf6', label: 'Beta', icon: '🧪' },
-        'starting-out': { color: '#ef4444', label: 'Starting Out', icon: '🌱' }
+        'in-progress': { color: '#f59e0b', label: 'In Progress', icon: '??' },
+        'finalised': { color: '#10b981', label: 'Finalised', icon: '?' },
+        'bug-tested': { color: '#3b82f6', label: 'Bug Tested', icon: '??' },
+        'beta': { color: '#8b5cf6', label: 'Beta', icon: '??' },
+        'starting-out': { color: '#ef4444', label: 'Starting Out', icon: '??' }
     };
     const status = statusConfig[mod.status];
     
@@ -1337,7 +1337,7 @@ function showModDetails(modId) {
                         <div class="review-item">
                             <div class="review-header">
                                 <strong>${review.user}</strong>
-                                <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</span>
+                                <span class="review-rating">${'?'.repeat(review.rating)}${'?'.repeat(5-review.rating)}</span>
                             </div>
                             <p class="review-comment">${review.comment}</p>
                         </div>
@@ -1461,7 +1461,7 @@ function renderDownloadManager() {
                 <img src="${dl.image}" alt="${dl.title}" class="download-item-icon">
                 <div class="download-item-info">
                     <div class="download-item-title">${dl.title}</div>
-                    <div class="download-item-game">${dl.game} • v${dl.version}</div>
+                    <div class="download-item-game">${dl.game} � v${dl.version}</div>
                 </div>
                 <div class="download-item-actions">
                     ${dl.status === 'downloading' ? `
@@ -1770,7 +1770,7 @@ function purchaseMod(modId) {
         showMessage(`Processing purchase for ${mod.title}...`, 'info');
         
         setTimeout(() => {
-            showMessage(`🎉 Purchase successful! ${mod.title} is now yours!`, 'success');
+            showMessage(`?? Purchase successful! ${mod.title} is now yours!`, 'success');
             addToLibrary(modId);
             closeModal();
         }, 1500);
@@ -1804,7 +1804,7 @@ function purchaseAndAddToLibrary(modId) {
         
         setTimeout(() => {
             addToLibrary(modId);
-            showMessage(`🎉 Purchase successful! "${mod.title}" added to your library!`, 'success');
+            showMessage(`?? Purchase successful! "${mod.title}" added to your library!`, 'success');
             closeModal();
         }, 1500);
     }
@@ -1922,7 +1922,7 @@ function checkout() {
             updateCartDisplay();
             saveData();
             toggleCart();
-            showMessage('🎉 Items added to your library!', 'success');
+            showMessage('?? Items added to your library!', 'success');
         }, 1000);
         return;
     }
@@ -2110,7 +2110,7 @@ function showCheckoutSuccess() {
     document.body.appendChild(modal);
     modal.style.display = 'flex';
     setTimeout(() => modal.classList.add('show'), 10);
-    showMessage('🎉 Purchase complete!', 'success');
+    showMessage('?? Purchase complete!', 'success');
 }
 
 function closePaymentModal() {
@@ -2544,7 +2544,7 @@ function addMessageToChat(message, sender) {
     let formattedMessage = message
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n/g, '<br>')
-        .replace(/• /g, '&bull; ')
+        .replace(/� /g, '&bull; ')
         .replace(/(\d+)\. /g, '<strong>$1.</strong> ');
     
     const messageDiv = document.createElement('div');
@@ -2569,219 +2569,219 @@ function getBotResponse(message) {
     // Greetings
     if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey') || lower.includes('sup') || lower.includes('yo')) {
         const greetings = [
-            "Hey there! 👋 I'm ExusBot, your gaming & modding assistant! What can I help you with?",
-            "Hello! 🎮 Ready to help you find the perfect mods! What are you looking for?",
-            "Hey! 🤖 ExusBot here! Ask me anything about mods, games, or tech!",
-            "Yo! What's up? 🎯 Need help with mods, installations, or just wanna chat about games?"
+            "Hey there! ?? I'm ExusBot, your gaming & modding assistant! What can I help you with?",
+            "Hello! ?? Ready to help you find the perfect mods! What are you looking for?",
+            "Hey! ?? ExusBot here! Ask me anything about mods, games, or tech!",
+            "Yo! What's up? ?? Need help with mods, installations, or just wanna chat about games?"
         ];
         return greetings[Math.floor(Math.random() * greetings.length)];
     }
     
     // How are you / what's up
     if (lower.includes('how are you') || lower.includes("how's it going") || lower.includes('whats up') || lower.includes("what's up")) {
-        return "I'm running at peak performance! 🚀 Ready to help you mod your games. What do you need?";
+        return "I'm running at peak performance! ?? Ready to help you mod your games. What do you need?";
     }
     
     // Thanks
     if (lower.includes('thank') || lower.includes('thx') || lower.includes('cheers')) {
-        return "You're welcome! 😊 Happy to help. Let me know if you need anything else!";
+        return "You're welcome! ?? Happy to help. Let me know if you need anything else!";
     }
     
     // Goodbye
     if (lower.includes('bye') || lower.includes('goodbye') || lower.includes('see ya') || lower.includes('later')) {
-        return "See you later! 👋 Happy modding! Come back anytime you need help!";
+        return "See you later! ?? Happy modding! Come back anytime you need help!";
     }
     
     // What can you do
     if (lower.includes('what can you do') || lower.includes('help me') || lower.includes('what do you do') || lower.includes('features')) {
-        return "I can help you with:\n🎮 Finding mods for your favorite games\n📥 Installation guides & troubleshooting\n💻 Programming & development questions\n🔧 Technical support & optimization\n⚙️ Game settings & performance tips\n🎯 Mod compatibility checks\n\nJust ask away!";
+        return "I can help you with:\n?? Finding mods for your favorite games\n?? Installation guides & troubleshooting\n?? Programming & development questions\n?? Technical support & optimization\n?? Game settings & performance tips\n?? Mod compatibility checks\n\nJust ask away!";
     }
     
     // Mod installation - General
     if (lower.includes('install') && (lower.includes('mod') || lower.includes('mods'))) {
-        return "📥 **General Mod Installation:**\n\n1️⃣ Download the mod file from ExusCraft\n2️⃣ Extract the ZIP/RAR to your game's mod folder\n3️⃣ Enable mods in your game settings\n4️⃣ Restart the game\n\nWhich game do you need specific help with? (Minecraft, Skyrim, GTA V, etc.)";
+        return "?? **General Mod Installation:**\n\n1?? Download the mod file from ExusCraft\n2?? Extract the ZIP/RAR to your game's mod folder\n3?? Enable mods in your game settings\n4?? Restart the game\n\nWhich game do you need specific help with? (Minecraft, Skyrim, GTA V, etc.)";
     }
     
     // Minecraft specific
     if (lower.includes('minecraft')) {
         if (lower.includes('install') || lower.includes('how to')) {
-            return "🧱 **Minecraft Mod Installation:**\n\n**For Forge Mods:**\n1. Install Minecraft Forge from files.minecraftforge.net\n2. Put .jar mod files in %appdata%/.minecraft/mods\n3. Launch with Forge profile\n\n**For Fabric Mods:**\n1. Install Fabric Loader\n2. Add Fabric API mod\n3. Put mods in the mods folder\n\n**For Bedrock:**\nUse .mcpack files - just double-click to install!\n\nNeed more details?";
+            return "?? **Minecraft Mod Installation:**\n\n**For Forge Mods:**\n1. Install Minecraft Forge from files.minecraftforge.net\n2. Put .jar mod files in %appdata%/.minecraft/mods\n3. Launch with Forge profile\n\n**For Fabric Mods:**\n1. Install Fabric Loader\n2. Add Fabric API mod\n3. Put mods in the mods folder\n\n**For Bedrock:**\nUse .mcpack files - just double-click to install!\n\nNeed more details?";
         }
         if (lower.includes('shader') || lower.includes('shaders')) {
-            return "✨ **Minecraft Shaders:**\n\nPopular options:\n• **Optifine** - Classic, great performance\n• **Iris** - Fabric-based, modern\n• **BSL Shaders** - Beautiful & balanced\n• **SEUS** - Ultra realistic\n• **Complementary** - Best all-rounder\n\nInstall Optifine/Iris first, then put shader packs in the shaderpacks folder!";
+            return "? **Minecraft Shaders:**\n\nPopular options:\n� **Optifine** - Classic, great performance\n� **Iris** - Fabric-based, modern\n� **BSL Shaders** - Beautiful & balanced\n� **SEUS** - Ultra realistic\n� **Complementary** - Best all-rounder\n\nInstall Optifine/Iris first, then put shader packs in the shaderpacks folder!";
         }
-        return "🧱 Minecraft is awesome for modding! We have texture packs, shaders, gameplay mods, and more. What specifically are you looking for? Shaders? New content? Performance mods?";
+        return "?? Minecraft is awesome for modding! We have texture packs, shaders, gameplay mods, and more. What specifically are you looking for? Shaders? New content? Performance mods?";
     }
     
     // Skyrim specific
     if (lower.includes('skyrim')) {
         if (lower.includes('install') || lower.includes('how to')) {
-            return "⚔️ **Skyrim Mod Installation:**\n\n**Recommended Method:**\n1. Install **Vortex** or **Mod Organizer 2**\n2. Get **SKSE64** (Script Extender)\n3. Download mods from ExusCraft/Nexus\n4. Install via your mod manager\n5. Sort load order with LOOT\n\n**Essential Mods:**\n• USSEP (Unofficial Patch)\n• SkyUI\n• SKSE64\n\nNeed help with load order?";
+            return "?? **Skyrim Mod Installation:**\n\n**Recommended Method:**\n1. Install **Vortex** or **Mod Organizer 2**\n2. Get **SKSE64** (Script Extender)\n3. Download mods from ExusCraft/Nexus\n4. Install via your mod manager\n5. Sort load order with LOOT\n\n**Essential Mods:**\n� USSEP (Unofficial Patch)\n� SkyUI\n� SKSE64\n\nNeed help with load order?";
         }
         if (lower.includes('crash') || lower.includes('ctd')) {
-            return "🔧 **Skyrim Crash Fixes:**\n\n1. Check load order with LOOT\n2. Look for missing masters\n3. Install Crash Logger for diagnosis\n4. Verify game files on Steam\n5. Check for mod conflicts\n6. Make sure SKSE matches your game version\n\nTry disabling mods one by one to find the culprit!";
+            return "?? **Skyrim Crash Fixes:**\n\n1. Check load order with LOOT\n2. Look for missing masters\n3. Install Crash Logger for diagnosis\n4. Verify game files on Steam\n5. Check for mod conflicts\n6. Make sure SKSE matches your game version\n\nTry disabling mods one by one to find the culprit!";
         }
-        return "⚔️ Skyrim modding is legendary! We have graphics overhauls, new quests, gameplay changes, and more. Looking for anything specific?";
+        return "?? Skyrim modding is legendary! We have graphics overhauls, new quests, gameplay changes, and more. Looking for anything specific?";
     }
     
     // GTA V specific
     if (lower.includes('gta') || lower.includes('grand theft auto')) {
         if (lower.includes('install') || lower.includes('how to')) {
-            return "🚗 **GTA V Mod Installation:**\n\n**For Script Mods:**\n1. Install ScriptHookV\n2. Install ScriptHookVDotNet (for .NET mods)\n3. Put .asi files in GTA V folder\n\n**For Vehicle/Texture Mods:**\n1. Install OpenIV\n2. Create a mods folder\n3. Use OpenIV to replace files\n\n⚠️ **Important:** Only mod in Story Mode! Online modding = ban!";
+            return "?? **GTA V Mod Installation:**\n\n**For Script Mods:**\n1. Install ScriptHookV\n2. Install ScriptHookVDotNet (for .NET mods)\n3. Put .asi files in GTA V folder\n\n**For Vehicle/Texture Mods:**\n1. Install OpenIV\n2. Create a mods folder\n3. Use OpenIV to replace files\n\n?? **Important:** Only mod in Story Mode! Online modding = ban!";
         }
         if (lower.includes('online') || lower.includes('ban')) {
-            return "⚠️ **GTA Online Warning:**\n\nNEVER use mods in GTA Online! Rockstar will ban you permanently.\n\n✅ Safe: Story Mode modding\n❌ Unsafe: Any mods in Online\n\nAlways remove mods before going online, or use a separate game installation!";
+            return "?? **GTA Online Warning:**\n\nNEVER use mods in GTA Online! Rockstar will ban you permanently.\n\n? Safe: Story Mode modding\n? Unsafe: Any mods in Online\n\nAlways remove mods before going online, or use a separate game installation!";
         }
-        return "🚗 GTA V has amazing mods! Car packs, graphics mods, script mods, and more. Just remember - Story Mode only! What are you looking for?";
+        return "?? GTA V has amazing mods! Car packs, graphics mods, script mods, and more. Just remember - Story Mode only! What are you looking for?";
     }
     
     // Cyberpunk specific
     if (lower.includes('cyberpunk')) {
         if (lower.includes('install') || lower.includes('how to')) {
-            return "🤖 **Cyberpunk 2077 Mod Installation:**\n\n1. Install **Vortex** mod manager\n2. Get **Cyber Engine Tweaks** (essential!)\n3. Install **redscript** for script mods\n4. Download mods and install via Vortex\n\n**Popular Mods:**\n• Better Vehicle Handling\n• Appearance Menu Mod\n• Better Minimap\n• Cyber Engine Tweaks\n\nMost mods go in the game's archive/pc/mod folder!";
+            return "?? **Cyberpunk 2077 Mod Installation:**\n\n1. Install **Vortex** mod manager\n2. Get **Cyber Engine Tweaks** (essential!)\n3. Install **redscript** for script mods\n4. Download mods and install via Vortex\n\n**Popular Mods:**\n� Better Vehicle Handling\n� Appearance Menu Mod\n� Better Minimap\n� Cyber Engine Tweaks\n\nMost mods go in the game's archive/pc/mod folder!";
         }
-        return "🤖 Cyberpunk 2077 modding has grown huge! Graphics mods, gameplay tweaks, new features - what interests you?";
+        return "?? Cyberpunk 2077 modding has grown huge! Graphics mods, gameplay tweaks, new features - what interests you?";
     }
     
     // Rust specific
     if (lower.includes('rust')) {
-        return "🔧 **Rust Modding:**\n\nRust uses server-side mods via **Oxide/uMod**.\n\n**For Server Owners:**\n1. Install Oxide on your server\n2. Add plugins to oxide/plugins folder\n3. Configure via oxide/config\n\n**For Players:**\nClient mods are limited - most mods are server-side. Look for modded servers with the features you want!\n\nNeed server setup help?";
+        return "?? **Rust Modding:**\n\nRust uses server-side mods via **Oxide/uMod**.\n\n**For Server Owners:**\n1. Install Oxide on your server\n2. Add plugins to oxide/plugins folder\n3. Configure via oxide/config\n\n**For Players:**\nClient mods are limited - most mods are server-side. Look for modded servers with the features you want!\n\nNeed server setup help?";
     }
     
     // Fallout specific
     if (lower.includes('fallout')) {
-        return "☢️ **Fallout 4 Mod Installation:**\n\n1. Install **Vortex** or **Mod Organizer 2**\n2. Get **F4SE** (Script Extender)\n3. Enable modding in Fallout4.ini\n4. Download and install mods\n\n**Must-Have Mods:**\n• Unofficial Fallout 4 Patch\n• Sim Settlements 2\n• True Storms\n• Vivid Fallout\n\nSimilar to Skyrim modding if you're familiar!";
+        return "?? **Fallout 4 Mod Installation:**\n\n1. Install **Vortex** or **Mod Organizer 2**\n2. Get **F4SE** (Script Extender)\n3. Enable modding in Fallout4.ini\n4. Download and install mods\n\n**Must-Have Mods:**\n� Unofficial Fallout 4 Patch\n� Sim Settlements 2\n� True Storms\n� Vivid Fallout\n\nSimilar to Skyrim modding if you're familiar!";
     }
     
     // Witcher specific
     if (lower.includes('witcher')) {
-        return "🐺 **Witcher 3 Mod Installation:**\n\n1. Use **Vortex** or manual install\n2. Put mods in /mods folder (create if needed)\n3. Merge mods with **Script Merger** if needed\n4. Use **Mod Limit Fix** for many mods\n\n**Popular Mods:**\n• HD Reworked Project\n• All Quest Objectives on Map\n• Fast Travel from Anywhere\n• E3 Graphics Mod";
+        return "?? **Witcher 3 Mod Installation:**\n\n1. Use **Vortex** or manual install\n2. Put mods in /mods folder (create if needed)\n3. Merge mods with **Script Merger** if needed\n4. Use **Mod Limit Fix** for many mods\n\n**Popular Mods:**\n� HD Reworked Project\n� All Quest Objectives on Map\n� Fast Travel from Anywhere\n� E3 Graphics Mod";
     }
     
     // Counter-Strike specific
     if (lower.includes('counter') || lower.includes('cs2') || lower.includes('csgo')) {
-        return "🎯 **CS2 Customization:**\n\nCS2 is more limited than CSGO was, but you can:\n• Use custom crosshairs (in settings)\n• Workshop maps for practice\n• Config files for settings\n• HUD customization\n\n⚠️ Be careful with third-party tools - VAC bans are permanent!";
+        return "?? **CS2 Customization:**\n\nCS2 is more limited than CSGO was, but you can:\n� Use custom crosshairs (in settings)\n� Workshop maps for practice\n� Config files for settings\n� HUD customization\n\n?? Be careful with third-party tools - VAC bans are permanent!";
     }
     
     // Download help
     if (lower.includes('download')) {
-        return "📥 **How to Download:**\n\n1. Click on any mod card to see details\n2. For **free mods**: Click 'Download Now'\n3. For **paid mods**: Click 'Purchase' and complete checkout\n4. Downloads start automatically!\n\nAll files are virus-scanned and safe. Need help with a specific download?";
+        return "?? **How to Download:**\n\n1. Click on any mod card to see details\n2. For **free mods**: Click 'Download Now'\n3. For **paid mods**: Click 'Purchase' and complete checkout\n4. Downloads start automatically!\n\nAll files are virus-scanned and safe. Need help with a specific download?";
     }
     
     // Price/cost questions
     if (lower.includes('price') || lower.includes('cost') || lower.includes('how much')) {
-        return "💰 **Pricing Info:**\n\n• **Free mods** - Marked with FREE badge, no cost!\n• **Paid mods** - Support creators, usually $1-20\n• **Collections** - Bundle deals available\n\nCreators set their own prices. Free mods are often donation-supported!";
+        return "?? **Pricing Info:**\n\n� **Free mods** - Marked with FREE badge, no cost!\n� **Paid mods** - Support creators, usually $1-20\n� **Collections** - Bundle deals available\n\nCreators set their own prices. Free mods are often donation-supported!";
     }
     
     // Free mods
     if (lower.includes('free')) {
-        return "🆓 **Free Mods:**\n\nWe have tons of free mods! Look for the 'FREE' badge on mod cards, or use the 'Free Mods' filter in the navigation.\n\nFree doesn't mean low quality - many amazing mods are free! Creators often accept donations if you want to support them.";
+        return "?? **Free Mods:**\n\nWe have tons of free mods! Look for the 'FREE' badge on mod cards, or use the 'Free Mods' filter in the navigation.\n\nFree doesn't mean low quality - many amazing mods are free! Creators often accept donations if you want to support them.";
     }
     
     // Account/login issues
     if (lower.includes('login') || lower.includes('sign in') || lower.includes('account')) {
-        return "🔐 **Account Help:**\n\n• Click 'Login' or 'Join Now' in the top right\n• Sign in with Google for quick access\n• Your purchases and collections are saved to your account\n\nHaving trouble? Try clearing your browser cache or using a different browser!";
+        return "?? **Account Help:**\n\n� Click 'Login' or 'Join Now' in the top right\n� Sign in with Google for quick access\n� Your purchases and collections are saved to your account\n\nHaving trouble? Try clearing your browser cache or using a different browser!";
     }
     
     // Collections
     if (lower.includes('collection')) {
-        return "📦 **Collections:**\n\nCollections are curated mod packs!\n\n**To create one:**\n1. Go to Collections page\n2. Click 'Create Collection'\n3. Add mods and descriptions\n4. Share with the community!\n\n**To use one:**\nBrowse collections, find one you like, and download all mods at once!";
+        return "?? **Collections:**\n\nCollections are curated mod packs!\n\n**To create one:**\n1. Go to Collections page\n2. Click 'Create Collection'\n3. Add mods and descriptions\n4. Share with the community!\n\n**To use one:**\nBrowse collections, find one you like, and download all mods at once!";
     }
     
     // Performance/optimization
     if (lower.includes('performance') || lower.includes('fps') || lower.includes('lag') || lower.includes('slow') || lower.includes('optimize')) {
-        return "⚡ **Performance Tips:**\n\n1. **Lower graphics settings** in-game\n2. **Update GPU drivers** regularly\n3. **Close background apps** while gaming\n4. **Use performance mods** (many games have them)\n5. **Check mod conflicts** - too many mods = lag\n6. **Verify game files** if issues persist\n\nWhich game needs optimization?";
+        return "? **Performance Tips:**\n\n1. **Lower graphics settings** in-game\n2. **Update GPU drivers** regularly\n3. **Close background apps** while gaming\n4. **Use performance mods** (many games have them)\n5. **Check mod conflicts** - too many mods = lag\n6. **Verify game files** if issues persist\n\nWhich game needs optimization?";
     }
     
     // Crashes
     if (lower.includes('crash') || lower.includes('not working') || lower.includes('broken') || lower.includes('error')) {
-        return "🔧 **Troubleshooting Crashes:**\n\n1. **Verify game files** via Steam/launcher\n2. **Check mod compatibility** - outdated mods crash!\n3. **Review load order** (use LOOT for Bethesda games)\n4. **Update mods** to latest versions\n5. **Check for conflicts** - disable mods one by one\n6. **Read mod descriptions** for requirements\n\nWhat game is crashing?";
+        return "?? **Troubleshooting Crashes:**\n\n1. **Verify game files** via Steam/launcher\n2. **Check mod compatibility** - outdated mods crash!\n3. **Review load order** (use LOOT for Bethesda games)\n4. **Update mods** to latest versions\n5. **Check for conflicts** - disable mods one by one\n6. **Read mod descriptions** for requirements\n\nWhat game is crashing?";
     }
     
     // Programming/coding help
     if (lower.includes('code') || lower.includes('programming') || lower.includes('javascript') || lower.includes('python') || lower.includes('java') || lower.includes('develop')) {
-        return "💻 **Programming Help:**\n\nI can help with:\n• JavaScript/TypeScript\n• Python\n• Java/C#\n• HTML/CSS\n• Game modding scripts\n• API integration\n\nWhat are you working on? Share your code or describe the problem!";
+        return "?? **Programming Help:**\n\nI can help with:\n� JavaScript/TypeScript\n� Python\n� Java/C#\n� HTML/CSS\n� Game modding scripts\n� API integration\n\nWhat are you working on? Share your code or describe the problem!";
     }
     
     // JavaScript specific
     if (lower.includes('js') || lower.includes('react') || lower.includes('node')) {
-        return "💛 **JavaScript Help:**\n\nI can assist with:\n• Vanilla JS, ES6+\n• React, Vue, Angular\n• Node.js, Express\n• Async/await, Promises\n• DOM manipulation\n• API calls\n\nWhat's your question?";
+        return "?? **JavaScript Help:**\n\nI can assist with:\n� Vanilla JS, ES6+\n� React, Vue, Angular\n� Node.js, Express\n� Async/await, Promises\n� DOM manipulation\n� API calls\n\nWhat's your question?";
     }
     
     // Mod creation
     if (lower.includes('create mod') || lower.includes('make mod') || lower.includes('mod creation') || lower.includes('modding tutorial')) {
-        return "🛠️ **Creating Mods:**\n\n**Beginner-friendly games:**\n• Minecraft (Java) - MCreator or direct coding\n• Skyrim - Creation Kit\n• GTA V - OpenIV + tutorials\n\n**You'll need:**\n• Game's modding tools\n• Basic programming knowledge\n• Patience and creativity!\n\nWhich game do you want to mod?";
+        return "??? **Creating Mods:**\n\n**Beginner-friendly games:**\n� Minecraft (Java) - MCreator or direct coding\n� Skyrim - Creation Kit\n� GTA V - OpenIV + tutorials\n\n**You'll need:**\n� Game's modding tools\n� Basic programming knowledge\n� Patience and creativity!\n\nWhich game do you want to mod?";
     }
     
     // Upload mod
     if (lower.includes('upload') || lower.includes('submit') || lower.includes('share mod')) {
-        return "📤 **Upload Your Mod:**\n\n1. Create an account on ExusCraft\n2. Go to your profile\n3. Click 'Upload Mod'\n4. Fill in details, screenshots, description\n5. Upload your mod files\n6. Submit for review!\n\nMake sure to include good screenshots and a clear description!";
+        return "?? **Upload Your Mod:**\n\n1. Create an account on ExusCraft\n2. Go to your profile\n3. Click 'Upload Mod'\n4. Fill in details, screenshots, description\n5. Upload your mod files\n6. Submit for review!\n\nMake sure to include good screenshots and a clear description!";
     }
     
     // Safety/virus concerns
     if (lower.includes('safe') || lower.includes('virus') || lower.includes('malware') || lower.includes('trust')) {
-        return "🛡️ **Safety Info:**\n\nAll mods on ExusCraft are:\n• Scanned for viruses\n• Reviewed by our team\n• Community-rated\n\n**Stay safe:**\n• Only download from trusted sources\n• Check reviews and ratings\n• Use antivirus software\n• Backup your saves before modding!";
+        return "??? **Safety Info:**\n\nAll mods on ExusCraft are:\n� Scanned for viruses\n� Reviewed by our team\n� Community-rated\n\n**Stay safe:**\n� Only download from trusted sources\n� Check reviews and ratings\n� Use antivirus software\n� Backup your saves before modding!";
     }
     
     // Compatibility
     if (lower.includes('compatible') || lower.includes('work with') || lower.includes('conflict')) {
-        return "🔄 **Mod Compatibility:**\n\n**Check for:**\n• Game version requirements\n• Other required mods (dependencies)\n• Known conflicts in mod description\n• Load order (for Bethesda games)\n\n**Tools:**\n• LOOT - Auto-sorts load order\n• xEdit - Check for conflicts\n• Mod manager conflict detection\n\nWhich mods are you trying to use together?";
+        return "?? **Mod Compatibility:**\n\n**Check for:**\n� Game version requirements\n� Other required mods (dependencies)\n� Known conflicts in mod description\n� Load order (for Bethesda games)\n\n**Tools:**\n� LOOT - Auto-sorts load order\n� xEdit - Check for conflicts\n� Mod manager conflict detection\n\nWhich mods are you trying to use together?";
     }
     
     // Backup
     if (lower.includes('backup') || lower.includes('save')) {
-        return "💾 **Backup Tips:**\n\n**Always backup before modding:**\n• Save game files\n• Game configuration\n• Original game files (if modifying)\n\n**Locations:**\n• Documents/My Games/[Game]\n• %AppData%/[Game]\n• Steam/userdata/\n\nMod managers often have backup features too!";
+        return "?? **Backup Tips:**\n\n**Always backup before modding:**\n� Save game files\n� Game configuration\n� Original game files (if modifying)\n\n**Locations:**\n� Documents/My Games/[Game]\n� %AppData%/[Game]\n� Steam/userdata/\n\nMod managers often have backup features too!";
     }
     
     // Recommendations
     if (lower.includes('recommend') || lower.includes('best mod') || lower.includes('top mod') || lower.includes('popular')) {
-        return "⭐ **Top Recommendations:**\n\nCheck out our:\n• **Featured Mods** - Hand-picked quality\n• **Most Downloaded** - Community favorites\n• **Highest Rated** - Best reviewed\n• **Collections** - Curated bundles\n\nOr tell me your game and what you're looking for - graphics, gameplay, content?";
+        return "? **Top Recommendations:**\n\nCheck out our:\n� **Featured Mods** - Hand-picked quality\n� **Most Downloaded** - Community favorites\n� **Highest Rated** - Best reviewed\n� **Collections** - Curated bundles\n\nOr tell me your game and what you're looking for - graphics, gameplay, content?";
     }
     
     // Graphics mods
     if (lower.includes('graphics') || lower.includes('visual') || lower.includes('texture') || lower.includes('enb') || lower.includes('reshade')) {
-        return "🎨 **Graphics Mods:**\n\n**Types:**\n• **Texture packs** - Higher res textures\n• **ENB/ReShade** - Post-processing effects\n• **Lighting mods** - Better shadows/lights\n• **Weather mods** - Atmospheric effects\n\n**Performance impact:** High-res = more VRAM needed\n\nWhich game do you want to beautify?";
+        return "?? **Graphics Mods:**\n\n**Types:**\n� **Texture packs** - Higher res textures\n� **ENB/ReShade** - Post-processing effects\n� **Lighting mods** - Better shadows/lights\n� **Weather mods** - Atmospheric effects\n\n**Performance impact:** High-res = more VRAM needed\n\nWhich game do you want to beautify?";
     }
     
     // Joke/fun
     if (lower.includes('joke') || lower.includes('funny') || lower.includes('laugh')) {
         const jokes = [
-            "Why do programmers prefer dark mode? Because light attracts bugs! 🐛",
-            "I tried to make a mod once... it was a total conversion of my free time into frustration! 😅",
-            "What's a modder's favorite key? Ctrl+Z! 🔄",
-            "Why did the mod crash? It had too many dependencies... just like me with coffee! ☕"
+            "Why do programmers prefer dark mode? Because light attracts bugs! ??",
+            "I tried to make a mod once... it was a total conversion of my free time into frustration! ??",
+            "What's a modder's favorite key? Ctrl+Z! ??",
+            "Why did the mod crash? It had too many dependencies... just like me with coffee! ?"
         ];
         return jokes[Math.floor(Math.random() * jokes.length)];
     }
     
     // Who made you
     if (lower.includes('who made you') || lower.includes('who created you') || lower.includes('who are you')) {
-        return "🤖 I'm ExusBot, created by the ExusCraft team! I'm here to help you with all things gaming and modding. Built with love in New Zealand! 🇳🇿";
+        return "?? I'm ExusBot, created by the ExusCraft team! I'm here to help you with all things gaming and modding. Built with love in New Zealand! ????";
     }
     
     // ExusCraft info
     if (lower.includes('exuscraft') || lower.includes('about') || lower.includes('this site') || lower.includes('this website')) {
-        return "🎮 **About ExusCraft:**\n\nWe're a community-driven mod marketplace!\n\n• Browse thousands of mods\n• Support mod creators\n• Create and share collections\n• Safe, verified downloads\n• Built by gamers, for gamers! 🇳🇿\n\nWhat would you like to explore?";
+        return "?? **About ExusCraft:**\n\nWe're a community-driven mod marketplace!\n\n� Browse thousands of mods\n� Support mod creators\n� Create and share collections\n� Safe, verified downloads\n� Built by gamers, for gamers! ????\n\nWhat would you like to explore?";
     }
     
     // Weather (fun)
     if (lower.includes('weather')) {
-        return "I'm a gaming bot, not a weather bot! 😄 But I can tell you the weather in Skyrim is always dramatic, and Night City is perpetually smoggy! 🌆";
+        return "I'm a gaming bot, not a weather bot! ?? But I can tell you the weather in Skyrim is always dramatic, and Night City is perpetually smoggy! ??";
     }
     
     // Love/feelings
     if (lower.includes('love you') || lower.includes('marry')) {
-        return "Aww, I'm flattered! 😊 But I'm just a bot - my heart is made of code! I do love helping you with mods though! 🎮";
+        return "Aww, I'm flattered! ?? But I'm just a bot - my heart is made of code! I do love helping you with mods though! ??";
     }
     
     // Swearing/rude (keep it friendly)
     if (lower.includes('stupid') || lower.includes('dumb') || lower.includes('suck')) {
-        return "Hey, I'm trying my best here! 😅 Let me know what you actually need help with and I'll do better!";
+        return "Hey, I'm trying my best here! ?? Let me know what you actually need help with and I'll do better!";
     }
     
     // Default responses (rotate through these)
     const defaults = [
-        "Hmm, I'm not sure about that one! 🤔 Try asking about mod installation, game-specific help, or troubleshooting!",
+        "Hmm, I'm not sure about that one! ?? Try asking about mod installation, game-specific help, or troubleshooting!",
         "I didn't quite catch that! I'm best at helping with mods, games, and tech stuff. What do you need?",
         "Not sure I understand - could you rephrase? I can help with mod installation, downloads, troubleshooting, and more!",
         "That's outside my expertise! But I'm great with gaming and modding questions. What game are you playing?"
@@ -3105,12 +3105,12 @@ function submitMod(event, existingId = null) {
         if (index > -1) {
             userMods[index] = modData;
         }
-        showMessage('Mod updated successfully! 🎉', 'success');
+        showMessage('Mod updated successfully! ??', 'success');
     } else {
         userMods.unshift(modData);
         // Also add to main mods array so it shows up
         mods.unshift(modData);
-        showMessage('Mod uploaded successfully! 🎉', 'success');
+        showMessage('Mod uploaded successfully! ??', 'success');
     }
     
     saveUserData();
@@ -3153,7 +3153,7 @@ function showMyMods() {
                         <img src="${mod.images?.[0] || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=200&fit=crop'}" alt="${mod.title}">
                         <div class="my-mod-info">
                             <h4>${mod.title}</h4>
-                            <p>${mod.gameTitle} • ${mod.category}</p>
+                            <p>${mod.gameTitle} � ${mod.category}</p>
                             <div class="my-mod-stats">
                                 <span><i class="fas fa-download"></i> ${formatDownloads(mod.downloads || 0)}</span>
                                 <span><i class="fas fa-star"></i> ${mod.rating || 0}</span>
@@ -3205,7 +3205,7 @@ function showFavorites() {
                         <button class="remove-fav-btn" onclick="event.stopPropagation(); toggleFavorite('${mod._id}')"><i class="fas fa-heart-broken"></i></button>
                         <div class="favorite-info">
                             <h4>${mod.title}</h4>
-                            <p>${mod.gameTitle} • ${mod.category}</p>
+                            <p>${mod.gameTitle} � ${mod.category}</p>
                             <span class="favorite-price">${mod.isFree ? 'FREE' : '$' + mod.price.toFixed(2)}</span>
                         </div>
                     </div>
@@ -3788,7 +3788,7 @@ async function submitModUpload(e) {
         document.getElementById('uploadProgressBar').style.width = '100%';
         document.getElementById('uploadProgressText').textContent = 'Upload complete!';
         
-        alert('✅ ' + data.message);
+        alert('? ' + data.message);
         
         // Clear form and saved data
         document.getElementById('uploadForm').reset();
@@ -3817,3 +3817,13 @@ setInterval(() => {
         saveUploadProgress();
     }
 }, 30000);
+
+
+
+// Toggle game dropdown
+function toggleGameDropdown() {
+    const dropdown = document.getElementById('gameDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
