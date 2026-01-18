@@ -3624,3 +3624,196 @@ function initGSAPAnimations() {
     
     console.log('GSAP animations initialized');
 }
+
+
+// ============================================
+// UPLOAD MOD FUNCTIONALITY
+// ============================================
+
+let uploadFormData = {};
+
+function showUploadModal() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        showLogin();
+        return;
+    }
+    
+    document.getElementById('uploadModal').style.display = 'flex';
+    
+    // Restore saved form data if exists
+    if (uploadFormData.title) {
+        document.getElementById('uploadTitle').value = uploadFormData.title || '';
+        document.getElementById('uploadGame').value = uploadFormData.game || '';
+        document.getElementById('uploadCategory').value = uploadFormData.category || '';
+        document.getElementById('uploadShortDesc').value = uploadFormData.shortDesc || '';
+        document.getElementById('uploadDescription').value = uploadFormData.description || '';
+        document.getElementById('uploadPrice').value = uploadFormData.price || '0';
+        document.getElementById('uploadVersion').value = uploadFormData.version || '1.0.0';
+        document.getElementById('uploadTags').value = uploadFormData.tags || '';
+    }
+}
+
+function closeUploadModal() {
+    // Save form data before closing
+    saveUploadProgress();
+    
+    if (confirm('Close upload form? Your progress will be saved.')) {
+        document.getElementById('uploadModal').style.display = 'none';
+    }
+}
+
+function saveUploadProgress() {
+    uploadFormData = {
+        title: document.getElementById('uploadTitle').value,
+        game: document.getElementById('uploadGame').value,
+        category: document.getElementById('uploadCategory').value,
+        shortDesc: document.getElementById('uploadShortDesc').value,
+        description: document.getElementById('uploadDescription').value,
+        price: document.getElementById('uploadPrice').value,
+        version: document.getElementById('uploadVersion').value,
+        tags: document.getElementById('uploadTags').value
+    };
+}
+
+// Show/hide custom category input
+document.addEventListener('DOMContentLoaded', () => {
+    const categorySelect = document.getElementById('uploadCategory');
+    if (categorySelect) {
+        categorySelect.addEventListener('change', (e) => {
+            const customGroup = document.getElementById('customCategoryGroup');
+            if (e.target.value === 'Custom') {
+                customGroup.style.display = 'block';
+            } else {
+                customGroup.style.display = 'none';
+            }
+        });
+    }
+});
+
+async function submitModUpload(e) {
+    e.preventDefault();
+    
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('Please login to upload mods');
+        showLogin();
+        return;
+    }
+    
+    // Get form data
+    const title = document.getElementById('uploadTitle').value;
+    const game = document.getElementById('uploadGame').value;
+    let category = document.getElementById('uploadCategory').value;
+    const shortDesc = document.getElementById('uploadShortDesc').value;
+    const description = document.getElementById('uploadDescription').value;
+    const price = document.getElementById('uploadPrice').value;
+    const version = document.getElementById('uploadVersion').value;
+    const tags = document.getElementById('uploadTags').value;
+    const images = document.getElementById('uploadImages').files;
+    const modFile = document.getElementById('uploadFile').files[0];
+    
+    // Handle custom category
+    if (category === 'Custom') {
+        const customCategory = document.getElementById('uploadCustomCategory').value;
+        if (!customCategory) {
+            alert('Please enter a custom category');
+            return;
+        }
+        category = customCategory;
+    }
+    
+    // Validate
+    if (!images || images.length === 0) {
+        alert('Please upload at least one image');
+        return;
+    }
+    
+    if (images.length > 5) {
+        alert('Maximum 5 images allowed');
+        return;
+    }
+    
+    if (!modFile) {
+        alert('Please upload your mod file');
+        return;
+    }
+    
+    if (modFile.size > 500 * 1024 * 1024) {
+        alert('Mod file must be under 500MB');
+        return;
+    }
+    
+    // Create FormData
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('gameTitle', game);
+    formData.append('category', category);
+    formData.append('shortDescription', shortDesc);
+    formData.append('description', description);
+    formData.append('price', price);
+    formData.append('version', version);
+    formData.append('tags', tags);
+    formData.append('author', currentUser?.username || 'Anonymous');
+    
+    // Add images
+    for (let i = 0; i < images.length; i++) {
+        formData.append('images', images[i]);
+    }
+    
+    // Add mod file
+    formData.append('modFile', modFile);
+    
+    // Show progress
+    document.getElementById('uploadProgress').style.display = 'block';
+    document.getElementById('uploadProgressText').textContent = 'Uploading...';
+    document.getElementById('uploadSubmitBtn').disabled = true;
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/mods/user-upload`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Upload failed');
+        }
+        
+        // Success!
+        document.getElementById('uploadProgressBar').style.width = '100%';
+        document.getElementById('uploadProgressText').textContent = 'Upload complete!';
+        
+        alert('✅ ' + data.message);
+        
+        // Clear form and saved data
+        document.getElementById('uploadForm').reset();
+        uploadFormData = {};
+        
+        // Close modal
+        setTimeout(() => {
+            document.getElementById('uploadModal').style.display = 'none';
+            document.getElementById('uploadProgress').style.display = 'none';
+            document.getElementById('uploadProgressBar').style.width = '0%';
+            document.getElementById('uploadSubmitBtn').disabled = false;
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        alert('Upload failed: ' + error.message);
+        document.getElementById('uploadProgress').style.display = 'none';
+        document.getElementById('uploadSubmitBtn').disabled = false;
+    }
+}
+
+// Auto-save form data every 30 seconds
+setInterval(() => {
+    const modal = document.getElementById('uploadModal');
+    if (modal && modal.style.display === 'flex') {
+        saveUploadProgress();
+    }
+}, 30000);

@@ -1,0 +1,412 @@
+/* ============================================
+   ULTRA SMOOTH 240Hz FEEL
+   Buttery smooth animations and interactions
+   ============================================ */
+
+/* Force hardware acceleration on everything */
+* {
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
+}
+
+/* Ultra smooth scrolling */
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Instant response transitions */
+:root {
+    --ultra-fast: 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+    --butter-smooth: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --silky: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ultra responsive buttons */
+button, .btn, a {
+    transition: all var(--ultra-fast);
+    will-change: transform, opacity, background-color;
+}
+
+button:hover, .btn:hover {
+    transform: translateY(-1px) scale(1.02);
+    transition: all var(--ultra-fast);
+}
+
+button:active, .btn:active {
+    transform: translateY(0) scale(0.98);
+    transition: all 0.05s;
+}
+
+/* Silky smooth cards */
+.game-card, .mod-card {
+    transition: all var(--butter-smooth);
+    will-change: transform, box-shadow;
+}
+
+.game-card:hover, .mod-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    transition: all var(--butter-smooth);
+}
+
+/* Lightning fast nav links */
+.nav-link {
+    transition: all var(--ultra-fast);
+    will-change: color, background-color;
+}
+
+.nav-link:hover {
+    transition: all var(--ultra-fast);
+}
+
+/* Instant input response */
+input, textarea, select {
+    transition: all var(--ultra-fast);
+    will-change: border-color, background-color, box-shadow;
+}
+
+input:focus, textarea:focus, select:focus {
+    transition: all var(--ultra-fast);
+}
+
+/* Smooth modal animations */
+.modal {
+    transition: opacity var(--silky), transform var(--silky);
+    will-change: opacity, transform;
+}
+
+.modal.active {
+    animation: modal-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modal-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Buttery smooth scrollbar */
+::-webkit-scrollbar-thumb {
+    transition: background var(--ultra-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    transition: background var(--ultra-fast);
+}
+
+/* Ultra responsive hover effects */
+.game-image img {
+    transition: transform var(--butter-smooth);
+    will-change: transform;
+}
+
+.game-card:hover .game-image img {
+    transform: scale(1.08);
+    transition: transform var(--butter-smooth);
+}
+
+/* Instant dropdown response */
+.dropdown-menu, .user-dropdown {
+    transition: opacity var(--ultra-fast), transform var(--ultra-fast);
+    will-change: opacity, transform;
+}
+
+.dropdown-menu.active, .user-dropdown.active {
+    animation: dropdown-in 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dropdown-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Silky cart slide */
+.cart, .chatbot, .download-manager-panel {
+    transition: transform var(--silky), opacity var(--silky);
+    will-change: transform, opacity;
+}
+
+/* Lightning fast floating buttons */
+.cart-toggle, .chatbot-toggle, .download-manager-toggle {
+    transition: all var(--ultra-fast);
+    will-change: transform, box-shadow;
+}
+
+.cart-toggle:hover, .chatbot-toggle:hover, .download-manager-toggle:hover {
+    transform: translateY(-3px) scale(1.08);
+    transition: all var(--ultra-fast);
+}
+
+.cart-toggle:active, .chatbot-toggle:active, .download-manager-toggle:active {
+    transform: translateY(0) scale(1);
+    transition: all 0.05s;
+}
+
+/* Instant search response */
+.search-bar input {
+    transition: all var(--ultra-fast);
+}
+
+/* Smooth loading spinner */
+.loading-spinner {
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Ultra smooth page transitions */
+.fade-in {
+    animation: fade-in-smooth 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fade-in-smooth {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Instant ripple effect on clicks */
+.btn-animated::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.4s, height 0.4s;
+}
+
+.btn-animated:active::after {
+    width: 300px;
+    height: 300px;
+    transition: width 0s, height 0s;
+}
+
+/* Silky smooth navbar scroll */
+.navbar {
+    transition: all var(--butter-smooth);
+    will-change: background-color, box-shadow;
+}
+
+/* Ultra responsive game filter cards */
+.game-card-filter {
+    transition: all var(--butter-smooth);
+    will-change: transform, border-color, box-shadow;
+}
+
+.game-card-filter:hover {
+    transform: translateY(-5px) scale(1.03);
+    transition: all var(--butter-smooth);
+}
+
+.game-card-filter:active {
+    transform: translateY(-2px) scale(1.01);
+    transition: all 0.05s;
+}
+
+/* Lightning fast trust bar items */
+.trust-item {
+    transition: all var(--ultra-fast);
+    will-change: transform, color;
+}
+
+.trust-item:hover {
+    transform: translateY(-2px);
+    transition: all var(--ultra-fast);
+}
+
+/* Instant hero button response */
+.hero-cta .btn {
+    transition: all var(--ultra-fast);
+    will-change: transform, box-shadow;
+}
+
+.hero-cta .btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 40px rgba(6, 182, 212, 0.4);
+    transition: all var(--ultra-fast);
+}
+
+.hero-cta .btn:active {
+    transform: translateY(-1px) scale(1.02);
+    transition: all 0.05s;
+}
+
+/* Smooth stat number animations */
+.stat-number {
+    transition: all var(--butter-smooth);
+}
+
+/* Ultra responsive mobile menu */
+.mobile-nav {
+    transition: transform var(--silky);
+    will-change: transform;
+}
+
+/* Instant theme toggle */
+.theme-toggle {
+    transition: all var(--ultra-fast);
+    will-change: transform, background-color;
+}
+
+.theme-toggle:hover {
+    transform: rotate(180deg) scale(1.1);
+    transition: all var(--butter-smooth);
+}
+
+/* Silky smooth parallax */
+.parallax-section {
+    will-change: transform;
+}
+
+/* Ultra smooth gradient animations */
+.gradient-text {
+    background-size: 200% auto;
+    animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+    0%, 100% { background-position: 0% center; }
+    50% { background-position: 100% center; }
+}
+
+/* Lightning fast form interactions */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    transform: scale(1.01);
+    transition: all var(--ultra-fast);
+}
+
+/* Instant badge animations */
+.hero-badge {
+    transition: all var(--butter-smooth);
+    will-change: transform;
+}
+
+.hero-badge:hover {
+    transform: scale(1.05);
+    transition: all var(--ultra-fast);
+}
+
+/* Smooth price display */
+.game-price {
+    transition: all var(--butter-smooth);
+}
+
+/* Ultra responsive rating stars */
+.game-rating {
+    transition: all var(--ultra-fast);
+}
+
+/* Silky smooth footer links */
+.footer-column a {
+    transition: all var(--ultra-fast);
+    will-change: color, transform;
+}
+
+.footer-column a:hover {
+    transform: translateX(5px);
+    transition: all var(--ultra-fast);
+}
+
+/* Performance optimizations */
+.game-card, .mod-card, .btn, .nav-link {
+    contain: layout style paint;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Force 60fps minimum on all animations */
+@media (min-resolution: 120dpi) {
+    * {
+        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+
+/* Upload Modal Enhancements */
+#uploadModal .modal-content {
+    animation: modal-slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modal-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+#uploadModal .form-group {
+    transition: all var(--butter-smooth);
+}
+
+#uploadModal input:focus,
+#uploadModal select:focus,
+#uploadModal textarea:focus {
+    transform: scale(1.01);
+    transition: all var(--ultra-fast);
+}
+
+#uploadModal button[type="submit"] {
+    transition: all var(--ultra-fast);
+}
+
+#uploadModal button[type="submit"]:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+}
+
+#uploadModal button[type="submit"]:active:not(:disabled) {
+    transform: translateY(0) scale(1);
+}
+
+#uploadProgressBar {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

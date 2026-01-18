@@ -178,6 +178,117 @@ router.post('/upload', auth, adminAuth, upload.fields([
     }
 });
 
+// Upload new mod (user - requires approval)
+router.post('/user-upload', auth, upload.fields([
+    { name: 'images', maxCount: 5 },
+    { name: 'modFile', maxCount: 1 }
+]), async (req, res) => {
+    try {
+        const {
+            title,
+            description,
+            shortDescription,
+            price,
+            category,
+            gameTitle,
+            gameEngine,
+            author,
+            tags,
+            version = '1.0.0'
+        } = req.body;
+
+        // Process uploaded files
+        const images = req.files.images ? req.files.images.map(file => `/uploads/mod-images/${file.filename}`) : [];
+        const modFile = req.files.modFile ? `/uploads/mod-files/${req.files.modFile[0].filename}` : '';
+
+        if (images.length === 0) {
+            return res.status(400).json({ message: 'At least one image is required' });
+        }
+
+        if (!modFile) {
+            return res.status(400).json({ message: 'Mod file is required' });
+        }
+
+        // Get file size
+        const fileSize = req.files.modFile[0].size;
+        const fileSizeFormatted = formatFileSize(fileSize);
+
+        const mod = new Mod({
+            title,
+            description,
+            shortDescription,
+            price: parseFloat(price) || 0,
+            isFree: parseFloat(price) === 0,
+            category,
+            gameTitle,
+            gameEngine,
+            author,
+            authorId: req.userId,
+            images,
+            downloadUrl: modFile,
+            fileSize: fileSizeFormatted,
+            version,
+            tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+            approved: false, // User uploads require approval
+            active: true,
+            featured: false
+        });
+
+        await mod.save();
+
+        res.status(201).json({
+            message: 'Mod submitted for approval! Our team will review it shortly.',
+            mod
+        });
+    } catch (error) {
+        console.error('Error uploading mod:', error);
+        res.status(500).json({ message: 'Server error during upload' });
+    }
+});
+
+// Get pending mods (admin only)
+router.get('/admin/pending', auth, adminAuth, async (req, res) => {
+    try {
+        const mods = await Mod.find({ approved: false })
+            .populate('authorId', 'username email')
+            .sort({ createdAt: -1 });
+        
+        res.json(mods);
+    } catch (error) {
+        console.error('Error fetching pending mods:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Update mod price (admin only)
+router.put('/:id/price', auth, adminAuth, async (req, res) => {
+    try {
+        const { price } = req.body;
+        
+        if (price === undefined || price < 0) {
+            return res.status(400).json({ message: 'Invalid price' });
+        }
+        
+        const mod = await Mod.findByIdAndUpdate(
+            req.params.id,
+            { 
+                price: parseFloat(price),
+                isFree: parseFloat(price) === 0
+            },
+            { new: true }
+        );
+        
+        if (!mod) {
+            return res.status(404).json({ message: 'Mod not found' });
+        }
+        
+        res.json({ message: 'Price updated successfully', mod });
+    } catch (error) {
+        console.error('Error updating price:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // Get all mods for admin management
 router.get('/admin/all', auth, adminAuth, async (req, res) => {
     try {

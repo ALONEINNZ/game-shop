@@ -7,6 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="styles-new.css" rel="stylesheet">
+    <link href="ultra-smooth.css" rel="stylesheet">
 </head>
 <body>
     <!-- Loading Screen -->
@@ -433,6 +434,107 @@
             <div id="profileContent">
                 <!-- Profile content will be loaded here -->
             </div>
+        </div>
+    </div>
+
+    <!-- Upload Mod Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <span class="close" onclick="closeUploadModal()">&times;</span>
+            <h2><i class="fas fa-upload"></i> Upload Your Mod</h2>
+            <form id="uploadForm" onsubmit="submitModUpload(event)" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Mod Title *</label>
+                    <input type="text" id="uploadTitle" required placeholder="Enter mod name">
+                </div>
+                
+                <div class="form-group">
+                    <label>Game *</label>
+                    <select id="uploadGame" required>
+                        <option value="">Select a game</option>
+                        <option value="Minecraft">Minecraft</option>
+                        <option value="Skyrim">Skyrim</option>
+                        <option value="GTA V">GTA V</option>
+                        <option value="Cyberpunk 2077">Cyberpunk 2077</option>
+                        <option value="Rust">Rust</option>
+                        <option value="Fallout 4">Fallout 4</option>
+                        <option value="The Witcher 3">The Witcher 3</option>
+                        <option value="Counter-Strike 2">Counter-Strike 2</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="uploadCategory" required>
+                        <option value="">Select category</option>
+                        <option value="Graphics">Graphics</option>
+                        <option value="Gameplay">Gameplay</option>
+                        <option value="UI/UX">UI/UX</option>
+                        <option value="Audio">Audio</option>
+                        <option value="Maps">Maps</option>
+                        <option value="Characters">Characters</option>
+                        <option value="Weapons">Weapons</option>
+                        <option value="Vehicles">Vehicles</option>
+                        <option value="Total Conversion">Total Conversion</option>
+                        <option value="Utility">Utility</option>
+                        <option value="Custom">Custom (specify below)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="customCategoryGroup" style="display: none;">
+                    <label>Custom Category</label>
+                    <input type="text" id="uploadCustomCategory" placeholder="Enter custom category">
+                </div>
+                
+                <div class="form-group">
+                    <label>Short Description *</label>
+                    <input type="text" id="uploadShortDesc" required placeholder="Brief description (max 150 characters)" maxlength="150">
+                </div>
+                
+                <div class="form-group">
+                    <label>Full Description *</label>
+                    <textarea id="uploadDescription" required rows="5" placeholder="Detailed description of your mod..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Price (NZD) *</label>
+                    <input type="number" id="uploadPrice" required min="0" max="99.99" step="0.01" value="0" placeholder="0.00">
+                    <small style="color: var(--text-muted);">Set to 0 for free mods. Max $99.99</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Version</label>
+                    <input type="text" id="uploadVersion" value="1.0.0" placeholder="1.0.0">
+                </div>
+                
+                <div class="form-group">
+                    <label>Tags (comma separated)</label>
+                    <input type="text" id="uploadTags" placeholder="e.g. performance, graphics, optimization">
+                </div>
+                
+                <div class="form-group">
+                    <label>Mod Images * (Max 5)</label>
+                    <input type="file" id="uploadImages" accept="image/*" multiple required>
+                    <small style="color: var(--text-muted);">Upload 1-5 images showcasing your mod</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Mod File * (ZIP, RAR, or 7Z)</label>
+                    <input type="file" id="uploadFile" accept=".zip,.rar,.7z" required>
+                    <small style="color: var(--text-muted);">Max 500MB</small>
+                </div>
+                
+                <div id="uploadProgress" style="display: none; margin: 1rem 0;">
+                    <div style="background: var(--bg-secondary); border-radius: var(--radius-full); overflow: hidden; height: 8px;">
+                        <div id="uploadProgressBar" style="background: var(--accent-primary); height: 100%; width: 0%; transition: width 0.3s;"></div>
+                    </div>
+                    <p id="uploadProgressText" style="text-align: center; margin-top: 0.5rem; color: var(--text-secondary);"></p>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="uploadSubmitBtn">
+                    <i class="fas fa-cloud-upload-alt"></i> Submit for Review
+                </button>
+            </form>
         </div>
     </div>
 

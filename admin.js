@@ -1,307 +1,235 @@
-// Admin panel functionality
+// Admin Panel JavaScript
+const API_BASE = 'http://localhost:3007/api';
 let currentUser = null;
-const API_BASE = window.location.origin + '/api';
+let allMods = [];
 
-// Initialize admin panel
-document.addEventListener('DOMContentLoaded', function() {
-    checkAdminAuth();
-    loadMods();
-    loadAnalytics();
-});
-
-// Check admin authentication
-async function checkAdminAuth() {
+// Check authentication on load
+document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = '/';
+        window.location.href = 'index.html';
         return;
     }
-    
+
     try {
+        // Verify user is admin
         const response = await fetch(`${API_BASE}/auth/me`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+            headers: { 'Authorization': `Bearer ${token}` }
         });
         
-        if (response.ok) {
-            currentUser = await response.json();
-            if (currentUser.role !== 'admin') {
-                alert('Access denied. Admin privileges required.');
-                window.location.href = '/';
-                return;
-            }
-            document.getElementById('adminUsername').textContent = currentUser.username;
-        } else {
-            window.location.href = '/';
+        if (!response.ok) {
+            throw new Error('Not authenticated');
         }
+        
+        const data = await response.json();
+        currentUser = data.user;
+        
+        if (currentUser.role !== 'admin') {
+            alert('Access denied. Admin privileges required.');
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        // Load admin data
+        await loadAdminData();
     } catch (error) {
-        console.error('Auth check failed:', error);
-        window.location.href = '/';
+        console.error('Auth error:', error);
+        localStorage.removeItem('token');
+        window.location.href = 'index.html';
     }
-}
+});
 
-// Tab management
-function showTab(tabName) {
-    // Hide all tabs
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // Remove active class from all tab buttons
-    document.querySelectorAll('.admin-tab').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Show selected tab
-    document.getElementById(`${tabName}-tab`).classList.add('active');
-    event.target.classList.add('active');
-    
-    // Load data for specific tabs
-    if (tabName === 'manage') {
-        loadMods();
-    } else if (tabName === 'users') {
-        loadUsers();
-    } else if (tabName === 'analytics') {
-        loadAnalytics();
-    }
-}
-
-// Upload mod
-async function uploadMod(event) {
-    event.preventDefault();
-    
-    const formData = new FormData();
-    formData.append('title', document.getElementById('modTitle').value);
-    formData.append('author', document.getElementById('modAuthor').value);
-    formData.append('gameTitle', document.getElementById('gameTitle').value);
-    formData.append('category', document.getElementById('modCategory').value);
-    formData.append('gameEngine', document.getElementById('gameEngine').value);
-    formData.append('price', document.getElementById('modPrice').value);
-    formData.append('shortDescription', document.getElementById('shortDescription').value);
-    formData.append('description', document.getElementById('fullDescription').value);
-    formData.append('tags', document.getElementById('modTags').value);
-    
-    // Add images
-    const images = document.getElementById('modImages').files;
-    for (let i = 0; i < images.length; i++) {
-        formData.append('images', images[i]);
-    }
-    
-    // Add mod file
-    const modFile = document.getElementById('modFile').files[0];
-    if (modFile) {
-        formData.append('modFile', modFile);
-    }
-    
+async function loadAdminData() {
     try {
-        const response = await fetch(`${API_BASE}/mods/upload`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: formData
+        const token = localStorage.getItem('token');
+        
+        // Load all mods
+        const modsResponse = await fetch(`${API_BASE}/mods/admin/all`, {
+            headers: { 'Authorization': `Bearer ${token}` }
         });
         
-        const result = await response.json();
+        if (!modsResponse.ok) throw new Error('Failed to load mods');
         
-        if (response.ok) {
-            showMessage('Mod uploaded successfully!', 'success');
-            document.getElementById('modUploadForm').reset();
-            loadMods();
-        } else {
-            showMessage(result.message || 'Upload failed', 'error');
-        }
+        allMods = await modsResponse.json();
+        
+        // Update stats
+        updateStats();
+        
+        // Render tables
+        renderTables();
     } catch (error) {
-        console.error('Upload error:', error);
-        showMessage('Upload failed. Please try again.', 'error');
+        console.error('Error loading admin data:', error);
+        alert('Error loading admin data: ' + error.message);
     }
 }
 
-// Load mods for management
-async function loadMods() {
-    try {
-        const response = await fetch(`${API_BASE}/mods/admin`, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-        
-        if (response.ok) {
-            const mods = await response.json();
-            displayMods(mods);
-        }
-    } catch (error) {
-        console.error('Error loading mods:', error);
-    }
+function updateStats() {
+    const totalMods = allMods.length;
+    const pendingMods = allMods.filter(m => !m.approved).length;
+    const approvedMods = allMods.filter(m => m.approved).length;
+    
+    document.getElementById('totalMods').textContent = totalMods;
+    document.getElementById('pendingMods').textContent = pendingMods;
+    document.getElementById('approvedMods').textContent = approvedMods;
 }
 
-// Display mods in management panel
-function displayMods(mods) {
-    const container = document.getElementById('modsList');
+function renderTables() {
+    const pending = allMods.filter(m => !m.approved);
+    const approved = allMods.filter(m => m.approved);
     
-    if (mods.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No mods uploaded yet.</p>';
-        return;
-    }
+    document.getElementById('pendingModsTable').innerHTML = pending.map(mod => createModRow(mod, true)).join('');
+    document.getElementById('approvedModsTable').innerHTML = approved.map(mod => createModRow(mod, false)).join('');
+    document.getElementById('allModsTable').innerHTML = allMods.map(mod => createModRow(mod, true)).join('');
+}
+
+function createModRow(mod, showApprove) {
+    const statusClass = mod.approved ? 'status-approved' : 'status-pending';
+    const statusText = mod.approved ? 'Approved' : 'Pending';
+    const authorName = mod.authorId?.username || mod.author || 'Unknown';
     
-    container.innerHTML = mods.map(mod => `
-        <div class="mod-item">
-            <img src="${mod.images[0] || '/placeholder.jpg'}" alt="${mod.title}" 
-                 style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--border-radius);">
-            
-            <div class="mod-info">
-                <h4 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">${mod.title}</h4>
-                <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary); font-size: 0.9rem;">${mod.shortDescription}</p>
-                <div style="display: flex; gap: 1rem; align-items: center;">
-                    <span class="status-badge status-${mod.approved ? 'approved' : 'pending'}">
-                        ${mod.approved ? 'Approved' : 'Pending'}
-                    </span>
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">
-                        ${mod.downloads} downloads • $${mod.price}
-                    </span>
-                </div>
-            </div>
-            
-            <div class="mod-actions">
-                ${!mod.approved ? `
-                    <button onclick="approveMod('${mod._id}')" class="btn btn-primary" style="padding: 0.5rem 1rem;">
-                        <i class="fas fa-check"></i> Approve
-                    </button>
+    return `
+        <tr>
+            <td><img src="${mod.images?.[0] || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'40\'%3E%3Crect fill=\'%23ddd\' width=\'60\' height=\'40\'/%3E%3C/svg%3E'}" alt="${mod.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'60\\' height=\\'40\\'%3E%3Crect fill=\\'%23ddd\\' width=\\'60\\' height=\\'40\\'/%3E%3C/svg%3E'"></td>
+            <td><strong>${mod.title}</strong></td>
+            <td>${authorName}</td>
+            <td>${mod.gameTitle}</td>
+            <td>${mod.isFree ? 'FREE' : '$' + mod.price.toFixed(2)}</td>
+            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+            <td class="action-btns">
+                ${showApprove && !mod.approved ? `
+                    <button class="btn-approve" onclick="approveMod('${mod._id}')" title="Approve"><i class="fas fa-check"></i></button>
                 ` : ''}
-                <button onclick="toggleFeatured('${mod._id}', ${mod.featured})" class="btn btn-outline" style="padding: 0.5rem 1rem;">
-                    <i class="fas fa-star"></i> ${mod.featured ? 'Unfeature' : 'Feature'}
-                </button>
-                <button onclick="deleteMod('${mod._id}')" class="btn btn-outline" style="padding: 0.5rem 1rem; color: #dc3545; border-color: #dc3545;">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
+                <button class="btn-edit" onclick="editMod('${mod._id}')" title="Edit"><i class="fas fa-edit"></i></button>
+                <button class="btn-delete" onclick="deleteMod('${mod._id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    `;
 }
 
-// Approve mod
-async function approveMod(modId) {
+async function approveMod(id) {
     try {
-        const response = await fetch(`${API_BASE}/mods/${modId}/approve`, {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE}/mods/${id}/approve`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             }
         });
         
-        if (response.ok) {
-            showMessage('Mod approved successfully!', 'success');
-            loadMods();
-        }
+        if (!response.ok) throw new Error('Failed to approve mod');
+        
+        const data = await response.json();
+        alert(`"${data.mod.title}" has been approved!`);
+        
+        // Reload data
+        await loadAdminData();
     } catch (error) {
         console.error('Error approving mod:', error);
-        showMessage('Failed to approve mod', 'error');
+        alert('Error approving mod: ' + error.message);
     }
 }
 
-// Toggle featured status
-async function toggleFeatured(modId, currentStatus) {
-    try {
-        const response = await fetch(`${API_BASE}/mods/${modId}/feature`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ featured: !currentStatus })
-        });
-        
-        if (response.ok) {
-            showMessage('Featured status updated!', 'success');
-            loadMods();
-        }
-    } catch (error) {
-        console.error('Error updating featured status:', error);
-        showMessage('Failed to update featured status', 'error');
+async function deleteMod(id) {
+    if (!confirm('Are you sure you want to delete this mod? This action cannot be undone.')) {
+        return;
     }
-}
-
-// Delete mod
-async function deleteMod(modId) {
-    if (!confirm('Are you sure you want to delete this mod?')) return;
     
     try {
-        const response = await fetch(`${API_BASE}/mods/${modId}`, {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE}/mods/${id}`, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            headers: { 'Authorization': `Bearer ${token}` }
         });
         
-        if (response.ok) {
-            showMessage('Mod deleted successfully!', 'success');
-            loadMods();
-        }
+        if (!response.ok) throw new Error('Failed to delete mod');
+        
+        alert('Mod deleted successfully!');
+        
+        // Reload data
+        await loadAdminData();
     } catch (error) {
         console.error('Error deleting mod:', error);
-        showMessage('Failed to delete mod', 'error');
+        alert('Error deleting mod: ' + error.message);
     }
 }
 
-// Load users
-async function loadUsers() {
-    // Implementation for user management
-    document.getElementById('usersList').innerHTML = '<p>User management coming soon...</p>';
+function editMod(id) {
+    const mod = allMods.find(m => m._id === id);
+    if (!mod) return;
+    
+    document.getElementById('editModId').value = mod._id;
+    document.getElementById('editTitle').value = mod.title;
+    document.getElementById('editPrice').value = mod.price || 0;
+    document.getElementById('editCategory').value = mod.category || 'Gameplay';
+    document.getElementById('editFeatured').checked = mod.featured || false;
+    document.getElementById('editModModal').style.display = 'flex';
 }
 
-// Load analytics
-async function loadAnalytics() {
+function closeEditModal() {
+    document.getElementById('editModModal').style.display = 'none';
+}
+
+async function saveModEdit(e) {
+    e.preventDefault();
+    
+    const id = document.getElementById('editModId').value;
+    const price = parseFloat(document.getElementById('editPrice').value) || 0;
+    const featured = document.getElementById('editFeatured').checked;
+    
     try {
-        const response = await fetch(`${API_BASE}/admin/analytics`, {
+        const token = localStorage.getItem('token');
+        
+        // Update price
+        const priceResponse = await fetch(`${API_BASE}/mods/${id}/price`, {
+            method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ price })
         });
         
-        if (response.ok) {
-            const analytics = await response.json();
-            document.getElementById('totalMods').textContent = analytics.totalMods || 0;
-            document.getElementById('totalDownloads').textContent = analytics.totalDownloads || 0;
-            document.getElementById('activeUsers').textContent = analytics.activeUsers || 0;
-            document.getElementById('totalRevenue').textContent = `$${analytics.totalRevenue || 0}`;
-        }
+        if (!priceResponse.ok) throw new Error('Failed to update price');
+        
+        // Update featured status
+        const featuredResponse = await fetch(`${API_BASE}/mods/${id}/feature`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ featured })
+        });
+        
+        if (!featuredResponse.ok) throw new Error('Failed to update featured status');
+        
+        alert('Mod updated successfully!');
+        closeEditModal();
+        
+        // Reload data
+        await loadAdminData();
     } catch (error) {
-        console.error('Error loading analytics:', error);
+        console.error('Error updating mod:', error);
+        alert('Error updating mod: ' + error.message);
     }
 }
 
-// Logout
-function logout() {
-    localStorage.removeItem('token');
-    window.location.href = '/';
+function showAdminTab(tab) {
+    // Remove active class from all tabs and sections
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+    
+    // Add active class to clicked tab
+    event.target.classList.add('active');
+    
+    // Show corresponding section
+    document.getElementById(tab + 'Section').classList.add('active');
 }
 
-// Show message
-function showMessage(message, type) {
-    const messageDiv = document.createElement('div');
-    messageDiv.style.cssText = `
-        position: fixed;
-        top: 120px;
-        right: 20px;
-        padding: 1.5rem 2rem;
-        border-radius: var(--border-radius);
-        color: var(--text-primary);
-        font-weight: 600;
-        z-index: 3000;
-        max-width: 400px;
-        box-shadow: var(--shadow-heavy);
-        backdrop-filter: blur(10px);
-        animation: slideInMessage 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        background: ${type === 'success' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(239, 68, 68, 0.9)'};
-        border: 1px solid ${type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'};
-    `;
-    
-    messageDiv.textContent = message;
-    document.body.appendChild(messageDiv);
-    
-    setTimeout(() => {
-        messageDiv.style.animation = 'slideOutMessage 0.5s cubic-bezier(0.23, 1, 0.32, 1)';
-        setTimeout(() => messageDiv.remove(), 500);
-    }, 4000);
+function adminLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('token');
+        window.location.href = 'index.html';
+    }
 }
