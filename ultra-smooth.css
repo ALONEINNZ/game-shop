@@ -840,3 +840,42 @@ input, textarea, select {
     align-items: center;
     gap: 0.5rem;
 }
+
+
+/* ============================================
+   3D SCROLL ANIMATION STYLING
+   ============================================ */
+
+#hero-3d-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+#hero-3d-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+}
+
+.hero-background {
+    position: relative;
+    z-index: 2;
+}
+
+/* Fade out 3D on scroll */
+@media (max-width: 768px) {
+    #hero-3d-container {
+        opacity: 0.3;
+    }
+}
