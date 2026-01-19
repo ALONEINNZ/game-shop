@@ -8,11 +8,17 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="styles-new.css" rel="stylesheet">
     <link href="ultra-smooth.css" rel="stylesheet">
+    <link href="holographic-effects.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Cyberpunk Effects Overlays -->
+    <div class="scanlines"></div>
+    <div class="hex-pattern"></div>
+    
     <!-- Loading Screen -->
-    <div class="loading" id="loading">
-        <div class="loading-spinner"></div>
+    <div class="loading" id="loading" style="background: #000510;">
+        <div class="loading-spinner" style="border-color: #5B8CFF transparent #C15CFF transparent;"></div>
+        <p style="color: #5B8CFF; margin-top: 2rem; font-size: 1.2rem; text-shadow: 0 0 10px #5B8CFF;">INITIALIZING EXUSCRAFT...</p>
     </div>
 
     <!-- Premium Navigation -->
@@ -725,8 +731,19 @@
     <!-- GSAP for smooth animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Smooth Scroll System -->
+    <script src="smooth-scroll.js"></script>
+    <!-- 3D Enhancement Scripts -->
+    <script src="3d-loading.js"></script>
+    <script src="3d-ultimate.js"></script>
+    <script src="3d-enhanced.js"></script>
     <script src="3d-scroll.js"></script>
-    <script src="app.js?v=20260119"></script>
+    <script src="3d-card-effects.js"></script>
+    <script src="3d-sections.js"></script>
+    <script src="3d-transitions.js"></script>
+    <script src="3d-cursor.js"></script>
+    <script src="scroll-showcase.js?v=2"></script>
+    <script src="app.js?v=20260123"></script>
 </body>
 </html>
 

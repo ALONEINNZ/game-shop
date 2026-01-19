@@ -8,12 +8,21 @@ html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Add momentum scrolling for iOS */
+    -webkit-overflow-scrolling: touch;
 }
 
 body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* Prevent scroll jank */
+    overscroll-behavior-y: none;
+}
+
+/* Smooth scroll container */
+* {
+    scroll-behavior: smooth;
 }
 
 /* Balanced transitions - smooth but performant */
@@ -878,4 +887,167 @@ input, textarea, select {
     #hero-3d-container {
         opacity: 0.3;
     }
+}
+
+
+/* ============================================
+   FULL 3D EXPERIENCE STYLING
+   ============================================ */
+
+/* Ensure content is above 3D background */
+body {
+    position: relative;
+}
+
+.navbar, .hero, .section, .footer {
+    position: relative;
+    z-index: 10;
+}
+
+/* 3D Card Effects */
+.game-card, .mod-card, .game-card-filter {
+    transform-style: preserve-3d !important;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    will-change: transform;
+    position: relative;
+    overflow: visible !important;
+}
+
+.game-card:hover, .mod-card:hover, .game-card-filter:hover {
+    z-index: 100 !important;
+}
+
+/* Add depth to card images */
+.game-card img, .mod-card img {
+    transform: translateZ(15px);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.game-card:hover img, .mod-card:hover img {
+    transform: translateZ(25px) scale(1.05);
+}
+
+/* Add depth to card content */
+.game-info, .mod-info, .game-title, .game-price {
+    transform: translateZ(20px);
+    position: relative;
+}
+
+/* Glassmorphism effect for cards */
+.game-card, .mod-card, .game-card-filter {
+    background: rgba(26, 31, 46, 0.8) !important;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Enhanced shadows for 3D depth */
+.game-card:hover, .mod-card:hover, .game-card-filter:hover {
+    box-shadow: 
+        0 30px 80px rgba(0, 0, 0, 0.6),
+        0 0 60px rgba(91, 140, 255, 0.4),
+        inset 0 0 30px rgba(91, 140, 255, 0.15) !important;
+}
+
+/* Card shine effect */
+.card-shine {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border-radius: inherit;
+    z-index: 10;
+    mix-blend-mode: overlay;
+}
+
+/* Floating animation for buttons */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.btn-primary {
+    animation: float 3s ease-in-out infinite;
+}
+
+.btn-primary:hover {
+    animation: none;
+}
+
+/* Glow effect on hover */
+.game-card:hover::before,
+.mod-card:hover::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #5B8CFF, #7C5CFF, #C15CFF, #06B6D4);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0.5;
+    filter: blur(10px);
+}
+
+/* Parallax effect for sections */
+.section {
+    transform-style: preserve-3d;
+}
+
+/* Hero content depth */
+.hero-title {
+    transform: translateZ(30px);
+}
+
+.hero-subtitle {
+    transform: translateZ(20px);
+}
+
+.hero-cta {
+    transform: translateZ(40px);
+}
+
+/* Trust bar 3D effect */
+.trust-item {
+    transform-style: preserve-3d;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.trust-item:hover {
+    transform: translateZ(10px) scale(1.1);
+}
+
+/* Game filter cards 3D */
+.game-card-filter {
+    transform-style: preserve-3d;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.game-card-filter:hover {
+    transform: perspective(1000px) rotateY(5deg) translateZ(20px);
+}
+
+/* Navbar 3D depth */
+.navbar {
+    transform-style: preserve-3d;
+}
+
+.nav-link {
+    transform-style: preserve-3d;
+}
+
+.nav-link:hover {
+    transform: translateZ(5px);
+}
+
+/* Footer 3D */
+.footer-column a {
+    transform-style: preserve-3d;
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.footer-column a:hover {
+    transform: translateZ(5px) translateX(5px);
 }
