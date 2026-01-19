@@ -2835,9 +2835,9 @@ function handleNavSearch(event) {
 }
 
 // ============================================
-// UPLOAD MOD FEATURE
+// UPLOAD MOD FEATURE (OLD - USES PROFILE MODAL)
 // ============================================
-function showUploadModal(existingMod = null) {
+function showUploadModalOld(existingMod = null) {
     if (!currentUser) {
         showLogin();
         showMessage('Please login to upload mods', 'info');
@@ -3633,13 +3633,37 @@ function initGSAPAnimations() {
 let uploadFormData = {};
 
 function showUploadModal() {
+    console.log('=== UPLOAD MODAL DEBUG START ===');
+    
+    // Check if modal exists
+    const modal = document.getElementById('uploadModal');
+    console.log('Modal element:', modal);
+    
+    if (!modal) {
+        console.error('ERROR: Upload modal not found in DOM!');
+        alert('Error: Upload modal not found. Please refresh the page.');
+        return;
+    }
+    
+    // Check login status
     const token = localStorage.getItem('token');
+    console.log('Token exists:', !!token);
+    
     if (!token) {
+        console.log('User not logged in, showing login modal');
+        alert('Please login first to upload mods');
         showLogin();
         return;
     }
     
-    document.getElementById('uploadModal').style.display = 'flex';
+    // Show the modal
+    console.log('Setting modal display to flex...');
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+    modal.style.visibility = 'visible';
+    console.log('Modal should now be visible!');
+    console.log('Modal computed style:', window.getComputedStyle(modal).display);
+    console.log('=== UPLOAD MODAL DEBUG END ===');
     
     // Restore saved form data if exists
     if (uploadFormData.title) {

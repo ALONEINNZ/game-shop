@@ -371,7 +371,6 @@ input:focus, textarea:focus, select:focus {
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
 }
 
 .user-dropdown.active,
@@ -379,7 +378,6 @@ input:focus, textarea:focus, select:focus {
     opacity: 1 !important;
     visibility: visible !important;
     transform: translateY(0) !important;
-    pointer-events: auto;
 }
 
 /* Game Dropdown Smooth Animations */
@@ -388,7 +386,6 @@ input:focus, textarea:focus, select:focus {
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
 }
 
 .dropdown-menu.show,
@@ -396,7 +393,6 @@ input:focus, textarea:focus, select:focus {
     opacity: 1 !important;
     visibility: visible !important;
     transform: translateY(5px) !important;
-    pointer-events: auto;
 }
 
 /* Ensure dropdowns work properly */
@@ -488,4 +484,238 @@ input:focus, textarea:focus, select:focus {
 
 .hero-cta .btn:active {
     transform: translateY(-1px) !important;
+}
+
+
+/* Upload Modal Display Fix */
+#uploadModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+#uploadModal[style*="display: flex"] {
+    display: flex !important;
+}
+
+
+/* ============================================
+   UPLOAD MODAL STYLING
+   ============================================ */
+
+#uploadModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+#uploadModal .modal-content {
+    background: var(--bg-card, #1a1f2e);
+    border: 1px solid var(--border-color, #2d3748);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 700px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease;
+}
+
+#uploadModal .close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    color: var(--text-secondary, #a0aec0);
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+#uploadModal .close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary, #fff);
+}
+
+#uploadModal h2 {
+    margin: 0 0 1.5rem 0;
+    color: var(--text-primary, #fff);
+    font-size: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#uploadModal .form-group {
+    margin-bottom: 1.5rem;
+}
+
+#uploadModal .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary, #fff);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+#uploadModal .form-group input,
+#uploadModal .form-group select,
+#uploadModal .form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary, #0f1419);
+    border: 1px solid var(--border-color, #2d3748);
+    border-radius: 8px;
+    color: var(--text-primary, #fff);
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+#uploadModal .form-group input:focus,
+#uploadModal .form-group select:focus,
+#uploadModal .form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary, #5B8CFF);
+    box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.1);
+}
+
+#uploadModal .form-group small {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text-muted, #718096);
+    font-size: 0.85rem;
+}
+
+#uploadModal button[type="submit"] {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #5B8CFF 0%, #7C5CFF 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+#uploadModal button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(91, 140, 255, 0.3);
+}
+
+#uploadModal button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#uploadProgress {
+    margin: 1rem 0;
+}
+
+#uploadProgressBar {
+    height: 8px;
+    background: var(--accent-primary, #5B8CFF);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scrollbar styling for modal */
+#uploadModal .modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+#uploadModal .modal-content::-webkit-scrollbar-track {
+    background: var(--bg-secondary, #0f1419);
+    border-radius: 4px;
+}
+
+#uploadModal .modal-content::-webkit-scrollbar-thumb {
+    background: var(--accent-primary, #5B8CFF);
+    border-radius: 4px;
+}
+
+#uploadModal .modal-content::-webkit-scrollbar-thumb:hover {
+    background: #7C5CFF;
+}
+
+
+/* ============================================
+   DROPDOWN POSITIONING FIX
+   ============================================ */
+
+/* Game Dropdown - Position directly under the button */
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    margin-top: 0.5rem;
+}
+
+.nav-dropdown .dropdown-menu.show,
+.nav-dropdown:hover .dropdown-menu {
+    transform: translateX(-50%) translateY(5px) !important;
+}
+
+/* User Dropdown - Position directly under avatar */
+.user-profile-dropdown {
+    position: relative;
+}
+
+.user-profile-dropdown .user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: auto;
+    margin-top: 0.5rem;
 }
