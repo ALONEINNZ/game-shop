@@ -12,7 +12,8 @@ const PORT = process.env.PORT || 3007;
 const uploadDirs = [
     'uploads',
     'uploads/mod-images',
-    'uploads/mod-files'
+    'uploads/mod-files',
+    'uploads/jam-images'
 ];
 
 uploadDirs.forEach(dir => {
@@ -38,6 +39,7 @@ app.use('/api/comments', require('./routes/comments'));
 app.use('/api/collections', require('./routes/collections'));
 app.use('/api/chatbot', require('./routes/chatbot'));
 app.use('/api/refunds', require('./routes/refunds'));
+app.use('/api/jams', require('./routes/jams'));
 
 // Admin route
 app.get('/admin', (req, res) => {

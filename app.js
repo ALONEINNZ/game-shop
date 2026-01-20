@@ -572,6 +572,184 @@ function toggleUserMenu() {
 }
 
 // ============================================
+// NAVIGATION FUNCTIONS
+// ============================================
+
+function showProfile() {
+    if (!currentUser) {
+        showLogin();
+        return;
+    }
+    window.location.href = '/profile.html';
+}
+
+function showLibrary() {
+    if (!currentUser) {
+        showLogin();
+        showMessage('Please login to view your library', 'info');
+        return;
+    }
+    
+    // Create library modal
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 1200px; max-height: 90vh; overflow-y: auto;">
+            <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+            <h2 style="margin-bottom: 2rem;"><i class="fas fa-book"></i> My Library</h2>
+            
+            <div id="libraryGrid" class="games-showcase">
+                ${library.length === 0 ? `
+                    <div style="text-align: center; padding: 4rem; grid-column: 1 / -1;">
+                        <i class="fas fa-book-open" style="font-size: 4rem; color: #5B8CFF; margin-bottom: 1rem;"></i>
+                        <h3>Your library is empty</h3>
+                        <p style="color: rgba(255, 255, 255, 0.6);">Start adding mods to your library!</p>
+                    </div>
+                ` : library.map(item => {
+                    const mod = mods.find(m => m._id === item.modId);
+                    if (!mod) return '';
+                    return `
+                        <div class="game-card" onclick="showModDetails('${mod._id}')">
+                            <div class="game-card-image">
+                                <img src="${mod.images[0]}" alt="${mod.title}">
+                            </div>
+                            <div class="game-card-content">
+                                <h3 class="game-card-title">${mod.title}</h3>
+                                <p class="game-card-description">${mod.shortDescription || mod.description.substring(0, 100)}</p>
+                                <div class="game-card-footer">
+                                    <span>${mod.gameTitle}</span>
+                                    <button onclick="event.stopPropagation(); downloadMod('${mod._id}')" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-download"></i> Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function showMyMods() {
+    if (!currentUser) {
+        showLogin();
+        showMessage('Please login to view your mods', 'info');
+        return;
+    }
+    
+    showMessage('My Mods feature - Upload your own mods!', 'info');
+    showUploadModal();
+}
+
+function showFavorites() {
+    if (!currentUser) {
+        showLogin();
+        showMessage('Please login to view favorites', 'info');
+        return;
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 1200px; max-height: 90vh; overflow-y: auto;">
+            <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+            <h2 style="margin-bottom: 2rem;"><i class="fas fa-heart"></i> Favorites</h2>
+            
+            <div id="favoritesGrid" class="games-showcase">
+                ${favorites.length === 0 ? `
+                    <div style="text-align: center; padding: 4rem; grid-column: 1 / -1;">
+                        <i class="fas fa-heart-broken" style="font-size: 4rem; color: #5B8CFF; margin-bottom: 1rem;"></i>
+                        <h3>No favorites yet</h3>
+                        <p style="color: rgba(255, 255, 255, 0.6);">Click the heart icon on mods to add them here!</p>
+                    </div>
+                ` : favorites.map(modId => {
+                    const mod = mods.find(m => m._id === modId);
+                    if (!mod) return '';
+                    return `
+                        <div class="game-card" onclick="showModDetails('${mod._id}')">
+                            <div class="game-card-image">
+                                <img src="${mod.images[0]}" alt="${mod.title}">
+                                <div class="game-card-badge" style="background: #EF4444;">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                            </div>
+                            <div class="game-card-content">
+                                <h3 class="game-card-title">${mod.title}</h3>
+                                <p class="game-card-description">${mod.shortDescription || mod.description.substring(0, 100)}</p>
+                                <div class="game-card-footer">
+                                    <span>${mod.isFree ? 'Free' : '$' + mod.price.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function showDownloads() {
+    if (!currentUser) {
+        showLogin();
+        showMessage('Please login to view downloads', 'info');
+        return;
+    }
+    
+    window.location.href = '/downloads.html';
+}
+
+function showSettings() {
+    if (!currentUser) {
+        showLogin();
+        showMessage('Please login to access settings', 'info');
+        return;
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+            <h2 style="margin-bottom: 2rem;"><i class="fas fa-cog"></i> Settings</h2>
+            
+            <div style="padding: 1rem;">
+                <h3 style="margin-bottom: 1rem;">Account</h3>
+                <p><strong>Username:</strong> ${currentUser.username}</p>
+                <p><strong>Email:</strong> ${currentUser.email}</p>
+                
+                <hr style="margin: 2rem 0; border: 1px solid rgba(255, 255, 255, 0.1);">
+                
+                <h3 style="margin-bottom: 1rem;">Preferences</h3>
+                <label style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <input type="checkbox" ${currentTheme === 'dark' ? 'checked' : ''} onchange="toggleTheme()">
+                    Dark Mode
+                </label>
+                
+                <hr style="margin: 2rem 0; border: 1px solid rgba(255, 255, 255, 0.1);">
+                
+                <button onclick="logout(); this.closest('.modal').remove();" class="btn btn-danger" style="width: 100%;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function scrollToMods() {
+    const modsSection = document.getElementById('games');
+    if (modsSection) {
+        modsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// ============================================
 // USER DATA STORAGE
 // ============================================
 let userMods = JSON.parse(localStorage.getItem('userMods') || '[]');
@@ -895,6 +1073,13 @@ function addToLibrary(modId) {
         return;
     }
     
+    // SECURITY: Only allow free mods to be added directly
+    // Paid mods must go through purchase flow
+    if (!mod.isFree && mod.price > 0) {
+        showMessage('⚠️ This is a paid mod. Please purchase it first!', 'error');
+        return;
+    }
+    
     library.push({
         modId: modId,
         title: mod.title,
@@ -906,7 +1091,7 @@ function addToLibrary(modId) {
     });
     
     saveUserData();
-    showMessage(`"${mod.title}" added to your library! ??`, 'success');
+    showMessage(`"${mod.title}" added to your library! 📚`, 'success');
 }
 
 function removeFromLibrary(modId) {
@@ -1244,10 +1429,16 @@ function displayModCards(modsToShow, containerId) {
                         <span class="mod-card-price">${priceDisplay}</span>
                     </div>
                     <div class="mod-card-actions">
-                        <button onclick="event.stopPropagation(); ${mod.isFree ? `downloadMod('${mod._id}')` : `addModToCart('${mod._id}')`}" class="btn btn-primary btn-sm">
-                            <i class="fas fa-${mod.isFree ? 'download' : 'cart-plus'}"></i>
-                            ${mod.isFree ? 'Download' : 'Add to Cart'}
-                        </button>
+                        ${isInLibrary(mod._id) && !mod.isFree ? `
+                            <button class="btn btn-success btn-sm" disabled>
+                                <i class="fas fa-check-circle"></i> Purchased
+                            </button>
+                        ` : `
+                            <button onclick="event.stopPropagation(); ${mod.isFree ? `downloadMod('${mod._id}')` : `addModToCart('${mod._id}')`}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-${mod.isFree ? 'download' : 'cart-plus'}"></i>
+                                ${mod.isFree ? 'Download' : 'Add to Cart'}
+                            </button>
+                        `}
                     </div>
                 </div>
             </div>
@@ -1360,6 +1551,13 @@ function showModDetails(modId) {
                     </button>
                     <button onclick="addToLibrary('${mod._id}')" class="btn btn-library btn-large ${isInLibrary(mod._id) ? 'in-library' : ''}">
                         <i class="fas fa-${isInLibrary(mod._id) ? 'check' : 'book'}"></i> ${isInLibrary(mod._id) ? 'In Library' : 'Add to Library'}
+                    </button>
+                ` : isInLibrary(mod._id) ? `
+                    <button class="btn btn-success btn-large" disabled>
+                        <i class="fas fa-check-circle"></i> Purchased
+                    </button>
+                    <button onclick="downloadModWithAnimation('${mod._id}')" class="btn btn-primary btn-large download-btn" id="downloadBtn-${mod._id}">
+                        <i class="fas fa-download"></i> Download Again
                     </button>
                 ` : `
                     <button onclick="purchaseAndAddToLibrary('${mod._id}')" class="btn btn-primary btn-large">
@@ -1777,8 +1975,8 @@ function purchaseMod(modId) {
     }
 }
 
-// Purchase and Add to Library (Steam-like)
-function purchaseAndAddToLibrary(modId) {
+// Purchase and Add to Library (Steam-like) - WITH REAL PAYMENT
+async function purchaseAndAddToLibrary(modId) {
     const mod = mods.find(m => m._id === modId);
     if (!mod) {
         showMessage('Mod not found!', 'error');
@@ -1797,19 +1995,31 @@ function purchaseAndAddToLibrary(modId) {
         return;
     }
     
-    const confirmPurchase = confirm(`Purchase ${mod.title} for $${mod.price.toFixed(2)} and add to your library?\n\nThis is a demo - no real payment will be processed.`);
+    // SECURITY FIX: Free mods can be added directly
+    if (mod.isFree || mod.price === 0) {
+        addToLibrary(modId);
+        closeModal();
+        return;
+    }
+    
+    // SECURITY FIX: Paid mods require actual payment
+    const confirmPurchase = confirm(`Purchase ${mod.title} for $${mod.price.toFixed(2)}?\n\nYou will be redirected to secure payment.`);
     
     if (confirmPurchase) {
-        showMessage(`Processing purchase for ${mod.title}...`, 'info');
+        showMessage(`Processing payment for ${mod.title}...`, 'info');
         
-        setTimeout(() => {
-            addToLibrary(modId);
-            showMessage(`?? Purchase successful! "${mod.title}" added to your library!`, 'success');
-            closeModal();
-        }, 1500);
+        // Add to cart and proceed to checkout
+        if (!cart.find(item => item._id === modId)) {
+            cart.push(mod);
+            updateCartDisplay();
+            saveData();
+        }
+        
+        // Close modal and show checkout
+        closeModal();
+        showCheckout();
     }
 }
-
 // Add to Cart
 function addModToCart(modId) {
     const mod = mods.find(m => m._id === modId);
@@ -1912,8 +2122,17 @@ function checkout() {
         showMessage('Processing your free items...', 'info');
         setTimeout(() => {
             cart.forEach(item => {
-                if (!library.find(id => id === item._id)) {
-                    library.push(item._id);
+                // Use the secure addToLibrary function for free items
+                if (!library.some(libItem => libItem.modId === item._id)) {
+                    library.push({
+                        modId: item._id,
+                        title: item.title,
+                        game: item.gameTitle,
+                        category: item.category,
+                        image: item.images?.[0],
+                        version: item.version,
+                        addedAt: new Date().toISOString()
+                    });
                 }
                 downloadMod(item._id);
             });
@@ -1922,7 +2141,7 @@ function checkout() {
             updateCartDisplay();
             saveData();
             toggleCart();
-            showMessage('?? Items added to your library!', 'success');
+            showMessage('📚 Items added to your library!', 'success');
         }, 1000);
         return;
     }
@@ -2074,9 +2293,22 @@ async function processStripePayment(total) {
                 body: JSON.stringify({ paymentIntentId: paymentIntent.id, items: cartItems, amount: total })
             });
             
-            // Success
+            // SECURITY FIX: Add to library properly after successful payment
             cart.forEach(item => {
-                if (!library.find(id => id === item._id)) library.push(item._id);
+                // Add to library using the secure function
+                if (!library.some(libItem => libItem.modId === item._id)) {
+                    library.push({
+                        modId: item._id,
+                        title: item.title,
+                        game: item.gameTitle,
+                        category: item.category,
+                        image: item.images?.[0],
+                        version: item.version,
+                        addedAt: new Date().toISOString(),
+                        purchasedAt: new Date().toISOString(),
+                        paymentId: paymentIntent.id
+                    });
+                }
                 downloadMod(item._id);
             });
             saveUserData();
@@ -3851,3 +4083,157 @@ function toggleGameDropdown() {
         dropdown.classList.toggle('show');
     }
 }
+
+
+
+// ============================================
+// MISSING MODAL & UTILITY FUNCTIONS
+// ============================================
+
+function closeModal() {
+    const modal = document.getElementById('gameModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById('authModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function closeUploadModal() {
+    const modal = document.getElementById('uploadModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function toggleDownloadManager() {
+    const manager = document.getElementById('downloadManager');
+    if (manager) {
+        manager.classList.toggle('show');
+    }
+}
+
+function clearCompletedDownloads() {
+    showMessage('Completed downloads cleared', 'success');
+}
+
+function openDownloadsFolder() {
+    showMessage('Opening downloads folder...', 'info');
+    window.location.href = '/downloads.html';
+}
+
+function toggleChatbot() {
+    const chatbot = document.getElementById('chatbot');
+    if (chatbot) {
+        chatbot.classList.toggle('show');
+    }
+}
+
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    if (input && input.value.trim()) {
+        askBot(input.value);
+        input.value = '';
+    }
+}
+
+function askBot(question) {
+    showMessage(`Chatbot: "${question}" - Feature coming soon!`, 'info');
+}
+
+// Close modals when clicking outside
+window.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) {
+        e.target.style.display = 'none';
+    }
+});
+
+console.log('✅ All navigation and utility functions loaded!');
+
+
+// ============================================
+// SEARCH FUNCTIONALITY
+// ============================================
+
+// Expand search on focus
+document.addEventListener('DOMContentLoaded', () => {
+    const navSearch = document.querySelector('.nav-search');
+    const navSearchInput = document.getElementById('navSearch');
+    
+    if (navSearchInput && navSearch) {
+        // EXPAND on focus (when clicked)
+        navSearchInput.addEventListener('focus', () => {
+            navSearch.classList.add('expanded');
+        });
+        
+        // COLLAPSE on blur (when clicked away) - only if empty
+        navSearchInput.addEventListener('blur', () => {
+            if (!navSearchInput.value) {
+                navSearch.classList.remove('expanded');
+            }
+        });
+    }
+});
+
+// Handle nav search
+function handleNavSearch(event) {
+    if (event.key === 'Enter') {
+        const query = event.target.value.trim();
+        if (query) {
+            searchMods(query);
+        }
+    }
+}
+
+function searchMods(query) {
+    const searchQuery = query.toLowerCase();
+    const allGames = document.getElementById('allGames');
+    
+    if (!allGames) return;
+    
+    // Filter mods
+    const filteredMods = mods.filter(mod => {
+        return mod.title.toLowerCase().includes(searchQuery) ||
+               mod.description.toLowerCase().includes(searchQuery) ||
+               mod.gameTitle.toLowerCase().includes(searchQuery) ||
+               mod.category.toLowerCase().includes(searchQuery) ||
+               (mod.tags && mod.tags.some(tag => tag.toLowerCase().includes(searchQuery)));
+    });
+    
+    // Scroll to mods section
+    const modsSection = document.getElementById('games');
+    if (modsSection) {
+        modsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Display filtered results
+    if (filteredMods.length === 0) {
+        allGames.innerHTML = `
+            <div style="text-align: center; padding: 4rem; grid-column: 1 / -1;">
+                <i class="fas fa-search" style="font-size: 4rem; color: #5B8CFF; margin-bottom: 1rem;"></i>
+                <h3>No results found for "${query}"</h3>
+                <p style="color: rgba(255, 255, 255, 0.6);">Try different keywords</p>
+                <button onclick="location.reload()" class="btn btn-primary" style="margin-top: 1rem;">
+                    Clear Search
+                </button>
+            </div>
+        `;
+    } else {
+        displayMods(filteredMods, allGames);
+        showMessage(`Found ${filteredMods.length} mods for "${query}"`, 'success');
+    }
+}
+
+console.log('✅ Search functionality loaded!');

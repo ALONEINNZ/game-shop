@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Jams Functions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background: #0B0F14;
+            color: white;
+        }
+        button {
+            padding: 1rem 2rem;
+            margin: 1rem;
+            font-size: 1rem;
+            cursor: pointer;
+            background: linear-gradient(135deg, #5B8CFF, #7C5CFF);
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .status {
+            padding: 1rem;
+            margin: 1rem 0;
+            background: rgba(91, 140, 255, 0.1);
+            border-radius: 8px;
+        }
+        .success { color: #22C55E; }
+        .error { color: #EF4444; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Jams Functions Test Page</h1>
+    
+    <div class="status" id="status">
+        <h3>Loading...</h3>
+    </div>
+    
+    <div>
+        <button onclick="testShowCreateJamModal()">Test showCreateJamModal()</button>
+        <button onclick="testShowJoinJamModal()">Test showJoinJamModal()</button>
+        <button onclick="testFilterJams()">Test filterJams('all')</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script src="app.js?v=2"></script>
+    <script src="jams.js?v=2"></script>
+    
+    <script>
+        // Wait for scripts to load
+        setTimeout(() => {
+            const status = document.getElementById('status');
+            const results = document.getElementById('results');
+            
+            // Check if functions exist
+            const checks = {
+                'showCreateJamModal': typeof window.showCreateJamModal,
+                'showJoinJamModal': typeof window.showJoinJamModal,
+                'closeCreateJamModal': typeof window.closeCreateJamModal,
+                'closeJoinJamModal': typeof window.closeJoinJamModal,
+                'createJam': typeof window.createJam,
+                'joinJam': typeof window.joinJam,
+                'filterJams': typeof window.filterJams,
+                'viewJam': typeof window.viewJam,
+                'copyToClipboard': typeof window.copyToClipboard
+            };
+            
+            let html = '<h3>Function Availability:</h3><ul>';
+            let allGood = true;
+            
+            for (const [name, type] of Object.entries(checks)) {
+                const isFunction = type === 'function';
+                const className = isFunction ? 'success' : 'error';
+                const icon = isFunction ? '✅' : '❌';
+                html += `<li class="${className}">${icon} ${name}: ${type}</li>`;
+                if (!isFunction) allGood = false;
+            }
+            
+            html += '</ul>';
+            
+            if (allGood) {
+                status.innerHTML = '<h3 class="success">✅ All functions loaded successfully!</h3>';
+            } else {
+                status.innerHTML = '<h3 class="error">❌ Some functions are missing!</h3>';
+            }
+            
+            results.innerHTML = html;
+        }, 500);
+        
+        function testShowCreateJamModal() {
+            console.log('Testing showCreateJamModal...');
+            if (typeof window.showCreateJamModal === 'function') {
+                alert('✅ showCreateJamModal exists! (Would open modal if user logged in)');
+            } else {
+                alert('❌ showCreateJamModal is not defined!');
+            }
+        }
+        
+        function testShowJoinJamModal() {
+            console.log('Testing showJoinJamModal...');
+            if (typeof window.showJoinJamModal === 'function') {
+                alert('✅ showJoinJamModal exists! (Would open modal if user logged in)');
+            } else {
+                alert('❌ showJoinJamModal is not defined!');
+            }
+        }
+        
+        function testFilterJams() {
+            console.log('Testing filterJams...');
+            if (typeof window.filterJams === 'function') {
+                alert('✅ filterJams exists!');
+            } else {
+                alert('❌ filterJams is not defined!');
+            }
+        }
+    </script>
+</body>
+</html>

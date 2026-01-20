@@ -8,12 +8,13 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="styles-new.css" rel="stylesheet">
     <link href="ultra-smooth.css" rel="stylesheet">
-    <link href="holographic-effects.css" rel="stylesheet">
+    <!-- <link href="holographic-effects.css" rel="stylesheet"> DISABLED FOR PERFORMANCE -->
+    <link href="nav-fix.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Cyberpunk Effects Overlays -->
-    <div class="scanlines"></div>
-    <div class="hex-pattern"></div>
+    <!-- Cyberpunk Effects Overlays - DISABLED FOR PERFORMANCE -->
+    <!-- <div class="scanlines"></div>
+    <div class="hex-pattern"></div> -->
     
     <!-- Loading Screen -->
     <div class="loading" id="loading" style="background: #000510;">
@@ -65,8 +66,8 @@
                         <a href="#" onclick="filterByGame('Counter-Strike 2')"><span>🎯</span> Counter-Strike 2</a>
                     </div>
                 </div>
+                <a class="nav-link" href="jams.html">Jams</a>
                 <a class="nav-link" href="collections.html">Collections</a>
-                <a class="nav-link" href="downloads.html">Downloads</a>
                 <a class="nav-link upload-link" href="#" onclick="event.preventDefault(); showUploadModal();">
                     <i class="fas fa-upload"></i> Upload
                 </a>
@@ -150,24 +151,22 @@
 
     <!-- Cinematic Hero Section -->
     <section class="hero" id="hero">
-        <!-- 3D Scroll Animation Container -->
-        <div id="hero-3d-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></div>
+        <!-- 3D Scroll Animation Container - DISABLED FOR PERFORMANCE -->
+        <!-- <div id="hero-3d-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></div> -->
         
         <div class="hero-background" style="position: relative; z-index: 2;">
-            <div class="hero-particles"></div>
-            <!-- Interactive Hexagon Grid -->
-            <canvas id="hexGrid" class="hex-grid-canvas"></canvas>
-            <!-- Floating Hexagons -->
-            <div class="hex-container">
+            <!-- DISABLED HEAVY ANIMATIONS FOR PERFORMANCE -->
+            <!-- <div class="hero-particles"></div> -->
+            <!-- <canvas id="hexGrid" class="hex-grid-canvas"></canvas> -->
+            <!-- <div class="hex-container">
                 <div class="hex hex-1"></div>
                 <div class="hex hex-2"></div>
                 <div class="hex hex-3"></div>
                 <div class="hex hex-4"></div>
                 <div class="hex hex-5"></div>
                 <div class="hex hex-6"></div>
-            </div>
-            <!-- Rising Particles -->
-            <div class="particle-field">
+            </div> -->
+            <!-- <div class="particle-field">
                 <div class="particle p1"></div>
                 <div class="particle p2"></div>
                 <div class="particle p3"></div>
@@ -180,7 +179,7 @@
                 <div class="particle p10"></div>
                 <div class="particle p11"></div>
                 <div class="particle p12"></div>
-            </div>
+            </div> -->
         </div>
         <div class="hero-content">
             <span class="hero-badge">🎮 Community-Driven Platform</span>
@@ -909,6 +908,7 @@
     <script>
     // Mod Details Function
     function openModDetails(modId) {
+        console.log('🎯 openModDetails called with:', modId);
         const modData = {
             'ultra-graphics': {
                 title: 'Ultra Graphics Overhaul',
@@ -955,7 +955,12 @@
         };
 
         const mod = modData[modId];
-        if (!mod) return;
+        if (!mod) {
+            console.error('❌ Mod not found:', modId);
+            return;
+        }
+
+        console.log('✅ Mod found:', mod.title);
 
         const content = `
             <div style="padding: 2rem;">
@@ -1017,12 +1022,27 @@
             </div>
         `;
 
-        document.getElementById('modDetailsContent').innerHTML = content;
-        document.getElementById('modDetailsModal').style.display = 'flex';
+        const modalContent = document.getElementById('modDetailsContent');
+        const modal = document.getElementById('modDetailsModal');
+        
+        console.log('📦 Modal elements:', { modalContent, modal });
+        
+        if (modalContent && modal) {
+            modalContent.innerHTML = content;
+            modal.style.display = 'flex';
+            console.log('✅ Modal opened successfully!');
+        } else {
+            console.error('❌ Modal elements not found!');
+        }
     }
 
     function closeModDetails() {
-        document.getElementById('modDetailsModal').style.display = 'none';
+        console.log('🚪 Closing modal...');
+        const modal = document.getElementById('modDetailsModal');
+        if (modal) {
+            modal.style.display = 'none';
+            console.log('✅ Modal closed');
+        }
     }
 
     // Close modal on outside click
@@ -1041,21 +1061,19 @@
     <!-- GSAP for smooth animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <!-- Smooth Scroll System -->
-    <script src="smooth-scroll.js"></script>
-    <!-- 3D Enhancement Scripts -->
+    <!-- Smooth Scroll System - DISABLED FOR PERFORMANCE -->
+    <!-- <script src="smooth-scroll.js"></script> -->
+    <!-- 3D Enhancement Scripts - MOST DISABLED FOR PERFORMANCE -->
     <script src="3d-loading.js"></script>
-    <script src="3d-ultimate.js"></script>
-    <script src="3d-enhanced.js"></script>
-    <script src="3d-scroll.js"></script>
+    <!-- <script src="3d-ultimate.js"></script> -->
+    <!-- <script src="3d-enhanced.js"></script> -->
+    <!-- <script src="3d-scroll.js"></script> -->
     <script src="3d-card-effects.js"></script>
-    <script src="3d-sections.js"></script>
-    <script src="3d-transitions.js"></script>
-    <script src="3d-cursor.js"></script>
-    <script src="scroll-showcase.js?v=2"></script>
-    <script src="showcase-3d.js?v=2"></script>
+    <!-- <script src="3d-sections.js"></script> -->
+    <!-- <script src="3d-transitions.js"></script> -->
+    <!-- <script src="3d-cursor.js"></script> -->
+    <!-- <script src="scroll-showcase.js?v=2"></script> -->
+    <!-- <script src="showcase-3d.js?v=2"></script> -->
     <script src="app.js?v=20260125"></script>
 </body>
 </html>
-
-</body>\n</html>

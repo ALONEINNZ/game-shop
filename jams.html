@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mod Jams & Competitions - ExusCraft</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="styles-new.css" rel="stylesheet">
+    <link href="ultra-smooth.css" rel="stylesheet">
+    <script src="app.js?v=5" defer></script>
+    <script src="jams.js?v=5" defer></script>
+</head>
+<body>
+    <!-- Navigation (same as index.html) -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="/" class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                        <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
+                        <circle cx="16" cy="16" r="3" fill="white"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#5B8CFF"/>
+                                <stop offset="50%" style="stop-color:#7C5CFF"/>
+                                <stop offset="100%" style="stop-color:#C15CFF"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span class="logo-text">ExusCraft</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu">
+                <a class="nav-link" href="/">Browse</a>
+                <a class="nav-link active" href="/jams.html">Jams</a>
+                <a class="nav-link" href="/collections.html">Collections</a>
+                <a class="nav-link" href="/downloads.html">Downloads</a>
+            </div>
+            
+            <div class="nav-auth" id="navAuth">
+                <button onclick="showLogin()" class="btn btn-outline">Login</button>
+                <button onclick="showRegister()" class="btn btn-primary">Join Free</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" style="min-height: 60vh; padding: 8rem 2rem 4rem;">
+        <div class="hero-content" style="text-align: center;">
+            <span class="hero-badge">🎮 Collaborative Creation</span>
+            <h1 class="hero-title">Mod Jams & <span class="gradient-text">Competitions</span></h1>
+            <p class="hero-subtitle">Create private spaces for your team to collaborate on mods. No approval needed - just invite and create!</p>
+            <div class="hero-cta">
+                <button id="createJamBtn" class="btn btn-primary btn-large btn-animated">
+                    <i class="fas fa-plus-circle"></i> Create a Jam
+                </button>
+                <button id="joinJamBtn" class="btn btn-outline btn-large">
+                    <i class="fas fa-ticket-alt"></i> Join with Code
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Inline script to ensure buttons work immediately
+        
+        // Define functions directly here as fallback
+        function showCreateJamModal() {
+            console.log('🎮 Opening create jam modal (inline version)...');
+            
+            const user = localStorage.getItem('user');
+            if (!user) {
+                console.log('❌ No user found, redirecting...');
+                alert('Please login to create a jam');
+                window.location.href = '/';
+                return;
+            }
+            
+            console.log('✅ User found:', user);
+            const modal = document.getElementById('createJamModal');
+            console.log('📦 Modal element:', modal);
+            
+            if (modal) {
+                modal.style.cssText = 'display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0, 0, 0, 0.9) !important; z-index: 99999 !important; align-items: center !important; justify-content: center !important; opacity: 1 !important; visibility: visible !important;';
+                console.log('✅ Modal display set to flex with !important');
+                
+                // Force modal to stay open
+                setTimeout(() => {
+                    console.log('🔍 Checking modal after 100ms:', modal.style.display);
+                }, 100);
+                
+                setTimeout(() => {
+                    console.log('🔍 Checking modal after 500ms:', modal.style.display);
+                }, 500);
+                
+                setTimeout(() => {
+                    console.log('🔍 Checking modal after 1000ms:', modal.style.display);
+                }, 1000);
+            } else {
+                console.error('❌ Modal element not found');
+            }
+        }
+        
+        function showJoinJamModal() {
+            console.log('🎮 Opening join jam modal (inline version)...');
+            
+            const user = localStorage.getItem('user');
+            if (!user) {
+                alert('Please login to join a jam');
+                window.location.href = '/';
+                return;
+            }
+            
+            const modal = document.getElementById('joinJamModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            } else {
+                console.error('❌ Modal element not found');
+            }
+        }
+        
+        function closeCreateJamModal() {
+            const modal = document.getElementById('createJamModal');
+            if (modal) {
+                modal.style.display = 'none';
+                const form = document.getElementById('createJamForm');
+                if (form) form.reset();
+            }
+        }
+        
+        function closeJoinJamModal() {
+            const modal = document.getElementById('joinJamModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.getElementById('inviteCodeInput').value = '';
+            }
+        }
+        
+        async function createJam(event) {
+            event.preventDefault();
+            console.log('🎮 Creating jam...');
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+                
+                console.log('📤 Sending request to create jam...');
+                const response = await fetch('/api/jams/create', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                console.log('📥 Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to create jam');
+                }
+                
+                const data = await response.json();
+                console.log('✅ Jam created:', data);
+                
+                alert(`✅ Jam created! Invite code: ${data.jam.inviteCode}`);
+                closeCreateJamModal();
+                
+                // Reload page to show new jam
+                window.location.reload();
+            } catch (error) {
+                console.error('❌ Error creating jam:', error);
+                alert(`Failed to create jam: ${error.message}`);
+            }
+        }
+        
+        // Export to window
+        window.showCreateJamModal = showCreateJamModal;
+        window.showJoinJamModal = showJoinJamModal;
+        window.closeCreateJamModal = closeCreateJamModal;
+        window.closeJoinJamModal = closeJoinJamModal;
+        window.createJam = createJam;
+        
+        console.log('✅ Inline jam functions loaded');
+        
+        // Prevent modals from closing when clicking inside them
+        document.addEventListener('DOMContentLoaded', () => {
+            const createModal = document.getElementById('createJamModal');
+            const joinModal = document.getElementById('joinJamModal');
+            
+            // Prevent modal from closing when clicking inside modal content
+            if (createModal) {
+                const modalContent = createModal.querySelector('.modal-content');
+                if (modalContent) {
+                    modalContent.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                }
+                
+                // Close modal only when clicking the overlay (outside content)
+                createModal.addEventListener('click', (e) => {
+                    if (e.target === createModal) {
+                        closeCreateJamModal();
+                    }
+                });
+            }
+            
+            if (joinModal) {
+                const modalContent = joinModal.querySelector('.modal-content');
+                if (modalContent) {
+                    modalContent.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                }
+                
+                // Close modal only when clicking the overlay (outside content)
+                joinModal.addEventListener('click', (e) => {
+                    if (e.target === joinModal) {
+                        closeJoinJamModal();
+                    }
+                });
+            }
+            
+            console.log('✅ Modal click handlers set up');
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🎯 Setting up jam button listeners...');
+            
+            const createBtn = document.getElementById('createJamBtn');
+            const joinBtn = document.getElementById('joinJamBtn');
+            
+            if (createBtn) {
+                createBtn.addEventListener('click', () => {
+                    console.log('🎮 Create button clicked');
+                    if (typeof window.showCreateJamModal === 'function') {
+                        window.showCreateJamModal();
+                    } else {
+                        console.error('❌ showCreateJamModal not found on window');
+                        alert('Please refresh the page (Ctrl+Shift+R)');
+                    }
+                });
+                console.log('✅ Create button listener added');
+            }
+            
+            if (joinBtn) {
+                joinBtn.addEventListener('click', () => {
+                    console.log('🎮 Join button clicked');
+                    if (typeof window.showJoinJamModal === 'function') {
+                        window.showJoinJamModal();
+                    } else {
+                        console.error('❌ showJoinJamModal not found on window');
+                        alert('Please refresh the page (Ctrl+Shift+R)');
+                    }
+                });
+                console.log('✅ Join button listener added');
+            }
+        });
+    </script>    <!-- Jams Grid -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Active Jams</h2>
+                <div class="jam-filters">
+                    <button class="btn btn-sm" onclick="filterJams('all')">All</button>
+                    <button class="btn btn-sm" onclick="filterJams('active')">Active</button>
+                    <button class="btn btn-sm" onclick="filterJams('upcoming')">Upcoming</button>
+                    <button class="btn btn-sm" onclick="filterJams('ended')">Ended</button>
+                </div>
+            </div>
+            
+            <div id="jamsGrid" class="games-showcase">
+                <!-- Jams will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Create Jam Modal -->
+    <div id="createJamModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="modal-content" style="max-width: 800px; background: #1a2332; padding: 2rem; border-radius: 16px; position: relative; max-height: 90vh; overflow-y: auto;">
+            <span class="close" onclick="closeCreateJamModal()" style="position: absolute; top: 1rem; right: 1rem; font-size: 2rem; cursor: pointer; color: white;">&times;</span>
+            <h2 style="margin-bottom: 2rem; color: white;"><i class="fas fa-trophy"></i> Create a Jam</h2>
+            
+            <form id="createJamForm" onsubmit="createJam(event)">
+                <div class="form-group">
+                    <label>Jam Title *</label>
+                    <input type="text" name="title" required placeholder="e.g., Summer Mod Challenge 2026">
+                </div>
+                
+                <div class="form-group">
+                    <label>Short Description *</label>
+                    <input type="text" name="shortDescription" required maxlength="200" placeholder="Brief description (max 200 chars)">
+                </div>
+                
+                <div class="form-group">
+                    <label>Full Description *</label>
+                    <textarea name="description" required rows="4" placeholder="Detailed description of your jam..."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Theme</label>
+                        <input type="text" name="theme" placeholder="e.g., Cyberpunk, Medieval, Space">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Visibility</label>
+                        <select name="visibility">
+                            <option value="invite-only">Invite Only</option>
+                            <option value="public">Public</option>
+                            <option value="private">Private</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="datetime-local" name="startDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="datetime-local" name="endDate">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Rules</label>
+                    <textarea name="rules" rows="3" placeholder="Rules and guidelines for participants..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Allowed Games (comma-separated)</label>
+                    <input type="text" name="allowedGames" placeholder="e.g., Minecraft, Skyrim, GTA V">
+                </div>
+                
+                <div class="form-group">
+                    <label>Max Submissions Per User</label>
+                    <input type="number" name="maxSubmissionsPerUser" value="5" min="1" max="20">
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="allowTeams" checked>
+                        Allow Team Submissions
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+                    <i class="fas fa-rocket"></i> Create Jam
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Join Jam Modal -->
+    <div id="joinJamModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="modal-content" style="max-width: 500px; background: #1a2332; padding: 2rem; border-radius: 16px; position: relative;">
+            <span class="close" onclick="closeJoinJamModal()" style="position: absolute; top: 1rem; right: 1rem; font-size: 2rem; cursor: pointer; color: white;">&times;</span>
+            <h2 style="margin-bottom: 2rem; color: white;"><i class="fas fa-ticket-alt"></i> Join a Jam</h2>
+            
+            <form onsubmit="joinJam(event)">
+                <div class="form-group">
+                    <label>Invite Code</label>
+                    <input type="text" id="inviteCodeInput" required placeholder="Enter 8-character code" maxlength="8" style="text-transform: uppercase; font-size: 1.5rem; text-align: center; letter-spacing: 0.2rem;">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> Join Jam
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

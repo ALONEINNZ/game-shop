@@ -99,6 +99,14 @@ const modSchema = new mongoose.Schema({
         type: String,
         trim: true
     }],
+    jamId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Jam'
+    },
+    jamSubmission: {
+        type: Boolean,
+        default: false
+    },
     rating: {
         average: {
             type: Number,
