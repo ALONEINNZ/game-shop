@@ -4118,40 +4118,7 @@ function closeUploadModal() {
     }
 }
 
-function toggleDownloadManager() {
-    const manager = document.getElementById('downloadManager');
-    if (manager) {
-        manager.classList.toggle('show');
-    }
-}
-
-function clearCompletedDownloads() {
-    showMessage('Completed downloads cleared', 'success');
-}
-
-function openDownloadsFolder() {
-    showMessage('Opening downloads folder...', 'info');
-    window.location.href = '/downloads.html';
-}
-
-function toggleChatbot() {
-    const chatbot = document.getElementById('chatbot');
-    if (chatbot) {
-        chatbot.classList.toggle('show');
-    }
-}
-
-function sendMessage() {
-    const input = document.getElementById('chatInput');
-    if (input && input.value.trim()) {
-        askBot(input.value);
-        input.value = '';
-    }
-}
-
-function askBot(question) {
-    showMessage(`Chatbot: "${question}" - Feature coming soon!`, 'info');
-}
+// Duplicate functions removed - using the full implementations above
 
 // Close modals when clicking outside
 window.addEventListener('click', (e) => {

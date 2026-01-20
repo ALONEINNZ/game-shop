@@ -1,0 +1,328 @@
+/* ============================================
+   MOBILE RESPONSIVE STYLES - EXUSCRAFT OPTIMIZED
+   ============================================ */
+
+/* Tablet and below (1024px) */
+@media (max-width: 1024px) {
+    .nav-search {
+        max-width: 300px !important;
+    }
+    
+    .nav-search.expanded {
+        max-width: 400px !important;
+    }
+    
+    .hero-title {
+        font-size: 3rem !important;
+    }
+    
+    .games-showcase {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+    }
+    
+    /* Reduce 3D effects on tablets */
+    #three-canvas {
+        opacity: 0.6 !important;
+    }
+}
+
+/* Mobile (768px and below) */
+@media (max-width: 768px) {
+    /* Hide desktop nav, show mobile nav */
+    .nav-menu,
+    .nav-search,
+    .nav-auth,
+    .theme-toggle {
+        display: none !important;
+    }
+    
+    .mobile-menu-toggle {
+        display: block !important;
+    }
+    
+    /* Navigation */
+    .nav-container {
+        padding: 0 1rem !important;
+    }
+    
+    .logo-text {
+        font-size: 1.2rem !important;
+    }
+    
+    /* Optimize 3D canvas for mobile */
+    #three-canvas {
+        opacity: 0.4 !important;
+        filter: blur(1px);
+    }
+    
+    /* Disable heavy animations on mobile */
+    .game-card.featured-bob {
+        animation: none !important;
+    }
+    
+    /* Improve touch targets */
+    .btn, .nav-link, .game-card {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Hero Section */
+    .hero {
+        padding: 100px 1rem 2rem !important;
+        min-height: 70vh !important;
+    }
+    
+    .hero-title {
+        font-size: 2rem !important;
+        line-height: 1.2 !important;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem !important;
+    }
+    
+    .hero-cta {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    
+    .hero-cta .btn {
+        width: 100% !important;
+    }
+    
+    .hero-stats {
+        gap: 1.5rem !important;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem !important;
+    }
+    
+    /* Sections */
+    .section {
+        padding: 3rem 1rem !important;
+    }
+    
+    .section-title {
+        font-size: 1.75rem !important;
+    }
+    
+    .section-subtitle {
+        font-size: 0.95rem !important;
+    }
+    
+    /* Mod Cards */
+    .games-showcase {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    
+    .game-card,
+    .mod-card {
+        max-width: 100% !important;
+    }
+    
+    /* Game Filter Grid */
+    .game-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.75rem !important;
+    }
+    
+    .game-card-filter {
+        padding: 1rem !important;
+    }
+    
+    .game-card-filter .game-icon {
+        font-size: 2rem !important;
+    }
+    
+    /* Search and Filters */
+    .games-controls {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+    }
+    
+    .games-controls select,
+    .games-controls .search-bar {
+        width: 100% !important;
+    }
+    
+    /* Modals */
+    .modal-content {
+        max-width: 95% !important;
+        margin: 1rem !important;
+        padding: 1.5rem !important;
+        max-height: 85vh !important;
+    }
+    
+    .modal h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Forms */
+    .form-row {
+        flex-direction: column !important;
+    }
+    
+    .form-group {
+        width: 100% !important;
+    }
+    
+    /* Buttons */
+    .btn-large {
+        padding: 0.875rem 1.5rem !important;
+        font-size: 0.95rem !important;
+    }
+    
+    /* Trust Bar */
+    .trust-items {
+        gap: 1.5rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .trust-item {
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 0.5rem !important;
+    }
+    
+    /* Jams Grid */
+    #jamsGrid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .jam-filters {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+        justify-content: center !important;
+    }
+    
+    .jam-filters .btn {
+        flex: 1 1 auto !important;
+        min-width: 80px !important;
+    }
+}
+
+/* Small Mobile (480px and below) */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.75rem !important;
+    }
+    
+    .hero-badge {
+        font-size: 0.8rem !important;
+        padding: 0.5rem 1rem !important;
+    }
+    
+    .hero-stats {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+    
+    .section-title {
+        font-size: 1.5rem !important;
+    }
+    
+    .game-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .modal-content {
+        padding: 1rem !important;
+    }
+    
+    .btn-large {
+        padding: 0.75rem 1.25rem !important;
+        font-size: 0.9rem !important;
+    }
+}
+
+/* Landscape Mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+    .hero {
+        min-height: auto !important;
+        padding: 80px 1rem 2rem !important;
+    }
+    
+    .hero-stats {
+        display: none !important;
+    }
+    
+    .modal-content {
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger tap targets for mobile */
+    .btn {
+        min-height: 44px !important;
+        padding: 0.875rem 1.5rem !important;
+    }
+    
+    .nav-link {
+        padding: 0.875rem 1rem !important;
+    }
+    
+    .game-card,
+    .mod-card {
+        cursor: pointer !important;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .game-card:hover,
+    .mod-card:hover {
+        transform: none !important;
+    }
+    
+    .game-card:active,
+    .mod-card:active {
+        transform: scale(0.98) !important;
+        transition: transform 0.1s ease !important;
+    }
+    
+    /* Disable 3D effects on touch devices for performance */
+    #three-canvas {
+        display: none !important;
+    }
+    
+    /* Add subtle gradient background instead */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(ellipse at 50% 20%, rgba(91, 140, 255, 0.15), transparent 60%),
+                    radial-gradient(ellipse at 80% 80%, rgba(193, 92, 255, 0.1), transparent 50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+}
+
+/* Performance optimizations for low-end devices */
+@media (max-width: 768px) and (max-height: 800px) {
+    /* Reduce animations */
+    * {
+        animation-duration: 0.3s !important;
+        transition-duration: 0.2s !important;
+    }
+    
+    /* Simplify shadows */
+    .game-card,
+    .modal-content,
+    .btn-primary {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    /* Disable blur effects */
+    .navbar {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(18, 24, 38, 0.98) !important;
+    }
+}
