@@ -75,8 +75,10 @@ class ExusCraft3D {
         canvas.style.width = '100%';
         canvas.style.height = '100%';
         canvas.style.zIndex = '1';
-        canvas.style.pointerEvents = 'none';
+        canvas.style.pointerEvents = 'none'; // CRITICAL: Allow scroll through canvas
         canvas.style.opacity = this.isMobile ? '0.4' : '0.8';
+        canvas.style.touchAction = 'auto'; // Allow touch scrolling
+        canvas.style.userSelect = 'none'; // Prevent text selection
         
         document.body.insertBefore(canvas, document.body.firstChild);
     }

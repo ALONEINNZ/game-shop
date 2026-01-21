@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll Test - ExusCraft</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0B0F14;
+            color: white;
+            margin: 0;
+            padding: 2rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+            height: auto;
+            min-height: 100vh;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            border: 2px solid #5B8CFF;
+            margin-bottom: 2rem;
+            border-radius: 20px;
+            background: rgba(91, 140, 255, 0.1);
+        }
+        
+        .section:nth-child(even) {
+            background: rgba(193, 92, 255, 0.1);
+            border-color: #C15CFF;
+        }
+        
+        .scroll-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            z-index: 1000;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #5B8CFF;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        
+        .back-btn:hover {
+            background: #C15CFF;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Back to Main Site</a>
+    
+    <div class="scroll-indicator" id="scrollIndicator">
+        Scroll Position: <span id="scrollPos">0</span>px
+    </div>
+    
+    <div class="section">
+        <div>
+            <div>🚀 SCROLL TEST</div>
+            <div style="font-size: 1.5rem; margin-top: 1rem;">
+                If you can see this and scroll down, scrolling works!
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <div>
+            <div>📱 Section 2</div>
+            <div style="font-size: 1.5rem; margin-top: 1rem;">
+                Try scrolling with mouse wheel, arrow keys, or touch
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <div>
+            <div>⚡ Section 3</div>
+            <div style="font-size: 1.5rem; margin-top: 1rem;">
+                Scroll should be smooth and responsive
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <div>
+            <div>🎮 Section 4</div>
+            <div style="font-size: 1.5rem; margin-top: 1rem;">
+                No lag or stuttering
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <div>
+            <div>✅ Section 5</div>
+            <div style="font-size: 1.5rem; margin-top: 1rem;">
+                If you reached here, scrolling is FIXED!
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <div>
+            <div>🎉 SUCCESS!</div>
+            <div style="font-size: 1.5rem; margin-top: 1rem;">
+                Scrolling works perfectly!<br>
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+                        style="margin-top: 1rem; padding: 1rem 2rem; background: #22C55E; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem;">
+                    Scroll to Top
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update scroll position indicator
+        function updateScrollPosition() {
+            const scrollPos = Math.round(window.pageYOffset);
+            document.getElementById('scrollPos').textContent = scrollPos;
+        }
+        
+        window.addEventListener('scroll', updateScrollPosition);
+        updateScrollPosition();
+        
+        // Test scroll programmatically
+        console.log('🧪 Testing scroll...');
+        console.log('Document height:', document.body.scrollHeight);
+        console.log('Window height:', window.innerHeight);
+        console.log('Can scroll:', document.body.scrollHeight > window.innerHeight);
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'Home':
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                    break;
+                case 'End':
+                    window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+                    break;
+                case 'PageDown':
+                    window.scrollBy({top: window.innerHeight, behavior: 'smooth'});
+                    break;
+                case 'PageUp':
+                    window.scrollBy({top: -window.innerHeight, behavior: 'smooth'});
+                    break;
+            }
+        });
+        
+        console.log('✅ Scroll test page loaded!');
+        console.log('Use arrow keys, Page Up/Down, Home/End to test scrolling');
+    </script>
+</body>
+</html>

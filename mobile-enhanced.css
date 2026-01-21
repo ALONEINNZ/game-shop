@@ -505,3 +505,52 @@ html, body {
 .performance-notification.warning {
     border-color: rgba(250, 204, 21, 0.3);
 }
+
+/* CRITICAL SCROLL FIX */
+html, body {
+    overflow-x: hidden !important;
+    overflow-y: auto !important; /* Ensure vertical scroll works */
+    height: auto !important;
+    min-height: 100vh !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important; /* iOS smooth scrolling */
+}
+
+/* Fix any elements that might block scrolling */
+* {
+    pointer-events: auto !important;
+}
+
+/* Except the 3D canvas */
+#three-canvas {
+    pointer-events: none !important;
+    touch-action: none !important;
+}
+
+/* Ensure main content is scrollable */
+.hero, .section, .parallax-section {
+    position: relative !important;
+    z-index: 10 !important;
+    pointer-events: auto !important;
+}
+
+/* Fix mobile scroll issues */
+@media (max-width: 768px) {
+    body {
+        -webkit-overflow-scrolling: touch !important;
+        overflow-y: scroll !important;
+        height: auto !important;
+    }
+    
+    /* Ensure touch events work */
+    .hero, .section, .container {
+        touch-action: pan-y !important;
+    }
+}
+
+/* Emergency scroll fix */
+.scroll-fix {
+    overflow-y: auto !important;
+    height: auto !important;
+    position: relative !important;
+}
