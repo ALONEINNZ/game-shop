@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExusCraft Performance Test</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0B0F14;
+            color: #E6EAF2;
+            margin: 0;
+            padding: 2rem;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(18, 24, 38, 0.8);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(91, 140, 255, 0.2);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .test-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #5B8CFF, #C15CFF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .fps-counter {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: rgba(91, 140, 255, 0.1);
+            border-radius: 15px;
+            border: 2px solid rgba(91, 140, 255, 0.3);
+        }
+        
+        .fps-good { color: #22C55E; border-color: rgba(34, 197, 94, 0.3); }
+        .fps-ok { color: #FACC15; border-color: rgba(250, 204, 21, 0.3); }
+        .fps-bad { color: #EF4444; border-color: rgba(239, 68, 68, 0.3); }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(91, 140, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(91, 140, 255, 0.2);
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #5B8CFF;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #5B8CFF, #C15CFF);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(91, 140, 255, 0.3);
+        }
+        
+        .status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        
+        .status.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22C55E;
+        }
+        
+        .status.warning {
+            background: rgba(250, 204, 21, 0.1);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            color: #FACC15;
+        }
+        
+        .status.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #EF4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>⚡ Performance Test</h1>
+            <p>Testing ExusCraft 3D performance after lag fixes</p>
+        </div>
+        
+        <div class="fps-counter" id="fpsCounter">
+            <div>-- FPS</div>
+            <div style="font-size: 1rem; margin-top: 0.5rem;">Calculating...</div>
+        </div>
+        
+        <div class="metrics">
+            <div class="metric">
+                <span class="metric-value" id="avgFps">--</span>
+                <span class="metric-label">Average FPS</span>
+            </div>
+            <div class="metric">
+                <span class="metric-value" id="minFps">--</span>
+                <span class="metric-label">Minimum FPS</span>
+            </div>
+            <div class="metric">
+                <span class="metric-value" id="maxFps">--</span>
+                <span class="metric-label">Maximum FPS</span>
+            </div>
+            <div class="metric">
+                <span class="metric-value" id="memoryUsage">--</span>
+                <span class="metric-label">Memory (MB)</span>
+            </div>
+        </div>
+        
+        <div id="performanceStatus" class="status">
+            <strong>Starting performance test...</strong><br>
+            Move your mouse and scroll to test responsiveness
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="index.html" class="btn">← Back to Main Site</a>
+            <button onclick="location.reload()" class="btn">🔄 Restart Test</button>
+        </div>
+        
+        <div style="margin-top: 2rem; padding: 1rem; background: rgba(91, 140, 255, 0.05); border-radius: 8px; font-size: 0.9rem;">
+            <strong>Performance Guide:</strong><br>
+            • <span style="color: #22C55E;">60+ FPS</span>: Excellent (smooth)<br>
+            • <span style="color: #FACC15;">30-59 FPS</span>: Good (acceptable)<br>
+            • <span style="color: #EF4444;">Below 30 FPS</span>: Poor (laggy)<br><br>
+            <strong>Device:</strong> <span id="deviceInfo">Detecting...</span>
+        </div>
+    </div>
+
+    <script>
+        let frameCount = 0;
+        let lastTime = performance.now();
+        let fps = 0;
+        let fpsHistory = [];
+        let testStartTime = Date.now();
+        
+        function updateFPS() {
+            frameCount++;
+            const currentTime = performance.now();
+            const deltaTime = currentTime - lastTime;
+            
+            if (deltaTime >= 1000) { // Update every second
+                fps = Math.round((frameCount * 1000) / deltaTime);
+                fpsHistory.push(fps);
+                
+                // Keep only last 10 seconds of data
+                if (fpsHistory.length > 10) {
+                    fpsHistory.shift();
+                }
+                
+                // Update display
+                updateDisplay();
+                
+                frameCount = 0;
+                lastTime = currentTime;
+            }
+            
+            requestAnimationFrame(updateFPS);
+        }
+        
+        function updateDisplay() {
+            const fpsCounter = document.getElementById('fpsCounter');
+            const avgFps = document.getElementById('avgFps');
+            const minFps = document.getElementById('minFps');
+            const maxFps = document.getElementById('maxFps');
+            const memoryUsage = document.getElementById('memoryUsage');
+            const performanceStatus = document.getElementById('performanceStatus');
+            
+            // Update FPS counter
+            fpsCounter.innerHTML = `
+                <div>${fps} FPS</div>
+                <div style="font-size: 1rem; margin-top: 0.5rem;">${getFPSStatus(fps)}</div>
+            `;
+            
+            // Update FPS counter color
+            fpsCounter.className = 'fps-counter';
+            if (fps >= 60) {
+                fpsCounter.classList.add('fps-good');
+            } else if (fps >= 30) {
+                fpsCounter.classList.add('fps-ok');
+            } else {
+                fpsCounter.classList.add('fps-bad');
+            }
+            
+            // Calculate statistics
+            if (fpsHistory.length > 0) {
+                const avg = Math.round(fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length);
+                const min = Math.min(...fpsHistory);
+                const max = Math.max(...fpsHistory);
+                
+                avgFps.textContent = avg;
+                minFps.textContent = min;
+                maxFps.textContent = max;
+            }
+            
+            // Memory usage (if available)
+            if (performance.memory) {
+                const memMB = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+                memoryUsage.textContent = memMB;
+            } else {
+                memoryUsage.textContent = 'N/A';
+            }
+            
+            // Update status
+            const testDuration = Math.round((Date.now() - testStartTime) / 1000);
+            let statusClass = 'status';
+            let statusMessage = '';
+            
+            if (fpsHistory.length === 0) {
+                statusMessage = 'Starting performance test...';
+            } else {
+                const avgFpsValue = Math.round(fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length);
+                
+                if (avgFpsValue >= 60) {
+                    statusClass += ' success';
+                    statusMessage = `🚀 Excellent performance! Average ${avgFpsValue} FPS over ${testDuration}s`;
+                } else if (avgFpsValue >= 30) {
+                    statusClass += ' warning';
+                    statusMessage = `✅ Good performance! Average ${avgFpsValue} FPS over ${testDuration}s`;
+                } else {
+                    statusClass += ' error';
+                    statusMessage = `⚠️ Performance issues detected. Average ${avgFpsValue} FPS over ${testDuration}s`;
+                }
+            }
+            
+            performanceStatus.className = statusClass;
+            performanceStatus.innerHTML = `<strong>${statusMessage}</strong><br>Move your mouse and scroll to test responsiveness`;
+        }
+        
+        function getFPSStatus(fps) {
+            if (fps >= 60) return 'Excellent - Buttery smooth!';
+            if (fps >= 45) return 'Very Good - Smooth';
+            if (fps >= 30) return 'Good - Acceptable';
+            if (fps >= 20) return 'Fair - Slight lag';
+            return 'Poor - Laggy';
+        }
+        
+        function detectDevice() {
+            const deviceInfo = document.getElementById('deviceInfo');
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const cores = navigator.hardwareConcurrency || 'Unknown';
+            const memory = navigator.deviceMemory || 'Unknown';
+            const connection = navigator.connection ? navigator.connection.effectiveType : 'Unknown';
+            
+            let deviceType = 'Desktop';
+            if (isMobile) {
+                deviceType = 'Mobile';
+            }
+            
+            deviceInfo.innerHTML = `
+                ${deviceType} | 
+                ${cores} cores | 
+                ${memory}GB RAM | 
+                ${connection} connection |
+                ${window.innerWidth}x${window.innerHeight}
+            `;
+        }
+        
+        // Start the test
+        detectDevice();
+        updateFPS();
+        
+        // Add some visual feedback for interactions
+        let mouseActivity = 0;
+        document.addEventListener('mousemove', () => {
+            mouseActivity++;
+        });
+        
+        let scrollActivity = 0;
+        document.addEventListener('scroll', () => {
+            scrollActivity++;
+        });
+        
+        // Update activity indicators every 5 seconds
+        setInterval(() => {
+            if (mouseActivity > 0 || scrollActivity > 0) {
+                console.log(`Activity: ${mouseActivity} mouse moves, ${scrollActivity} scrolls`);
+                mouseActivity = 0;
+                scrollActivity = 0;
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

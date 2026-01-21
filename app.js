@@ -4204,3 +4204,194 @@ function searchMods(query) {
 }
 
 console.log('✅ Search functionality loaded!');
+
+// ============================================
+// 3D PERFORMANCE TOGGLE
+// ============================================
+
+let currentPerformanceMode = 'auto'; // 'auto', 'high', 'low', 'off'
+
+function toggle3DPerformance() {
+    const modes = ['auto', 'high', 'low', 'off'];
+    const currentIndex = modes.indexOf(currentPerformanceMode);
+    const nextIndex = (currentIndex + 1) % modes.length;
+    currentPerformanceMode = modes[nextIndex];
+    
+    // Update button appearance
+    const perfButton = document.querySelector('.performance-toggle');
+    const perfIcon = document.getElementById('perfIcon');
+    
+    if (perfButton && perfIcon) {
+        // Remove all classes
+        perfButton.classList.remove('low-performance', 'high-performance');
+        
+        // Update icon and class based on mode
+        switch (currentPerformanceMode) {
+            case 'auto':
+                perfIcon.className = 'fas fa-tachometer-alt';
+                perfButton.title = '3D Performance: Auto';
+                break;
+            case 'high':
+                perfIcon.className = 'fas fa-rocket';
+                perfButton.classList.add('high-performance');
+                perfButton.title = '3D Performance: High';
+                break;
+            case 'low':
+                perfIcon.className = 'fas fa-battery-half';
+                perfButton.classList.add('low-performance');
+                perfButton.title = '3D Performance: Low';
+                break;
+            case 'off':
+                perfIcon.className = 'fas fa-power-off';
+                perfButton.title = '3D Performance: Off';
+                break;
+        }
+    }
+    
+    // Show notification
+    showPerformanceNotification(currentPerformanceMode);
+    
+    // Apply performance mode
+    apply3DPerformanceMode(currentPerformanceMode);
+    
+    // Save preference
+    localStorage.setItem('exuscraft_3d_performance', currentPerformanceMode);
+}
+
+function showPerformanceNotification(mode) {
+    // Remove existing notification
+    const existing = document.querySelector('.performance-notification');
+    if (existing) {
+        existing.remove();
+    }
+    
+    // Create notification
+    const notification = document.createElement('div');
+    notification.className = 'performance-notification';
+    
+    let message, className;
+    switch (mode) {
+        case 'auto':
+            message = '🤖 Auto: Adapts to your device';
+            className = '';
+            break;
+        case 'high':
+            message = '🚀 High: Maximum visual quality';
+            className = 'success';
+            break;
+        case 'low':
+            message = '🔋 Low: Battery saving mode';
+            className = 'warning';
+            break;
+        case 'off':
+            message = '⚡ Off: 3D effects disabled';
+            className = 'warning';
+            break;
+    }
+    
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span>${message}</span>
+        </div>
+    `;
+    
+    if (className) {
+        notification.classList.add(className);
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Show notification
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }, 3000);
+}
+
+function apply3DPerformanceMode(mode) {
+    const canvas = document.getElementById('three-canvas');
+    
+    if (!canvas) {
+        // No 3D canvas found, reload with new mode
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+        return;
+    }
+    
+    switch (mode) {
+        case 'off':
+            canvas.style.display = 'none';
+            break;
+        case 'low':
+            canvas.style.opacity = '0.2';
+            canvas.style.filter = 'blur(1px)';
+            break;
+        case 'high':
+            canvas.style.opacity = '0.8';
+            canvas.style.filter = 'none';
+            break;
+        case 'auto':
+        default:
+            // Reset to auto-detected values
+            const isMobile = window.innerWidth <= 768;
+            canvas.style.opacity = isMobile ? '0.3' : '0.6';
+            canvas.style.filter = isMobile ? 'blur(0.5px)' : 'none';
+            canvas.style.display = 'block';
+            break;
+    }
+}
+
+// Initialize performance mode on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Load saved preference
+    const savedMode = localStorage.getItem('exuscraft_3d_performance');
+    if (savedMode && ['auto', 'high', 'low', 'off'].includes(savedMode)) {
+        currentPerformanceMode = savedMode;
+    }
+    
+    // Apply initial mode
+    setTimeout(() => {
+        apply3DPerformanceMode(currentPerformanceMode);
+        
+        // Update button appearance
+        const perfButton = document.querySelector('.performance-toggle');
+        const perfIcon = document.getElementById('perfIcon');
+        
+        if (perfButton && perfIcon) {
+            perfButton.classList.remove('low-performance', 'high-performance');
+            
+            switch (currentPerformanceMode) {
+                case 'high':
+                    perfIcon.className = 'fas fa-rocket';
+                    perfButton.classList.add('high-performance');
+                    perfButton.title = '3D Performance: High';
+                    break;
+                case 'low':
+                    perfIcon.className = 'fas fa-battery-half';
+                    perfButton.classList.add('low-performance');
+                    perfButton.title = '3D Performance: Low';
+                    break;
+                case 'off':
+                    perfIcon.className = 'fas fa-power-off';
+                    perfButton.title = '3D Performance: Off';
+                    break;
+                default:
+                    perfIcon.className = 'fas fa-tachometer-alt';
+                    perfButton.title = '3D Performance: Auto';
+                    break;
+            }
+        }
+    }, 2000); // Wait for 3D to load
+});
+
+console.log('✅ 3D Performance toggle loaded!');
