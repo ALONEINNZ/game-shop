@@ -46,7 +46,7 @@ class ShaderEffects {
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 2;
+            z-index: 1;
             opacity: 0.7;
             mix-blend-mode: screen;
         `;

@@ -12,8 +12,27 @@ class MicroInteractions {
         this.setupLoadingAnimations();
         this.setupScrollAnimations();
         this.setupGestureControls();
+        this.ensureClickability();
         
         console.log('✨ Micro-Interactions Loaded!');
+    }
+
+    ensureClickability() {
+        // Ensure all interactive elements remain clickable
+        const clickableElements = document.querySelectorAll('.game-card, .mod-card, .btn, a[href], button, [onclick]');
+        
+        clickableElements.forEach(element => {
+            // Ensure proper z-index and pointer events
+            const computedStyle = window.getComputedStyle(element);
+            if (computedStyle.position === 'static') {
+                element.style.position = 'relative';
+            }
+            element.style.zIndex = Math.max(parseInt(element.style.zIndex) || 0, 10);
+            element.style.pointerEvents = 'auto';
+        });
+
+        // Re-check periodically for dynamically added elements
+        setTimeout(() => this.ensureClickability(), 2000);
     }
 
     setupButtonMorphing() {
@@ -21,9 +40,12 @@ class MicroInteractions {
         const buttons = document.querySelectorAll('.btn');
         
         buttons.forEach(button => {
-            // Add ripple effect
+            // Add ripple effect - but don't interfere with click
             button.addEventListener('click', (e) => {
-                this.createRipple(e, button);
+                // Only add ripple if the click is actually on the button
+                if (e.target === button || button.contains(e.target)) {
+                    this.createRipple(e, button);
+                }
             });
 
             // Add magnetic effect
@@ -97,6 +119,10 @@ class MicroInteractions {
         const gameCards = document.querySelectorAll('.game-card, .mod-card');
         
         gameCards.forEach(card => {
+            // Ensure the card remains clickable
+            card.style.position = 'relative';
+            card.style.zIndex = '10';
+            
             card.addEventListener('mouseenter', () => {
                 this.cardHoverEnter(card);
             });
@@ -244,6 +270,17 @@ class MicroInteractions {
             
             .game-card.animate-element {
                 transition-delay: calc(var(--index, 0) * 0.1s);
+            }
+            
+            /* Ensure clickability */
+            .game-card, .mod-card, .btn, button, a[href], [onclick] {
+                position: relative !important;
+                z-index: 100 !important;
+                pointer-events: auto !important;
+            }
+            
+            .game-card *, .mod-card *, .btn *, button *, a[href] *, [onclick] * {
+                pointer-events: auto !important;
             }
         `;
         document.head.appendChild(animationStyle);
