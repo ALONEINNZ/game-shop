@@ -31,24 +31,16 @@ class MicroInteractions {
             element.style.pointerEvents = 'auto';
         });
 
-        // Re-check periodically for dynamically added elements
-        setTimeout(() => this.ensureClickability(), 2000);
+        // Don't re-run automatically to prevent infinite loops
     }
 
     setupButtonMorphing() {
-        // Add morphing effects to all buttons
+        // Add morphing effects to all buttons - but no click animations
         const buttons = document.querySelectorAll('.btn');
         
         buttons.forEach(button => {
-            // Add ripple effect - but don't interfere with click
-            button.addEventListener('click', (e) => {
-                // Only add ripple if the click is actually on the button
-                if (e.target === button || button.contains(e.target)) {
-                    this.createRipple(e, button);
-                }
-            });
-
-            // Add magnetic effect
+            // Remove click ripple effect - it's causing issues
+            // Just add magnetic effect
             button.addEventListener('mousemove', (e) => {
                 this.magneticEffect(e, button);
             });
@@ -272,34 +264,17 @@ class MicroInteractions {
                 transition-delay: calc(var(--index, 0) * 0.1s);
             }
             
-            /* Ensure clickability */
+            /* Ensure clickability - Simple version */
             .game-card, .mod-card, .btn, button, a[href], [onclick] {
                 position: relative !important;
                 z-index: 100 !important;
                 pointer-events: auto !important;
-                visibility: visible !important;
-                opacity: 1 !important;
+                cursor: pointer !important;
             }
             
-            .game-card *, .mod-card *, .btn *, button *, a[href] *, [onclick] * {
-                pointer-events: auto !important;
-                visibility: visible !important;
-            }
-            
-            /* CRITICAL: Prevent elements from disappearing on click */
+            /* Simple click protection */
             .game-card:active, .mod-card:active, .btn:active, button:active {
-                visibility: visible !important;
-                opacity: 1 !important;
-                display: block !important;
                 transform: scale(0.98) !important;
-            }
-            
-            /* Override any hiding transforms */
-            .game-card.animate-element.animate-in {
-                opacity: 1 !important;
-                transform: translateY(0) !important;
-                visibility: visible !important;
-                display: block !important;
             }
         `;
         document.head.appendChild(animationStyle);
