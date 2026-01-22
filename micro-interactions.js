@@ -277,10 +277,29 @@ class MicroInteractions {
                 position: relative !important;
                 z-index: 100 !important;
                 pointer-events: auto !important;
+                visibility: visible !important;
+                opacity: 1 !important;
             }
             
             .game-card *, .mod-card *, .btn *, button *, a[href] *, [onclick] * {
                 pointer-events: auto !important;
+                visibility: visible !important;
+            }
+            
+            /* CRITICAL: Prevent elements from disappearing on click */
+            .game-card:active, .mod-card:active, .btn:active, button:active {
+                visibility: visible !important;
+                opacity: 1 !important;
+                display: block !important;
+                transform: scale(0.98) !important;
+            }
+            
+            /* Override any hiding transforms */
+            .game-card.animate-element.animate-in {
+                opacity: 1 !important;
+                transform: translateY(0) !important;
+                visibility: visible !important;
+                display: block !important;
             }
         `;
         document.head.appendChild(animationStyle);
