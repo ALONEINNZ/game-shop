@@ -10,7 +10,7 @@
         const element = this.parentRule ? null : this.parentElement || this.ownerNode?.host;
         
         // Prevent hiding of clickable elements
-        if (element && element.matches && element.matches('.game-card, .mod-card, .btn, button, a[href], [onclick]')) {
+        if (element && element.matches && element.matches('.game-card, .mod-card, .btn, button, a[href], [onclick], .showcase-cta, [onclick*="openModDetails"]')) {
             if (property === 'display' && (value === 'none' || value === 'hidden')) {
                 console.warn('🚫 Prevented hiding of clickable element:', element);
                 return originalSetProperty.call(this, property, 'block', 'important');
@@ -23,6 +23,10 @@
                 console.warn('🚫 Prevented opacity hiding of clickable element:', element);
                 return originalSetProperty.call(this, property, '1', 'important');
             }
+            if (property === 'transform' && (value.includes('scale(0)') || value.includes('translateX(-100%)') || value.includes('translateY(-100%)'))) {
+                console.warn('🚫 Prevented transform hiding of clickable element:', element);
+                return originalSetProperty.call(this, property, 'none', 'important');
+            }
         }
         
         return originalSetProperty.call(this, property, value, priority);
@@ -33,7 +37,7 @@
         mutations.forEach(function(mutation) {
             if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                 const element = mutation.target;
-                if (element.matches && element.matches('.game-card, .mod-card, .btn, button, a[href], [onclick]')) {
+                if (element.matches && element.matches('.game-card, .mod-card, .btn, button, a[href], [onclick], .showcase-cta, [onclick*="openModDetails"]')) {
                     const style = element.style;
                     
                     // Force visibility
@@ -57,7 +61,7 @@
     
     // Emergency restore function
     function emergencyRestore() {
-        const elements = document.querySelectorAll('.game-card, .mod-card, .btn, button, a[href], [onclick]');
+        const elements = document.querySelectorAll('.game-card, .mod-card, .btn, button, a[href], [onclick], .showcase-cta, [onclick*="openModDetails"], [onclick*="viewDetails"]');
         elements.forEach(element => {
             const computed = window.getComputedStyle(element);
             if (computed.display === 'none' || computed.visibility === 'hidden' || parseFloat(computed.opacity) < 0.1) {

@@ -14,7 +14,12 @@ function ensureClickability() {
         '.card-actions button',
         '.view-details-btn',
         '.download-btn',
-        '.purchase-btn'
+        '.purchase-btn',
+        '.showcase-cta',
+        '.btn-primary',
+        '.btn-outline',
+        '[onclick*="openModDetails"]',
+        '[onclick*="viewDetails"]'
     ];
     
     clickableSelectors.forEach(selector => {
@@ -62,7 +67,9 @@ const style = document.createElement('style');
 style.id = 'clickability-fix-styles';
 style.textContent = `
     /* CRITICAL CLICKABILITY FIXES - PREVENT DISAPPEARING */
-    .game-card, .mod-card, .btn, button, a[href], [onclick] {
+    .game-card, .mod-card, .btn, button, a[href], [onclick],
+    .showcase-cta, .btn-primary, .btn-outline, 
+    [onclick*="openModDetails"], [onclick*="viewDetails"] {
         position: relative !important;
         z-index: 100 !important;
         pointer-events: auto !important;
@@ -74,6 +81,18 @@ style.textContent = `
     .game-card *, .mod-card *, .btn *, button *, a[href] *, [onclick] * {
         pointer-events: auto !important;
         visibility: visible !important;
+    }
+    
+    /* SPECIAL PROTECTION FOR VIEW DETAILS BUTTONS */
+    .showcase-cta, .btn[onclick*="openModDetails"], .btn[onclick*="viewDetails"],
+    button[onclick*="openModDetails"], button[onclick*="viewDetails"] {
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: inline-block !important;
+        position: relative !important;
+        z-index: 1000 !important;
+        pointer-events: auto !important;
+        transform: none !important;
     }
     
     /* Prevent transforms that hide elements */
@@ -121,6 +140,19 @@ style.textContent = `
         opacity: 1 !important;
         pointer-events: auto !important;
         display: inline-block !important;
+    }
+    
+    /* EMERGENCY PROTECTION FOR SHOWCASE BUTTONS */
+    .scroll-showcase .showcase-cta {
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: inline-block !important;
+        position: relative !important;
+        z-index: 2000 !important;
+        pointer-events: auto !important;
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
     }
 `;
 document.head.appendChild(style);
