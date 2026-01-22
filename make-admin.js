@@ -19,7 +19,7 @@ async function makeAdmin() {
         
         const user = await User.findOne({ email: email });
         if (!user) {
-            console.log(`User with email "${email}" not found`);
+            console.log(`User with email "${email}" not found`);69
             process.exit(1);
         }
         
