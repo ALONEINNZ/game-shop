@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Test - ExusCraft</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="layout-fix.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e14;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #ffffff;
+            --text-secondary: #64748b;
+            --accent-primary: #5b8cff;
+            --border-color: #334155;
+        }
+        
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .test-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .logo-text {
+            background: linear-gradient(135deg, #5b8cff, #c15cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <!-- Test Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="/" class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                        <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
+                        <circle cx="16" cy="16" r="3" fill="white"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#5B8CFF"/>
+                                <stop offset="50%" style="stop-color:#7C5CFF"/>
+                                <stop offset="100%" style="stop-color:#C15CFF"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span class="logo-text">ExusCraft</span>
+                </a>
+            </div>
+            
+            <div class="nav-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search mods, games, creators...">
+            </div>
+            
+            <div class="nav-menu">
+                <a class="nav-link" href="#games">Browse</a>
+                <div class="nav-dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" onclick="toggleDropdown('gameDropdown')">
+                        Games <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu" id="gameDropdown">
+                        <a href="#"><span>🧱</span> Minecraft</a>
+                        <a href="#"><span>⚔️</span> Skyrim</a>
+                        <a href="#"><span>🚗</span> GTA V</a>
+                        <a href="#"><span>🤖</span> Cyberpunk 2077</a>
+                    </div>
+                </div>
+                <a class="nav-link" href="#social">Social</a>
+                <a class="nav-link" href="#creator">Creator</a>
+                <a class="nav-link" href="#streaming">Streaming</a>
+                <a class="nav-link" href="#blockchain">Blockchain</a>
+                <a class="nav-link" href="#vr-ar">VR/AR</a>
+                <a class="nav-link" href="#ai">AI Tools</a>
+            </div>
+            
+            <div class="nav-auth">
+                <button class="btn btn-outline">Login</button>
+                <button class="btn btn-primary">Join Free</button>
+            </div>
+            
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#mobileGrad)"/>
+                    <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
+                    <circle cx="16" cy="16" r="3" fill="white"/>
+                    <defs><linearGradient id="mobileGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#5B8CFF"/><stop offset="50%" style="stop-color:#7C5CFF"/><stop offset="100%" style="stop-color:#C15CFF"/></linearGradient></defs>
+                </svg>
+                <span class="logo-text">ExusCraft</span>
+            </div>
+            <button class="mobile-nav-close" onclick="toggleMobileMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-nav-links">
+            <a href="#games"><i class="fas fa-gamepad"></i> Browse Mods</a>
+            <a href="#social"><i class="fas fa-users"></i> Social</a>
+            <a href="#creator"><i class="fas fa-hammer"></i> Creator Tools</a>
+            <a href="#streaming"><i class="fas fa-video"></i> Streaming</a>
+            <a href="#blockchain"><i class="fas fa-link"></i> Blockchain</a>
+            <a href="#vr-ar"><i class="fas fa-vr-cardboard"></i> VR/AR</a>
+            <a href="#ai"><i class="fas fa-brain"></i> AI Tools</a>
+        </div>
+    </div>
+
+    <!-- Test Content -->
+    <div class="test-content">
+        <h1>🧭 Navigation Test Page</h1>
+        <p>This page tests the navigation layout fixes. The navigation should be fully visible and responsive.</p>
+        
+        <div class="test-section">
+            <h2>✅ Navigation Checklist</h2>
+            <ul>
+                <li>✅ Logo visible on the left</li>
+                <li>✅ Search bar in the center</li>
+                <li>✅ Navigation links visible</li>
+                <li>✅ Dropdowns work properly</li>
+                <li>✅ Login/Join buttons on the right</li>
+                <li>✅ Mobile menu toggle (on small screens)</li>
+                <li>✅ No cut-off content</li>
+                <li>✅ Responsive design</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔧 Test Actions</h2>
+            <button onclick="testDropdown()" class="btn btn-primary">Test Dropdown</button>
+            <button onclick="testMobile()" class="btn btn-outline">Test Mobile Menu</button>
+            <button onclick="testResize()" class="btn btn-outline">Test Resize</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>📱 Responsive Test</h2>
+            <p>Resize your browser window to test responsive behavior:</p>
+            <ul>
+                <li><strong>Desktop (>768px):</strong> Full navigation visible</li>
+                <li><strong>Mobile (≤768px):</strong> Hamburger menu visible</li>
+            </ul>
+        </div>
+        
+        <!-- Spacer content to test scrolling -->
+        <div style="height: 200vh; background: linear-gradient(to bottom, transparent, rgba(91, 140, 255, 0.1));">
+            <div style="padding: 4rem 0; text-align: center;">
+                <h2>Scroll Test Area</h2>
+                <p>Scroll up and down to test navigation behavior</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load fixes -->
+    <script src="navigation-fix.js"></script>
+    
+    <script>
+        // Test functions
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            if (dropdown) {
+                // Close all other dropdowns
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    if (menu.id !== dropdownId) {
+                        menu.classList.remove('show');
+                    }
+                });
+                dropdown.classList.toggle('show');
+            }
+        }
+        
+        function toggleMobileMenu() {
+            const mobileNav = document.getElementById('mobileNav');
+            if (mobileNav) {
+                mobileNav.classList.toggle('active');
+            }
+        }
+        
+        function testDropdown() {
+            toggleDropdown('gameDropdown');
+            setTimeout(() => {
+                alert('Dropdown test complete! The dropdown should have opened/closed.');
+            }, 500);
+        }
+        
+        function testMobile() {
+            toggleMobileMenu();
+            setTimeout(() => {
+                alert('Mobile menu test complete! Check if the mobile menu opened/closed.');
+                toggleMobileMenu(); // Close it
+            }, 1000);
+        }
+        
+        function testResize() {
+            alert('Resize your browser window to test responsive behavior. Watch how the navigation adapts to different screen sizes.');
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+            }
+        });
+        
+        // Test responsive behavior
+        function checkResponsive() {
+            const width = window.innerWidth;
+            const status = document.getElementById('responsiveStatus') || document.createElement('div');
+            status.id = 'responsiveStatus';
+            status.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                font-size: 12px;
+                z-index: 10000;
+            `;
+            status.textContent = `Screen: ${width}px ${width <= 768 ? '(Mobile)' : '(Desktop)'}`;
+            
+            if (!document.body.contains(status)) {
+                document.body.appendChild(status);
+            }
+        }
+        
+        window.addEventListener('resize', checkResponsive);
+        checkResponsive();
+        
+        console.log('✅ Navigation test page loaded');
+    </script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+/* EMERGENCY STYLES - Critical fixes for stability */
+
+/* Disable problematic animations temporarily */
+.hero-particles,
+.hex-container,
+.particle-field,
+.scanlines,
+.hex-pattern {
+    display: none !important;
+}
+
+/* Smooth scrolling fix */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Prevent scroll jumping */
+body {
+    overflow-x: hidden;
+}
+
+/* Modal fixes */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: var(--bg-primary, #0a0e14);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    border: 1px solid var(--border-color, #1e293b);
+}
+
+.modal .close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--text-secondary, #64748b);
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
+}
+
+.modal .close:hover {
+    color: var(--text-primary, #ffffff);
+}
+
+/* Dropdown fixes */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--bg-secondary, #1e293b);
+    border: 1px solid var(--border-color, #334155);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    min-width: 200px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: none;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary, #ffffff);
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.dropdown-menu a:hover {
+    background: var(--bg-tertiary, #334155);
+}
+
+/* Notification styles */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.notification {
+    animation: slideIn 0.3s ease;
+}
+
+.notification-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.notification-content button {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+/* Game card fixes */
+.game-card {
+    background: var(--bg-secondary, #1e293b);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    border: 1px solid var(--border-color, #334155);
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.game-image {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+}
+
+.game-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.game-card:hover .game-image img {
+    transform: scale(1.05);
+}
+
+.game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.game-card:hover .game-overlay {
+    opacity: 1;
+}
+
+.game-info {
+    padding: 1.5rem;
+}
+
+.game-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary, #ffffff);
+    margin: 0 0 0.5rem 0;
+}
+
+.game-genre {
+    color: var(--accent-primary, #5b8cff);
+    font-weight: 500;
+    margin: 0 0 1rem 0;
+}
+
+.game-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.stars {
+    color: #fbbf24;
+}
+
+.rating-text {
+    color: var(--text-secondary, #64748b);
+    font-size: 0.9rem;
+}
+
+.game-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary, #64748b);
+}
+
+/* Auth form styles */
+.auth-form {
+    max-width: 400px;
+    width: 100%;
+}
+
+.auth-form h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-primary, #ffffff);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary, #ffffff);
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color, #334155);
+    border-radius: 8px;
+    background: var(--bg-secondary, #1e293b);
+    color: var(--text-primary, #ffffff);
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-primary, #5b8cff);
+    box-shadow: 0 0 0 2px rgba(91, 140, 255, 0.2);
+}
+
+/* Button styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #5b8cff, #7c5cff);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #4c7ce8, #6d4ce8);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(91, 140, 255, 0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text-primary, #ffffff);
+    border: 1px solid var(--border-color, #334155);
+}
+
+.btn-outline:hover {
+    background: var(--bg-secondary, #1e293b);
+    border-color: var(--accent-primary, #5b8cff);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .modal-content {
+        margin: 1rem;
+        padding: 1rem;
+    }
+    
+    .game-card {
+        margin-bottom: 1rem;
+    }
+    
+    .dropdown-menu {
+        position: fixed;
+        top: auto;
+        left: 1rem;
+        right: 1rem;
+        width: auto;
+    }
+}
+
+/* Performance optimizations */
+* {
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

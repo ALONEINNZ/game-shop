@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stability Test - ExusCraft</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="styles-new.css" rel="stylesheet">
+    <link href="emergency-styles.css" rel="stylesheet">
+</head>
+<body>
+    <div style="padding: 2rem; max-width: 800px; margin: 0 auto;">
+        <h1>🔧 Stability Test Page</h1>
+        <p>This page tests the bug fixes for scroll jumping and page reloading issues.</p>
+        
+        <div style="margin: 2rem 0;">
+            <h2>Test Scroll Navigation</h2>
+            <button onclick="testScroll('section1')" class="btn btn-primary">Scroll to Section 1</button>
+            <button onclick="testScroll('section2')" class="btn btn-primary">Scroll to Section 2</button>
+            <button onclick="testScroll('section3')" class="btn btn-primary">Scroll to Section 3</button>
+        </div>
+        
+        <div style="margin: 2rem 0;">
+            <h2>Test Modal</h2>
+            <button onclick="showTestModal()" class="btn btn-outline">Open Test Modal</button>
+        </div>
+        
+        <div style="margin: 2rem 0;">
+            <h2>Test Dropdown</h2>
+            <div class="nav-dropdown" style="position: relative; display: inline-block;">
+                <button onclick="toggleTestDropdown()" class="btn btn-outline">
+                    Test Dropdown <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu" id="testDropdown">
+                    <a href="#section1">Go to Section 1</a>
+                    <a href="#section2">Go to Section 2</a>
+                    <a href="#section3">Go to Section 3</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test Sections -->
+        <div id="section1" style="height: 100vh; background: #1e293b; margin: 2rem 0; padding: 2rem; border-radius: 12px;">
+            <h2>Section 1</h2>
+            <p>This is section 1. Scroll should work smoothly without jumping.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+        
+        <div id="section2" style="height: 100vh; background: #334155; margin: 2rem 0; padding: 2rem; border-radius: 12px;">
+            <h2>Section 2</h2>
+            <p>This is section 2. No page reloading should occur.</p>
+            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+        
+        <div id="section3" style="height: 100vh; background: #475569; margin: 2rem 0; padding: 2rem; border-radius: 12px;">
+            <h2>Section 3</h2>
+            <p>This is section 3. Smooth scrolling should be maintained.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        </div>
+    </div>
+    
+    <!-- Test Modal -->
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideTestModal()">&times;</span>
+            <h2>Test Modal</h2>
+            <p>This modal should open and close without causing page issues.</p>
+            <button onclick="hideTestModal()" class="btn btn-primary">Close Modal</button>
+        </div>
+    </div>
+    
+    <!-- Load bug fixes first -->
+    <script src="critical-bug-fixes.js"></script>
+    
+    <script>
+        // Test functions
+        function testScroll(sectionId) {
+            console.log('Testing scroll to:', sectionId);
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        function showTestModal() {
+            const modal = document.getElementById('testModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+        
+        function hideTestModal() {
+            const modal = document.getElementById('testModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        function toggleTestDropdown() {
+            const dropdown = document.getElementById('testDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+        
+        // Test scroll position tracking
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', () => {
+            const currentScrollTop = window.pageYOffset;
+            console.log('Scroll position:', currentScrollTop, 'Delta:', currentScrollTop - lastScrollTop);
+            lastScrollTop = currentScrollTop;
+        }, { passive: true });
+        
+        console.log('✅ Stability test page loaded');
+    </script>
+</body>
+</html>
